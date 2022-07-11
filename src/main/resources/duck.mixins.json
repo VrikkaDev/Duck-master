@@ -4,8 +4,12 @@
   "package": "net.VrikkaDuck.duck.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ServerConnectionHandler"
   ],
   "client": [
+    "ClientConnectionHandler",
+    "WidgetListBaseMixin",
+    "InGameHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1

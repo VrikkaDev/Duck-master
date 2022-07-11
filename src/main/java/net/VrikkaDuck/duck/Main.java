@@ -1,13 +1,12 @@
 package net.VrikkaDuck.duck;
 
+import fi.dy.masa.malilib.event.InitializationHandler;
+import net.VrikkaDuck.duck.config.ServerConfigs;
 import net.fabricmc.api.ClientModInitializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Main implements ClientModInitializer {
-    public static final Logger LOGGER = LoggerFactory.getLogger("duck");
     @Override
     public void onInitializeClient() {
-
+            InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
     }
 }
