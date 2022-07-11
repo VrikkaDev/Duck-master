@@ -37,6 +37,8 @@ public class ClientTickHandler implements IClientTickHandler {
                     }else{
                         Configs.Actions.RENDER_SHULKER_TOOLTIP = false;
                     }
+                }else{
+                    Configs.Actions.RENDER_SHULKER_TOOLTIP = false;
                 }
             }else{
                 Configs.Actions.RENDER_SHULKER_TOOLTIP = false;
