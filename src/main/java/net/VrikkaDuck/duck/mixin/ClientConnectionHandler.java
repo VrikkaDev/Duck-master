@@ -3,7 +3,6 @@ package net.VrikkaDuck.duck.mixin;
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
-import fi.dy.masa.malilib.util.InventoryUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.config.PacketType;
@@ -13,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
-import net.minecraft.util.collection.DefaultedList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientConnectionHandler {
@@ -35,8 +32,8 @@ public class ClientConnectionHandler {
         }else if(packet.getChannel().equals(Variables.ADMINSETID)){
             ClientNetworkHandler.refreshAdmin();
         }else if(packet.getChannel().equals(Variables.ACTIONID)){
+            Variables.LOGGER.info("CCH");
             Variables.LOGGER.info(packet.getData().readNbt());
-            //Variables.LOGGER.info(packet.getData().readString());
             this.processActionPacket(packet);
         }
     }

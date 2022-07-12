@@ -7,13 +7,8 @@ import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Callbacks;
 import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.config.Hotkeys;
-import net.minecraft.client.MinecraftClient;
-
-import java.util.List;
 
 public class KeyboardHandler implements IKeybindProvider ,IKeyboardInputHandler{
-
-    private int prevKeyCode = 0;
 
     public KeyboardHandler(){
         super();

@@ -1,13 +1,9 @@
 package net.VrikkaDuck.duck;
 
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.mixin.Interface;
-
-import java.io.File;
 
 public class Variables {
     public static final Logger LOGGER = LogManager.getLogger("duck");

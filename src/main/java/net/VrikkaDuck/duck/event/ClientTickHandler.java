@@ -1,7 +1,6 @@
 package net.VrikkaDuck.duck.event;
 
 import fi.dy.masa.malilib.interfaces.IClientTickHandler;
-import io.netty.buffer.Unpooled;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.config.PacketType;
@@ -9,6 +8,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -27,6 +27,9 @@ public class ClientTickHandler implements IClientTickHandler {
                 if(this.blockHit.getType() == HitResult.Type.BLOCK) {
                     BlockPos blockPos = ((BlockHitResult) this.blockHit).getBlockPos();
                     BlockState blockState = MinecraftClient.getInstance().world.getBlockState(blockPos);
+                    if(blockState == null){
+                        return;
+                    }
                     if(blockPos.equals(PREVIOUS_BLOCK)){
                         return;
                     }
@@ -35,7 +38,6 @@ public class ClientTickHandler implements IClientTickHandler {
                         PacketByteBuf buf = PacketByteBufs.create();
                        // Variables.LOGGER.info(buf.readString());
                         buf.writeBlockPos(blockPos);//TODO: <- makes string unusable
-                        Variables.LOGGER.info(buf.readString());
                         ClientNetworkHandler.sendAction(buf, PacketType.SHULKER);
                     }else{
                         Configs.Actions.RENDER_SHULKER_TOOLTIP = false;

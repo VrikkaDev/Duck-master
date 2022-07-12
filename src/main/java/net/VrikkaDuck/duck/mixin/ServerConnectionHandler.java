@@ -1,9 +1,7 @@
 package net.VrikkaDuck.duck.mixin;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import fi.dy.masa.malilib.config.IConfigBase;
-import fi.dy.masa.malilib.config.options.ConfigBoolean;
+import com.google.errorprone.annotations.Var;
 import io.netty.buffer.Unpooled;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.PacketType;
@@ -17,7 +15,6 @@ import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.NbtText;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,9 +22,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.nio.charset.Charset;
 import java.util.List;
-import java.util.UUID;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public class ServerConnectionHandler {
@@ -101,39 +96,54 @@ public class ServerConnectionHandler {
             }
         }else if(packet.getChannel().equals(Variables.ACTIONID)){
 
-            Variables.LOGGER.info(packet.getData().readString());
-            PacketType type = PacketType.valueOf(packet.getData().readString());
+            //Variables.LOGGER.info(packet.getData().readText());
+            //PacketType type = PacketType.valueOf(packet.getData().readText().asString());
+            PacketType type = PacketType.SHULKER;
             Variables.LOGGER.info(type.toString());
-            if(type == null){return;}
+
+            //if(type == null){return;}
 
             switch (type){
                 case SHULKER:
 
-                    if(!ServerConfigs.Generic.INSPECT_SHULKER.getBooleanValue()){
+                    if(!packet.getData().isReadable()){
                         return;
                     }
 
+                    if(!ServerConfigs.Generic.INSPECT_SHULKER.getBooleanValue()){
+                        return;
+                    }
+                    Variables.LOGGER.info("SCH1" );
+
+                    if(packet.getData().readBlockPos() == null){
+                        return;
+                    }
+
+                    Variables.LOGGER.info("SCH2");
                     BlockPos pos = packet.getData().readBlockPos();
+
+                    if(player.world.getBlockEntity(pos) == null){
+                        return;
+                    }
 
                     ShulkerBoxBlockEntity sb = (ShulkerBoxBlockEntity) player.world.getBlockEntity(pos);
 
                     PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                    Variables.LOGGER.info("SCH3");
 
                     NbtCompound compound = sb.createNbtWithId();
 
-                    buf.writeNbt(compound);
-
-
-
-                    if(sb.createNbtWithId() == null){
+                    Variables.LOGGER.info("SCH");
+                    if(compound.isEmpty()) {
                         return;
                     }
+
+                    buf.writeNbt(compound);
 
                     player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, buf));
 
                     break;
             }
         }
-        //Variables.LOGGER.info(packet.getData().readString());
     }
 }
