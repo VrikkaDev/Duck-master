@@ -46,9 +46,6 @@ public class ClientNetworkHandler {
         }
     }
     public static void sendAction(PacketByteBuf buf, PacketType type){
-
-        buf.clear();
-
         try {
         MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CustomPayloadC2SPacket(Variables.ACTIONID,
                 buf));

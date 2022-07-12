@@ -24,14 +24,14 @@ public class ClientTickHandler implements IClientTickHandler {
             if(Configs.Generic.INSPECT_SHULKER.getKeybind().isKeybindHeld()){
                 if(this.blockHit.getType() == HitResult.Type.BLOCK) {
                     BlockPos blockPos = ((BlockHitResult) this.blockHit).getBlockPos();
-                    BlockState blockState = MinecraftClient.getInstance().world.getBlockState(blockPos);
-                    if(blockState == null){
-                        return;
-                    }
+                    BlockState blockState = mc.world.getBlockState(blockPos);
+
                     if(blockPos.equals(PREVIOUS_BLOCK)){
                         return;
                     }
+
                     PREVIOUS_BLOCK = blockPos;
+
                     if(blockState.getBlock().getName().toString().contains("shulker")){
                         PacketByteBuf buf = PacketByteBufs.create();
                         Variables.LOGGER.info(blockPos);

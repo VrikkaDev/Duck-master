@@ -111,11 +111,9 @@ public class ServerConnectionHandler {
                         return;
                     }
 
-                    if(packet.getData().readBlockPos() == null){
-                        return;
-                    }
-
+                    Variables.LOGGER.info("SCH123");
                     BlockPos pos = packet.getData().readBlockPos();
+                    Variables.LOGGER.info("SCH312" + pos.toString());
 
                     if(player.world.getBlockEntity(pos) == null){
                         return;
@@ -137,6 +135,9 @@ public class ServerConnectionHandler {
 
                     player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, buf));
 
+                    break;
+                default:
+                    Variables.LOGGER.info("IAMSECHI");
                     break;
             }
         }
