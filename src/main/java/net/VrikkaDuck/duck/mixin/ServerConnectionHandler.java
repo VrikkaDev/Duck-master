@@ -96,12 +96,9 @@ public class ServerConnectionHandler {
             }
         }else if(packet.getChannel().equals(Variables.ACTIONID)){
 
-            //Variables.LOGGER.info(packet.getData().readText());
-            //PacketType type = PacketType.valueOf(packet.getData().readText().asString());
             PacketType type = PacketType.SHULKER;
             Variables.LOGGER.info(type.toString());
-
-            //if(type == null){return;}
+            Variables.LOGGER.info(packet.getData().isReadable());
 
             switch (type){
                 case SHULKER:
@@ -113,13 +110,11 @@ public class ServerConnectionHandler {
                     if(!ServerConfigs.Generic.INSPECT_SHULKER.getBooleanValue()){
                         return;
                     }
-                    Variables.LOGGER.info("SCH1" );
 
                     if(packet.getData().readBlockPos() == null){
                         return;
                     }
 
-                    Variables.LOGGER.info("SCH2");
                     BlockPos pos = packet.getData().readBlockPos();
 
                     if(player.world.getBlockEntity(pos) == null){
