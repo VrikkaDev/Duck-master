@@ -27,8 +27,6 @@ public class Callbacks {
         @Override
         public void onValueChanged(ConfigBoolean config)
         {
-            //Variables.LOGGER.info(config.getName());
-            //Variables.LOGGER.info(config);
             ClientNetworkHandler.setAdminBoolean(config.getName(), config.getBooleanValue());
         }
     }
@@ -41,18 +39,6 @@ public class Callbacks {
         for(IConfigBase base : Configs.Admin.DEFAULT_OPTIONS){
             ((ConfigBoolean)base).setValueChangeCallback(adminCallback);
         }
-        /*for(IConfigBase base : Configs.Generic.DEFAULT_OPTIONS){
-            if(base instanceof ConfigHotkey){
-                ((ConfigHotkey)base).getKeybind().setCallback(callbackGeneric);
-            }
-        }*/
-       /* Variables.LOGGER.info(Configs.Generic.INSPECT_SHULKER);
-        Variables.LOGGER.info(Configs.Generic.INSPECT_SHULKER.getKeybind());
-        Variables.LOGGER.info(Configs.Generic.INSPECT_SHULKER.getStringValue());
-        Variables.LOGGER.info(Configs.Generic.INSPECT_SHULKER.isModified());
-        Variables.LOGGER.info(Configs.Generic.INSPECT_SHULKER.getDefaultStringValue());
-        Variables.LOGGER.info(Configs.Generic.INSPECT_SHULKER.getName());
-        Configs.Generic.INSPECT_SHULKER.getKeybind().setCallback(callbackGeneric);*/
         Hotkeys.OPEN_CONFIG_GUI.getKeybind().setCallback(callbackGeneric);
     }
     private static class KeyCallbackHotkeysGeneric implements IHotkeyCallback
@@ -60,17 +46,10 @@ public class Callbacks {
         @Override
         public boolean onKeyAction(KeyAction action, IKeybind key)
         {
-            Variables.LOGGER.info(key.getKeys());
-            Variables.LOGGER.info(key.isKeybindHeld());
-            Variables.LOGGER.info(key);
-
             if (key == Hotkeys.OPEN_CONFIG_GUI.getKeybind())
             {
                 ClientNetworkHandler.refreshAdmin();
                 GuiBase.openGui(new ConfigGui());
-                return true;
-            }else if(key == Configs.Generic.INSPECT_SHULKER.getKeybind()){
-                //Configs.Actions.RENDER_SHULKER_TOOLTIP = true;
                 return true;
             }
             return false;

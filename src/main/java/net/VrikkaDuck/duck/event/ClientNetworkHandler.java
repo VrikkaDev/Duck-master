@@ -9,6 +9,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 public class ClientNetworkHandler {
     public static void refreshGenericTweaks(){
         MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CustomPayloadC2SPacket(Variables.GENERICID,
@@ -32,7 +35,11 @@ public class ClientNetworkHandler {
                 buf));
     }
     public static void sendAction(PacketByteBuf buf, PacketType type){
-        buf.writeIntLE(type.ordinal());
+
+        Variables.LOGGER.info(buf.readString());
+        buf.writeString(type.name(), 20);
+        Variables.LOGGER.info(buf.readString());
+        Variables.LOGGER.info(type.name());
         MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CustomPayloadC2SPacket(Variables.ACTIONID,
                 buf));
     }

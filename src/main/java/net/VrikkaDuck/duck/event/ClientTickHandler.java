@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.config.PacketType;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
@@ -31,8 +32,10 @@ public class ClientTickHandler implements IClientTickHandler {
                     }
                     PREVIOUS_BLOCK = blockPos;
                     if(blockState.getBlock().getName().toString().contains("shulker")){
-                        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-                        buf.writeBlockPos(blockPos);
+                        PacketByteBuf buf = PacketByteBufs.create();
+                       // Variables.LOGGER.info(buf.readString());
+                        buf.writeBlockPos(blockPos);//TODO: <- makes string unusable
+                        Variables.LOGGER.info(buf.readString());
                         ClientNetworkHandler.sendAction(buf, PacketType.SHULKER);
                     }else{
                         Configs.Actions.RENDER_SHULKER_TOOLTIP = false;

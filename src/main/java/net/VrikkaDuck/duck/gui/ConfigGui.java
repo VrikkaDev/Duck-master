@@ -42,9 +42,6 @@ public class ConfigGui extends GuiConfigsBase {
     @Override
     public void initGui()
     {
-
-       //    openGui(new GenericGui());
-
         super.initGui();
         this.clearOptions();
 
@@ -57,22 +54,16 @@ public class ConfigGui extends GuiConfigsBase {
         }
         for (ConfigOptionWrapper wrapper : this.getConfigs()){
             Variables.LOGGER.info(wrapper.getConfig());
-            //((ConfigBooleanHotkeyed)wrapper).setBooleanValue(true);
 
         }
         for(Object a : this.children()){
             Variables.LOGGER.info(a);
         }
-        Variables.LOGGER.info(this.getListWidget());
-        Variables.LOGGER.info(this.getListWidget().children());
-        Variables.LOGGER.info(this.getListWidget().getCurrentEntries());
     }
 
     @Override
     public void drawContents(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-       // Variables.LOGGER.info(this.getListWidget().getCurrentEntries().size());
-        //Variables.LOGGER.info(matrixStack.peek());
         this.getListWidget().drawContents(matrixStack, mouseX, mouseY, partialTicks);
         if(ConfigGui.tab == ConfigGuiTab.ADMIN){
             return;
@@ -85,7 +76,6 @@ public class ConfigGui extends GuiConfigsBase {
                         break;
                     }
                     WidgetConfigOption w = (WidgetConfigOption) widget;
-                   //Variables.LOGGER.info(w.getEntry().getConfig().getName());
 
                     isOn = false;
                     for(IConfigBase ob : Configs.Admin.OPTIONS){
