@@ -2,7 +2,7 @@ package net.VrikkaDuck.duck.config;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import fi.dy.masa.malilib.MaLiLib;
+import net.VrikkaDuck.duck.Variables;
 
 public class ServerBoolean {
     private final boolean defaultValue;
@@ -35,12 +35,12 @@ public class ServerBoolean {
             }
             else
             {
-                MaLiLib.logger.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
+                Variables.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
             }
         }
         catch (Exception e)
         {
-            MaLiLib.logger.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
+            Variables.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
         }
     }
     public JsonElement getAsJsonElement()
