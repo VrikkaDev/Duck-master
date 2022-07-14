@@ -83,7 +83,7 @@ public class ConfigGui extends GuiConfigsBase {
                     }
 
                     RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
-                    RenderUtils.drawOutline(w.getX()-1, w.getY(), w.getWidth()+1, w.getHeight(), 1, 0x2F6F6F6F);
+                   // RenderUtils.drawOutline(w.getX()-1, w.getY(), w.getWidth()+1, w.getHeight(), 1, 0x2F6F6F6F);
                     if(w.isMouseOver(mouseX, mouseY)){
                         RenderUtils.drawHoverText(mouseX, mouseY, hoverText(), matrixStack);
                     }

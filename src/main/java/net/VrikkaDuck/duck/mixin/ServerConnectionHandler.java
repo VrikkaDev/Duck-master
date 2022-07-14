@@ -5,8 +5,10 @@ import com.google.errorprone.annotations.Var;
 import io.netty.buffer.Unpooled;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.PacketType;
+import net.VrikkaDuck.duck.config.PacketTypes;
 import net.VrikkaDuck.duck.config.ServerBoolean;
 import net.VrikkaDuck.duck.config.ServerConfigs;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.NetworkThreadUtils;
@@ -90,20 +92,22 @@ public class ServerConnectionHandler {
                     }
                     ServerConfigs.Generic.OPTIONS = ImmutableList.copyOf(_list);
                 }
+
+                ServerConfigs.saveToFile();
+
                 ServerPlayerEntity player = ((ServerPlayNetworkHandler) (Object) this).getPlayer();
 
                 player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ADMINSETID, buf));
             }
         }else if(packet.getChannel().equals(Variables.ACTIONID)){
 
-            PacketType type = PacketType.SHULKER;
-            Variables.LOGGER.info(type.toString());
-            Variables.LOGGER.info(packet.getData().isReadable());
+            PacketTypes type = PacketType.identifierToType(packet.getData().readIdentifier());
 
             switch (type){
                 case SHULKER:
 
                     if(!packet.getData().isReadable()){
+                        Variables.LOGGER.error("Packet data is not readable");
                         return;
                     }
 
@@ -111,33 +115,30 @@ public class ServerConnectionHandler {
                         return;
                     }
 
-                    Variables.LOGGER.info("SCH123");
                     BlockPos pos = packet.getData().readBlockPos();
-                    Variables.LOGGER.info("SCH312" + pos.toString());
 
                     if(player.world.getBlockEntity(pos) == null){
+                        Variables.LOGGER.error("Could not find BlockEntity from given position");
                         return;
                     }
 
                     ShulkerBoxBlockEntity sb = (ShulkerBoxBlockEntity) player.world.getBlockEntity(pos);
 
-                    PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-                    Variables.LOGGER.info("SCH3");
-
                     NbtCompound compound = sb.createNbtWithId();
 
-                    Variables.LOGGER.info("SCH");
                     if(compound.isEmpty()) {
                         return;
                     }
 
+                    PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                    buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.SHULKER));
                     buf.writeNbt(compound);
 
                     player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, buf));
 
                     break;
                 default:
-                    Variables.LOGGER.info("IAMSECHI");
+                    Variables.LOGGER.error("Could not get viable PacketType");
                     break;
             }
         }

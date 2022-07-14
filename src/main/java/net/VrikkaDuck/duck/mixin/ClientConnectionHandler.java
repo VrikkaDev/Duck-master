@@ -6,11 +6,14 @@ import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.config.PacketType;
+import net.VrikkaDuck.duck.config.PacketTypes;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,7 +27,6 @@ import java.util.List;
 public class ClientConnectionHandler {
     @Inject(at = @At("RETURN"), method = "onCustomPayload")
     public void onCustomPayload(CustomPayloadS2CPacket packet, CallbackInfo cb){
-        Variables.LOGGER.info(packet.getChannel());
         if(packet.getChannel().equals(Variables.GENERICID)){
             this.processNbt(packet.getData().readNbt());
         }else if(packet.getChannel().equals(Variables.ADMINID)){
@@ -32,8 +34,6 @@ public class ClientConnectionHandler {
         }else if(packet.getChannel().equals(Variables.ADMINSETID)){
             ClientNetworkHandler.refreshAdmin();
         }else if(packet.getChannel().equals(Variables.ACTIONID)){
-            Variables.LOGGER.info("CCH");
-            Variables.LOGGER.info(packet.getData().readNbt());
             this.processActionPacket(packet);
         }
     }
@@ -64,10 +64,13 @@ public class ClientConnectionHandler {
         ClientNetworkHandler.refreshGenericTweaks();
     }
     private void processActionPacket(CustomPayloadS2CPacket packet){
-        PacketType type = PacketType.valueOf("SHULKER");
+
+        PacketByteBuf buf = PacketByteBufs.slice(packet.getData());
+        PacketTypes type = PacketType.identifierToType(buf.readIdentifier());
+
         switch (type){
             case SHULKER:
-                NbtCompound tnbt = packet.getData().readNbt();
+                NbtCompound tnbt = buf.readNbt();
                 NbtCompound nbt = new NbtCompound();
                 nbt.put ("BlockEntityTag", tnbt);
                 ItemStack stc = new ItemStack(Items.WHITE_SHULKER_BOX);
@@ -75,10 +78,13 @@ public class ClientConnectionHandler {
                 Configs.Actions.SHULKER_ITEM_STACK = stc;
                 Configs.Actions.RENDER_SHULKER_TOOLTIP = true;
 
-                Variables.LOGGER.info(stc);
-                Variables.LOGGER.info(stc.getNbt());
-                Variables.LOGGER.info(packet.getData().readNbt());
+               // Variables.LOGGER.info(stc);
+               // Variables.LOGGER.info(stc.getNbt());
+               // Variables.LOGGER.info(packet.getData().readNbt());
                 //DefaultedList<ItemStack> items = InventoryUtils.getStoredItems(Configs.Actions.SHULKER_ITEM_STACK, -1);
+                break;
+            default:
+                Variables.LOGGER.error("Could not get viable PacketType");
                 break;
         }
     }

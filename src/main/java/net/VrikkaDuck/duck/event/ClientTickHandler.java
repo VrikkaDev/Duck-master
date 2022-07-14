@@ -1,9 +1,11 @@
 package net.VrikkaDuck.duck.event;
 
 import fi.dy.masa.malilib.interfaces.IClientTickHandler;
+import io.netty.buffer.ByteBuf;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.config.PacketType;
+import net.VrikkaDuck.duck.config.PacketTypes;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -34,11 +36,9 @@ public class ClientTickHandler implements IClientTickHandler {
 
                     if(blockState.getBlock().getName().toString().contains("shulker")){
                         PacketByteBuf buf = PacketByteBufs.create();
-                        Variables.LOGGER.info(blockPos);
-                        Variables.LOGGER.info(buf.isReadable());
-                        buf.writeBlockPos(blockPos);//TODO: äsadasjdoiajsdojoijsadijdioasjdioasjo
-                        Variables.LOGGER.info(buf.isReadable());
-                        ClientNetworkHandler.sendAction(buf, PacketType.SHULKER);
+                        buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.SHULKER));
+                        buf.writeBlockPos(blockPos);
+                        ClientNetworkHandler.sendAction(buf, PacketTypes.SHULKER);
                     }else{
                         Configs.Actions.RENDER_SHULKER_TOOLTIP = false;
                     }

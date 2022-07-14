@@ -3,6 +3,7 @@ package net.VrikkaDuck.duck.event;
 import io.netty.buffer.Unpooled;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.PacketType;
+import net.VrikkaDuck.duck.config.PacketTypes;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -45,10 +46,11 @@ public class ClientNetworkHandler {
             e.printStackTrace();
         }
     }
-    public static void sendAction(PacketByteBuf buf, PacketType type){
+    public static void sendAction(PacketByteBuf buf, PacketTypes type){
         try {
-        MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CustomPayloadC2SPacket(Variables.ACTIONID,
-                buf));
+            //PacketByteBuf buffer = buf.
+            MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CustomPayloadC2SPacket(Variables.ACTIONID,
+                    buf));
         } catch (Exception e) {
             e.printStackTrace();
         }
