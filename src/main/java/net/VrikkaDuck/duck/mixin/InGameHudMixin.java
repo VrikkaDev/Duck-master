@@ -2,7 +2,6 @@ package net.VrikkaDuck.duck.mixin;
 
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
-import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.item.ItemStack;

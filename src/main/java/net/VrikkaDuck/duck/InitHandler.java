@@ -5,7 +5,6 @@ import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.event.TickHandler;
 import fi.dy.masa.malilib.interfaces.IInitializationHandler;
 import net.VrikkaDuck.duck.config.Configs;
-import net.VrikkaDuck.duck.config.ServerConfigs;
 import net.VrikkaDuck.duck.event.ClientTickHandler;
 import net.VrikkaDuck.duck.input.KeyboardHandler;
 

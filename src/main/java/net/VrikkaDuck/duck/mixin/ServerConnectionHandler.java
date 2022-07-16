@@ -1,14 +1,14 @@
 package net.VrikkaDuck.duck.mixin;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import fi.dy.masa.malilib.config.IConfigBase;
-import fi.dy.masa.malilib.config.options.ConfigBoolean;
+import com.google.errorprone.annotations.Var;
 import io.netty.buffer.Unpooled;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.PacketType;
+import net.VrikkaDuck.duck.config.PacketTypes;
 import net.VrikkaDuck.duck.config.ServerBoolean;
 import net.VrikkaDuck.duck.config.ServerConfigs;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.NetworkThreadUtils;
@@ -17,7 +17,6 @@ import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.NbtText;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,9 +24,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.nio.charset.Charset;
 import java.util.List;
-import java.util.UUID;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public class ServerConnectionHandler {
@@ -95,19 +92,24 @@ public class ServerConnectionHandler {
                     }
                     ServerConfigs.Generic.OPTIONS = ImmutableList.copyOf(_list);
                 }
+
+                ServerConfigs.saveToFile();
+
                 ServerPlayerEntity player = ((ServerPlayNetworkHandler) (Object) this).getPlayer();
 
                 player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ADMINSETID, buf));
             }
         }else if(packet.getChannel().equals(Variables.ACTIONID)){
 
-            Variables.LOGGER.info(packet.getData().readString());
-            PacketType type = PacketType.valueOf(packet.getData().readString());
-            Variables.LOGGER.info(type.toString());
-            if(type == null){return;}
+            PacketTypes type = PacketType.identifierToType(packet.getData().readIdentifier());
 
             switch (type){
                 case SHULKER:
+
+                    if(!packet.getData().isReadable()){
+                        Variables.LOGGER.error("Packet data is not readable");
+                        return;
+                    }
 
                     if(!ServerConfigs.Generic.INSPECT_SHULKER.getBooleanValue()){
                         return;
@@ -115,25 +117,30 @@ public class ServerConnectionHandler {
 
                     BlockPos pos = packet.getData().readBlockPos();
 
-                    ShulkerBoxBlockEntity sb = (ShulkerBoxBlockEntity) player.world.getBlockEntity(pos);
+                    if(player.world.getBlockEntity(pos) == null){
+                        Variables.LOGGER.error("Could not find BlockEntity from given position");
+                        return;
+                    }
 
-                    PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                    ShulkerBoxBlockEntity sb = (ShulkerBoxBlockEntity) player.world.getBlockEntity(pos);
 
                     NbtCompound compound = sb.createNbtWithId();
 
-                    buf.writeNbt(compound);
-
-
-
-                    if(sb.createNbtWithId() == null){
+                    if(compound.isEmpty()) {
                         return;
                     }
+
+                    PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                    buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.SHULKER));
+                    buf.writeNbt(compound);
 
                     player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, buf));
 
                     break;
+                default:
+                    Variables.LOGGER.error("Could not get viable PacketType");
+                    break;
             }
         }
-        //Variables.LOGGER.info(packet.getData().readString());
     }
 }

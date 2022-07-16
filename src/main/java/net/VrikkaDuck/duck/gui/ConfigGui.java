@@ -1,7 +1,5 @@
 package net.VrikkaDuck.duck.gui;
 
-import com.google.common.collect.Lists;
-import com.sun.jna.platform.unix.solaris.LibKstat;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import fi.dy.masa.malilib.gui.GuiConfigsBase;
@@ -9,19 +7,14 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
-import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetListConfigOptions;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
-import net.VrikkaDuck.duck.mixin.WidgetListBaseMixin;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -90,7 +83,7 @@ public class ConfigGui extends GuiConfigsBase {
                     }
 
                     RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
-                    RenderUtils.drawOutline(w.getX()-1, w.getY(), w.getWidth()+1, w.getHeight(), 1, 0x2F6F6F6F);
+                   // RenderUtils.drawOutline(w.getX()-1, w.getY(), w.getWidth()+1, w.getHeight(), 1, 0x2F6F6F6F);
                     if(w.isMouseOver(mouseX, mouseY)){
                         RenderUtils.drawHoverText(mouseX, mouseY, hoverText(), matrixStack);
                     }
