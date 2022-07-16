@@ -6,8 +6,7 @@
   "name": "Duck",
   "description": "Duck mod is server-client mod that allows you to do stuff☺",
   "authors": [
-    "VrikkaDuck",
-    "masa"
+    "VrikkaDuck"
   ],
   "contact": {
     "homepage": "https://github.com/VrikkaDev/",
@@ -26,7 +25,7 @@
       "net.VrikkaDuck.duck.Main"
     ],
     "modmenu": [
-      "fi.dy.masa.malilib.compat.modmenu.ModMenuImpl"
+      "net.VrikkaDuck.duck.compat.modmenu.ModMenuImpl"
     ]
   },
   "mixins": [
