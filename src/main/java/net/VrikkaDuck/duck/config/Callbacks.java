@@ -7,6 +7,7 @@ import fi.dy.masa.malilib.hotkeys.IHotkeyCallback;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
+import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.VrikkaDuck.duck.gui.ConfigGui;
 

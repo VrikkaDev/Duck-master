@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import net.VrikkaDuck.duck.Variables;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.LevelInfo;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -34,6 +36,9 @@ public class ServerConfigs{
 
     public static void saveToFile()
     {
+
+
+
         File dir = getConfigDirectory();
 
         if ((dir.exists() && dir.isDirectory()) || dir.mkdirs())

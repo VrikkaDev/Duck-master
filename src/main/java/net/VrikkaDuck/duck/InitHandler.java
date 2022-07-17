@@ -17,6 +17,7 @@ public class InitHandler implements IInitializationHandler {
         InputEventHandler.getKeybindManager().registerKeybindProvider(keyboardHandler);
         InputEventHandler.getInputManager().registerKeyboardInputHandler(keyboardHandler);
 
+
         TickHandler.getInstance().registerClientTickHandler(new ClientTickHandler());
 
         ConfigManager.getInstance().registerConfigHandler(Variables.MODID, new Configs());

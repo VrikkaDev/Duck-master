@@ -2,16 +2,11 @@ package net.VrikkaDuck.duck.event;
 
 import io.netty.buffer.Unpooled;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.PacketType;
-import net.VrikkaDuck.duck.config.PacketTypes;
+import net.VrikkaDuck.duck.networking.PacketTypes;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
-import net.minecraft.text.Text;
-
-import javax.annotation.Nullable;
-import java.io.IOException;
 
 public class ClientNetworkHandler {
     public static void refreshGenericTweaks(){

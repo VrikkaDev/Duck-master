@@ -1,14 +1,12 @@
 package net.VrikkaDuck.duck.mixin;
 
 import com.google.common.collect.ImmutableList;
-import com.google.errorprone.annotations.Var;
 import io.netty.buffer.Unpooled;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.PacketType;
-import net.VrikkaDuck.duck.config.PacketTypes;
+import net.VrikkaDuck.duck.networking.PacketType;
+import net.VrikkaDuck.duck.networking.PacketTypes;
 import net.VrikkaDuck.duck.config.ServerBoolean;
 import net.VrikkaDuck.duck.config.ServerConfigs;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.NetworkThreadUtils;
