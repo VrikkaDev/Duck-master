@@ -7,6 +7,5 @@ public class Main implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
-        //TODO: make it so admin tweaks are not universal but saved in world
     }
 }

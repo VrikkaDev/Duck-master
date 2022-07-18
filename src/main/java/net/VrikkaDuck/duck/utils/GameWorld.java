@@ -1,7 +1,11 @@
 package net.VrikkaDuck.duck.utils;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.World;
+
+import java.io.File;
+import java.nio.file.Path;
 
 public class GameWorld {
 
@@ -26,5 +30,9 @@ public class GameWorld {
 
     public static boolean isSingleplayer(){
         return server.isSingleplayer();
+    }
+
+    public static File getDataFolder(){
+        return GameWorld.getServer().getSavePath(WorldSavePath.ROOT).resolve("data").toFile();
     }
 }

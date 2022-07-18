@@ -3,8 +3,10 @@ package net.VrikkaDuck.duck.config;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import net.VrikkaDuck.duck.Variables;
+import net.VrikkaDuck.duck.utils.GameWorld;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.level.LevelInfo;
 
 import javax.annotation.Nullable;
@@ -19,7 +21,11 @@ public class ServerConfigs{
 
     public static void loadFromFile()
     {
-        File configFile = new File(getConfigDirectory(), CONFIG_FILE_NAME);
+        if(!GameWorld.isSingleplayer()){
+            return;
+        }
+
+        File configFile = new File(GameWorld.getDataFolder(), CONFIG_FILE_NAME);
 
         if (configFile.exists() && configFile.isFile() && configFile.canRead())
         {
@@ -37,9 +43,11 @@ public class ServerConfigs{
     public static void saveToFile()
     {
 
+        if(!GameWorld.isSingleplayer()){
+            return;
+        }
 
-
-        File dir = getConfigDirectory();
+        File dir = GameWorld.getDataFolder();
 
         if ((dir.exists() && dir.isDirectory()) || dir.mkdirs())
         {
