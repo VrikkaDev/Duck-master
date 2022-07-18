@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.config;
+package net.VrikkaDuck.duck.networking;
 
 public enum PacketTypes {
     SHULKER

@@ -5,8 +5,9 @@ import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
-import net.VrikkaDuck.duck.config.PacketType;
-import net.VrikkaDuck.duck.config.PacketTypes;
+import net.VrikkaDuck.duck.config.ServerConfigs;
+import net.VrikkaDuck.duck.networking.PacketType;
+import net.VrikkaDuck.duck.networking.PacketTypes;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -77,15 +78,14 @@ public class ClientConnectionHandler {
                 stc.setNbt(nbt);
                 Configs.Actions.SHULKER_ITEM_STACK = stc;
                 Configs.Actions.RENDER_SHULKER_TOOLTIP = true;
-
-               // Variables.LOGGER.info(stc);
-               // Variables.LOGGER.info(stc.getNbt());
-               // Variables.LOGGER.info(packet.getData().readNbt());
-                //DefaultedList<ItemStack> items = InventoryUtils.getStoredItems(Configs.Actions.SHULKER_ITEM_STACK, -1);
                 break;
             default:
                 Variables.LOGGER.error("Could not get viable PacketType");
                 break;
         }
+    }
+    @Inject(at = @At("RETURN"), method = "onGameJoin")
+    public void onJoin(CallbackInfo ci){
+        ServerConfigs.loadFromFile();
     }
 }

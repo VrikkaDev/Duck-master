@@ -45,13 +45,6 @@ public class ConfigGui extends GuiConfigsBase {
         {
             x += this.createButton(x, y, -1, tab);
         }
-        for (ConfigOptionWrapper wrapper : this.getConfigs()){
-            Variables.LOGGER.info(wrapper.getConfig());
-
-        }
-        for(Object a : this.children()){
-            Variables.LOGGER.info(a);
-        }
     }
 
     @Override
@@ -77,13 +70,11 @@ public class ConfigGui extends GuiConfigsBase {
                             break;
                         }
                     }
-                   // Variables.LOGGER.info(isOn);
                     if(isOn){
                         return;
                     }
 
                     RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
-                   // RenderUtils.drawOutline(w.getX()-1, w.getY(), w.getWidth()+1, w.getHeight(), 1, 0x2F6F6F6F);
                     if(w.isMouseOver(mouseX, mouseY)){
                         RenderUtils.drawHoverText(mouseX, mouseY, hoverText(), matrixStack);
                     }
@@ -97,7 +88,6 @@ public class ConfigGui extends GuiConfigsBase {
     @Override
     protected WidgetListConfigOptions createListWidget(int listX, int listY)
     {
-        Variables.LOGGER.info("ääää");
         return new WidgetListConfigOptions(listX, listY,
                 this.getBrowserWidth(), this.getBrowserHeight(), this.getConfigWidth(), this.getZOffset(), this.useKeybindSearch(), this);
     }

@@ -1,5 +1,5 @@
 
-package net.VrikkaDuck.duck.config;
+package net.VrikkaDuck.duck.networking;
 
 import net.minecraft.util.Identifier;
 
