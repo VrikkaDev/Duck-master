@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
     @Inject(at = @At("RETURN"), method = "render")
-    public void render(CallbackInfo cb){
+    private void render(CallbackInfo cb){
         if(Configs.Actions.RENDER_SHULKER_TOOLTIP){
             if(Configs.Admin.INSPECT_SHULKER.getBooleanValue()){
                 if(Configs.Generic.INSPECT_SHULKER.getKeybind().isKeybindHeld()){

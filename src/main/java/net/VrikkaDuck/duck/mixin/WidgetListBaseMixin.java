@@ -16,7 +16,7 @@ public class WidgetListBaseMixin<WIDGET> {
     @Shadow @Final protected List<WIDGET> listWidgets;
 
     @Inject(at = @At("RETURN"), method = "drawContents")
-    public void drawContents(CallbackInfo cb){
+    private void drawContents(CallbackInfo cb){
         ConfigGui.listWidgets = this.listWidgets;
     }
 }

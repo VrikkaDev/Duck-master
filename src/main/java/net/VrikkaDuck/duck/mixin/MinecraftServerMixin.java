@@ -16,7 +16,7 @@ public abstract class MinecraftServerMixin {
     @Shadow public abstract ServerWorld getOverworld();
 
     @Inject(at = @At("RETURN"), method = "<init>")
-    public void init(CallbackInfo ci){
+    private void init(CallbackInfo ci){
         GameWorld.setWorld(this.getOverworld());
         GameWorld.setServer(((MinecraftServer)(Object)this));
     }

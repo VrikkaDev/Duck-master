@@ -27,7 +27,7 @@ import java.util.List;
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientConnectionHandler {
     @Inject(at = @At("RETURN"), method = "onCustomPayload")
-    public void onCustomPayload(CustomPayloadS2CPacket packet, CallbackInfo cb){
+    private void onCustomPayload(CustomPayloadS2CPacket packet, CallbackInfo cb){
         if(packet.getChannel().equals(Variables.GENERICID)){
             this.processNbt(packet.getData().readNbt());
         }else if(packet.getChannel().equals(Variables.ADMINID)){
@@ -85,7 +85,7 @@ public class ClientConnectionHandler {
         }
     }
     @Inject(at = @At("RETURN"), method = "onGameJoin")
-    public void onJoin(CallbackInfo ci){
+    private void onJoin(CallbackInfo ci){
         ServerConfigs.loadFromFile();
     }
 }
