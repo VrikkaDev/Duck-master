@@ -1,11 +1,10 @@
-package net.VrikkaDuck.duck.utils;
+package net.VrikkaDuck.duck.util;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.World;
 
 import java.io.File;
-import java.nio.file.Path;
 
 public class GameWorld {
 

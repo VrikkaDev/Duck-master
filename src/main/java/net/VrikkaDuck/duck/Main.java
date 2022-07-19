@@ -7,5 +7,8 @@ public class Main implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
+        //TODO: Inspect furnace and see level
+        //TODO: Inspect beehives
+        //TODO: Inspect playerInventory
     }
 }

@@ -13,7 +13,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.*;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,7 +27,7 @@ import java.util.List;
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientConnectionHandler {
     @Inject(at = @At("RETURN"), method = "onCustomPayload")
-    public void onCustomPayload(CustomPayloadS2CPacket packet, CallbackInfo cb){
+    private void onCustomPayload(CustomPayloadS2CPacket packet, CallbackInfo cb){
         if(packet.getChannel().equals(Variables.GENERICID)){
             this.processNbt(packet.getData().readNbt());
         }else if(packet.getChannel().equals(Variables.ADMINID)){
@@ -41,7 +41,6 @@ public class ClientConnectionHandler {
     private void processNbt(NbtCompound nbt){
 
         List<IConfigBase> _list = new ArrayList<>();
-        //List<String> _keylist = List.copyOf(nbt.getKeys());
         for(IConfigBase base : Configs.Generic.DEFAULT_OPTIONS){
             if(nbt.getKeys().contains(base.getName())){
                 if(nbt.getBoolean(base.getName())){
@@ -54,7 +53,6 @@ public class ClientConnectionHandler {
     private void processAdminNbt(NbtCompound nbt){
 
         List<IConfigBase> _list = new ArrayList<>();
-        //List<String> _keylist = List.copyOf(nbt.getKeys());
         for(IConfigBase base : Configs.Admin.DEFAULT_OPTIONS){
             if(nbt.getKeys().contains(base.getName())){
                 ((ConfigBoolean)base).setBooleanValue(nbt.getBoolean(base.getName()));
@@ -70,14 +68,34 @@ public class ClientConnectionHandler {
         PacketTypes type = PacketType.identifierToType(buf.readIdentifier());
 
         switch (type){
-            case SHULKER:
+            case CONTAINER:
                 NbtCompound tnbt = buf.readNbt();
                 NbtCompound nbt = new NbtCompound();
                 nbt.put ("BlockEntityTag", tnbt);
                 ItemStack stc = new ItemStack(Items.WHITE_SHULKER_BOX);
                 stc.setNbt(nbt);
-                Configs.Actions.SHULKER_ITEM_STACK = stc;
-                Configs.Actions.RENDER_SHULKER_TOOLTIP = true;
+                if(stc.getNbt() == null || !(stc.getNbt().getCompound("BlockEntityTag").contains("Items")) ||
+                        stc.getNbt().getCompound("BlockEntityTag").getList("Items", 10).isEmpty()){
+                    NbtCompound n = stc.getNbt();
+                    NbtList lst = new NbtList();
+                    NbtCompound a =  new NbtCompound();
+                    a.put("Count", NbtByte.of((byte) 1));
+                    lst.add(0,a);
+                    NbtCompound b =  new NbtCompound();
+                    b.put("Slot", NbtByte.of((byte) 1));
+                    lst.add(1,b);
+                    NbtCompound c =  new NbtCompound();
+                    c.put("Count", NbtString.of("minecraft:air"));
+                    lst.add(2,c);
+                    n.getCompound("BlockEntityTag").put("Items", lst);
+                    stc.setNbt(n);
+                }
+
+                stc.setNbt(nbt);
+                Configs.Actions.CONTAINER_ITEM_STACK = stc;
+                Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
+                Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = buf.readVarInt() == 1;
+
                 break;
             default:
                 Variables.LOGGER.error("Could not get viable PacketType");
@@ -85,7 +103,8 @@ public class ClientConnectionHandler {
         }
     }
     @Inject(at = @At("RETURN"), method = "onGameJoin")
-    public void onJoin(CallbackInfo ci){
+    private void onJoin(CallbackInfo ci){
         ServerConfigs.loadFromFile();
+        ClientNetworkHandler.refreshAdmin();
     }
 }

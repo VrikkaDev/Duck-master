@@ -5,7 +5,8 @@ import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.networking.PacketType;
 import net.VrikkaDuck.duck.networking.PacketTypes;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.hit.BlockHitResult;
@@ -19,11 +20,10 @@ public class ClientTickHandler implements IClientTickHandler {
     public void onClientTick(MinecraftClient mc) {
         if (mc.world != null && mc.player != null)
         {
-            this.blockHit = mc.player.raycast(5, 0.0F, false);
-            if(Configs.Generic.INSPECT_SHULKER.getKeybind().isKeybindHeld()){
+            if(Configs.Generic.INSPECT_CONTAINER.getKeybind().isKeybindHeld()){
+                this.blockHit = mc.player.raycast(5, 0.0F, false);
                 if(this.blockHit.getType() == HitResult.Type.BLOCK) {
                     BlockPos blockPos = ((BlockHitResult) this.blockHit).getBlockPos();
-                    BlockState blockState = mc.world.getBlockState(blockPos);
 
                     if(blockPos.equals(PREVIOUS_BLOCK)){
                         return;
@@ -31,19 +31,32 @@ public class ClientTickHandler implements IClientTickHandler {
 
                     PREVIOUS_BLOCK = blockPos;
 
-                    if(blockState.getBlock().getName().toString().contains("shulker")){
+                    BlockEntity blockEntity = mc.world.getBlockEntity(blockPos);
+
+                    if(blockEntity == null){
+                        Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
+                        return;
+                    }
+
+                    if(blockEntity.getType().equals(BlockEntityType.SHULKER_BOX) ||
+                            blockEntity.getType().equals(BlockEntityType.BARREL) ||
+                            blockEntity.getType().equals(BlockEntityType.CHEST)){
+
                         PacketByteBuf buf = PacketByteBufs.create();
-                        buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.SHULKER));
+
+                        buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
+
                         buf.writeBlockPos(blockPos);
-                        ClientNetworkHandler.sendAction(buf, PacketTypes.SHULKER);
+
+                        ClientNetworkHandler.sendAction(buf, PacketTypes.CONTAINER);
                     }else{
-                        Configs.Actions.RENDER_SHULKER_TOOLTIP = false;
+                        Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
                     }
                 }else{
-                    Configs.Actions.RENDER_SHULKER_TOOLTIP = false;
+                    Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
                 }
             }else{
-                Configs.Actions.RENDER_SHULKER_TOOLTIP = false;
+                Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
                 PREVIOUS_BLOCK = null;
             }
         }

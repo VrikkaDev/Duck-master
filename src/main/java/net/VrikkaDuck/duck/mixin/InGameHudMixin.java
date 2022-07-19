@@ -3,6 +3,7 @@ package net.VrikkaDuck.duck.mixin;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import net.VrikkaDuck.duck.config.Configs;
+import net.VrikkaDuck.duck.util.GuiRenderUtils;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtByte;
@@ -17,28 +18,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
     @Inject(at = @At("RETURN"), method = "render")
-    public void render(CallbackInfo cb){
-        if(Configs.Actions.RENDER_SHULKER_TOOLTIP){
-            if(Configs.Admin.INSPECT_SHULKER.getBooleanValue()){
-                if(Configs.Generic.INSPECT_SHULKER.getKeybind().isKeybindHeld()){
-                    ItemStack stack = Configs.Actions.SHULKER_ITEM_STACK;
-                    if(stack.getNbt() == null || !(stack.getNbt().getCompound("BlockEntityTag").contains("Items"))){
-                        NbtCompound n = stack.getNbt();
-                        NbtList lst = new NbtList();
-                        NbtCompound a =  new NbtCompound();
-                        a.put("Count", NbtByte.of((byte) 1));
-                        lst.add(0,a);
-                        NbtCompound b =  new NbtCompound();
-                        b.put("Slot", NbtByte.of((byte) 1));
-                        lst.add(1,b);
-                        NbtCompound c =  new NbtCompound();
-                        c.put("Count", NbtString.of("minecraft:air"));
-                        lst.add(2,c);
-                        n.getCompound("BlockEntityTag").put("Items", lst);
-                        stack.setNbt(n);
+    private void render(CallbackInfo cb){
+        if(Configs.Actions.RENDER_CONTAINER_TOOLTIP){
+            if(Configs.Admin.INSPECT_CONTAINER.getBooleanValue()){
+                if(Configs.Generic.INSPECT_CONTAINER.getKeybind().isKeybindHeld()){
+                    if(Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP){
+
+                        GuiRenderUtils.renderDoubleChestPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - 96,
+                                GuiUtils.getScaledWindowHeight() / 2 + 30, true);
+                    }else{
+                        RenderUtils.renderShulkerBoxPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - 96,
+                                GuiUtils.getScaledWindowHeight() / 2 + 30, true);
                     }
-                    RenderUtils.renderShulkerBoxPreview(stack, GuiUtils.getScaledWindowWidth() / 2 - 96,
-                            GuiUtils.getScaledWindowHeight() / 2 + 30, true);
                 }
             }
         }
