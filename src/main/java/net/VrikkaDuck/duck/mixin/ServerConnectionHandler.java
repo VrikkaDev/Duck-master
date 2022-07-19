@@ -118,13 +118,13 @@ public class ServerConnectionHandler {
 
             PacketTypes type = PacketType.identifierToType(packet.getData().readIdentifier());
 
+            if(!packet.getData().isReadable()){
+                Variables.LOGGER.error("Packet data is not readable");
+                return;
+            }
+
             switch (type){
                 case CONTAINER:
-
-                    if(!packet.getData().isReadable()){
-                        Variables.LOGGER.error("Packet data is not readable");
-                        return;
-                    }
 
                     if(!ServerConfigs.Generic.INSPECT_CONTAINER.getBooleanValue()){
                         return;
@@ -174,6 +174,33 @@ public class ServerConnectionHandler {
 
                     player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, buf));
 
+                    break;
+                case FURNACE:
+
+                    if(!ServerConfigs.Generic.INSPECT_FURNACE.getBooleanValue()){
+                        return;
+                    }
+
+                    BlockPos fpos = packet.getData().readBlockPos();
+
+                    if(player.world.getBlockEntity(fpos) == null){
+                        Variables.LOGGER.error("Could not find BlockEntity from given position");
+                        return;
+                    }
+
+                    BlockEntity fblockEntity = player.world.getBlockEntity(fpos);
+
+                    NbtCompound fcompound = fblockEntity.createNbtWithId();
+
+                    if(fcompound.isEmpty()) {
+                        return;
+                    }
+
+                    PacketByteBuf fbuf = new PacketByteBuf(Unpooled.buffer());
+                    fbuf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.FURNACE));
+                    fbuf.writeNbt(fcompound);
+
+                    player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, fbuf));
                     break;
                 default:
                     Variables.LOGGER.error("Could not get viable PacketType");

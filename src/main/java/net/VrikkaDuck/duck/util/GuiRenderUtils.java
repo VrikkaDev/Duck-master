@@ -11,6 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 
@@ -62,6 +63,9 @@ public class GuiRenderUtils {
             matrixStack.pop();
             RenderSystem.applyModelViewMatrix();
         }
+    }
+    public static void renderFurnacePreview(NbtCompound nbt, int baseX, int baseY, boolean useBgColors){
+
     }
     private static MinecraftClient mc()
     {

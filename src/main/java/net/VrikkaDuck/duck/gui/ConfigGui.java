@@ -70,13 +70,11 @@ public class ConfigGui extends GuiConfigsBase {
                             break;
                         }
                     }
-                    if(isOn){
-                        return;
-                    }
-
-                    RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
-                    if(w.isMouseOver(mouseX, mouseY)){
-                        RenderUtils.drawHoverText(mouseX, mouseY, hoverText(), matrixStack);
+                    if(!isOn){
+                        RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
+                        if(w.isMouseOver(mouseX, mouseY)){
+                            RenderUtils.drawHoverText(mouseX, mouseY, hoverText(), matrixStack);
+                        }
                     }
                 }
             }

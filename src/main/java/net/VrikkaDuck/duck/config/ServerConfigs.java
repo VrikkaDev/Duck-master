@@ -13,8 +13,15 @@ import java.util.List;
 import java.util.UUID;
 
 public class ServerConfigs{
+
     private static final String CONFIG_FILE_NAME = Variables.MODID + "-server" + ".json";
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    public static class Generic {
+        public static final ServerBoolean INSPECT_CONTAINER = new ServerBoolean("inspectContainers", false);
+        public static final ServerBoolean INSPECT_FURNACE = new ServerBoolean("inspectFurnace", false);
+        public static ImmutableList<ServerBoolean> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE);
+    }
 
     public static void loadFromFile()
     {
@@ -36,7 +43,6 @@ public class ServerConfigs{
             }
         }
     }
-
     public static void saveToFile()
     {
 
@@ -72,6 +78,7 @@ public class ServerConfigs{
             }
         }
     }
+
     private static void writeConfigBase(JsonObject root, String category, List<? extends ServerBoolean> options)
     {
         JsonObject obj = getNestedObject(root, category, true);
@@ -154,10 +161,5 @@ public class ServerConfigs{
         }
 
         return false;
-    }
-
-    public static class Generic {
-        public static final ServerBoolean INSPECT_CONTAINER = new ServerBoolean("inspectContainers", false);
-        public static ImmutableList<ServerBoolean> OPTIONS = ImmutableList.of(INSPECT_CONTAINER);
     }
 }

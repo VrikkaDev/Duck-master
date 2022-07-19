@@ -18,23 +18,26 @@ public class Configs implements IConfigHandler {
 
     public static class Generic {
         public static final ConfigHotkey INSPECT_CONTAINER = new ConfigHotkey("inspectContainers", "k", "Inspect Containers when placed");
-        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER);
+        public static final ConfigHotkey INSPECT_FURNACE = new ConfigHotkey("inspectFurnace", "k", "Inspect Furnaces when placed");
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE);
 
-        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER);
-        public static final ImmutableList<ConfigHotkey> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_CONTAINER);
+        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE);
+        public static final ImmutableList<ConfigHotkey> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE);
     }
 
     public static class Admin {
         public static final ConfigBoolean INSPECT_CONTAINER = new ConfigBoolean("inspectContainers", false, "Inspect Containers when placed");
+        public static final ConfigBoolean INSPECT_FURNACE = new ConfigBoolean("inspectFurnace", false, "Inspect furnaces when placed");
 
-        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER);
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE);
 
-        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER);
+        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE);
     }
 
     public static class Actions{
         public static boolean RENDER_CONTAINER_TOOLTIP = false;
         public static boolean RENDER_DOUBLE_CHEST_TOOLTIP = false;
+        public static boolean RENDER_FURNACE_TOOLTIP = false;
         public static ItemStack CONTAINER_ITEM_STACK;
     }
 

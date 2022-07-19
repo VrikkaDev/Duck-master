@@ -41,9 +41,8 @@ public class ClientNetworkHandler {
             e.printStackTrace();
         }
     }
-    public static void sendAction(PacketByteBuf buf, PacketTypes type){
+    public static void sendAction(PacketByteBuf buf){
         try {
-            //PacketByteBuf buffer = buf.
             MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CustomPayloadC2SPacket(Variables.ACTIONID,
                     buf));
         } catch (Exception e) {

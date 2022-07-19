@@ -97,6 +97,10 @@ public class ClientConnectionHandler {
                 Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = buf.readVarInt() == 1;
 
                 break;
+            case FURNACE:
+                NbtCompound fnbt = buf.readNbt();
+                Variables.LOGGER.info(fnbt);
+                break;
             default:
                 Variables.LOGGER.error("Could not get viable PacketType");
                 break;

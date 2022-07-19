@@ -8,10 +8,18 @@ import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
 import net.VrikkaDuck.duck.Variables;
+import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.VrikkaDuck.duck.gui.ConfigGui;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 
 public class Callbacks {
+
+    private static ClientBlockHitHandler blockHitHandler = ClientBlockHitHandler.INSTANCE();
+    private static MinecraftClient mc = MinecraftClient.getInstance();
 
     public static class AdminFeatureCallback implements IValueChangeCallback<ConfigBoolean>
     {
@@ -31,6 +39,7 @@ public class Callbacks {
             ((ConfigBoolean)base).setValueChangeCallback(adminCallback);
         }
         Hotkeys.OPEN_CONFIG_GUI.getKeybind().setCallback(callbackGeneric);
+        Configs.Generic.INSPECT_CONTAINER.getKeybind().setCallback(callbackGeneric);
     }
     private static class KeyCallbackHotkeysGeneric implements IHotkeyCallback
     {
@@ -42,6 +51,12 @@ public class Callbacks {
                 ClientNetworkHandler.refreshAdmin();
                 GuiBase.openGui(new ConfigGui());
                 return true;
+            }else if(key == Configs.Generic.INSPECT_CONTAINER.getKeybind()){
+                 HitResult blockHit = mc.player.raycast(5, 0.0F, false);
+                if(blockHit.getType() == HitResult.Type.BLOCK) {
+                    BlockPos blockPos = ((BlockHitResult) blockHit).getBlockPos();
+                    blockHitHandler.lookingNewBlock(blockPos, mc);
+                }
             }
             return false;
         }

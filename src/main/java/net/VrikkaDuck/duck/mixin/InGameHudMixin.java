@@ -21,16 +21,19 @@ public class InGameHudMixin {
     private void render(CallbackInfo cb){
         if(Configs.Actions.RENDER_CONTAINER_TOOLTIP){
             if(Configs.Admin.INSPECT_CONTAINER.getBooleanValue()){
-                if(Configs.Generic.INSPECT_CONTAINER.getKeybind().isKeybindHeld()){
+                if(!Configs.Generic.INSPECT_CONTAINER.getKeybind().isKeybindHeld()){
+                    Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
+                    return;
+                }
                     if(Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP){
 
                         GuiRenderUtils.renderDoubleChestPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - 96,
-                                GuiUtils.getScaledWindowHeight() / 2 + 30, true);
+                                GuiUtils.getScaledWindowHeight() / 2 + 60, true);
                     }else{
                         RenderUtils.renderShulkerBoxPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - 96,
                                 GuiUtils.getScaledWindowHeight() / 2 + 30, true);
                     }
-                }
+
             }
         }
     }
