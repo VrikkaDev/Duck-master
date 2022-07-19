@@ -17,7 +17,7 @@ public class Configs implements IConfigHandler {
     private static final String CONFIG_FILE_NAME = Variables.MODID + ".json";
 
     public static class Generic {
-        public static final ConfigHotkey INSPECT_CONTAINER = new ConfigHotkey("inspectContainers", "k", "Inspect Shulkerboxes when placed");
+        public static final ConfigHotkey INSPECT_CONTAINER = new ConfigHotkey("inspectContainers", "k", "Inspect Containers when placed");
         public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER);
 
         public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER);
@@ -25,7 +25,7 @@ public class Configs implements IConfigHandler {
     }
 
     public static class Admin {
-        public static final ConfigBoolean INSPECT_CONTAINER = new ConfigBoolean("inspectContainers", false, "Inspect Shulkerboxes when placed");
+        public static final ConfigBoolean INSPECT_CONTAINER = new ConfigBoolean("inspectContainers", false, "Inspect Containers when placed");
 
         public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER);
 
@@ -33,8 +33,8 @@ public class Configs implements IConfigHandler {
     }
 
     public static class Actions{
-        public static boolean RENDER_SHULKER_TOOLTIP = false;
-        public static ItemStack SHULKER_ITEM_STACK;
+        public static boolean RENDER_CONTAINER_TOOLTIP = false;
+        public static ItemStack CONTAINER_ITEM_STACK;
     }
 
     public static void loadFromFile()

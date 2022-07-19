@@ -69,14 +69,14 @@ public class ClientConnectionHandler {
         PacketTypes type = PacketType.identifierToType(buf.readIdentifier());
 
         switch (type){
-            case SHULKER:
+            case CONTAINER:
                 NbtCompound tnbt = buf.readNbt();
                 NbtCompound nbt = new NbtCompound();
                 nbt.put ("BlockEntityTag", tnbt);
                 ItemStack stc = new ItemStack(Items.WHITE_SHULKER_BOX);
                 stc.setNbt(nbt);
-                Configs.Actions.SHULKER_ITEM_STACK = stc;
-                Configs.Actions.RENDER_SHULKER_TOOLTIP = true;
+                Configs.Actions.CONTAINER_ITEM_STACK = stc;
+                Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
                 break;
             default:
                 Variables.LOGGER.error("Could not get viable PacketType");

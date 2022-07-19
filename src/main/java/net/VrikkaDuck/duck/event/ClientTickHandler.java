@@ -34,7 +34,7 @@ public class ClientTickHandler implements IClientTickHandler {
                     BlockEntity blockEntity = mc.world.getBlockEntity(blockPos);
 
                     if(blockEntity == null){
-                        Configs.Actions.RENDER_SHULKER_TOOLTIP = false;
+                        Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
                         return;
                     }
 
@@ -42,19 +42,19 @@ public class ClientTickHandler implements IClientTickHandler {
 
                         PacketByteBuf buf = PacketByteBufs.create();
 
-                        buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.SHULKER));
+                        buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
 
                         buf.writeBlockPos(blockPos);
 
-                        ClientNetworkHandler.sendAction(buf, PacketTypes.SHULKER);
+                        ClientNetworkHandler.sendAction(buf, PacketTypes.CONTAINER);
                     }else{
-                        Configs.Actions.RENDER_SHULKER_TOOLTIP = false;
+                        Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
                     }
                 }else{
-                    Configs.Actions.RENDER_SHULKER_TOOLTIP = false;
+                    Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
                 }
             }else{
-                Configs.Actions.RENDER_SHULKER_TOOLTIP = false;
+                Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
                 PREVIOUS_BLOCK = null;
             }
         }

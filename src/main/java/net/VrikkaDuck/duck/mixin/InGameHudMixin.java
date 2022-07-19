@@ -18,10 +18,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class InGameHudMixin {
     @Inject(at = @At("RETURN"), method = "render")
     private void render(CallbackInfo cb){
-        if(Configs.Actions.RENDER_SHULKER_TOOLTIP){
-            if(Configs.Admin.INSPECT_SHULKER.getBooleanValue()){
+        if(Configs.Actions.RENDER_CONTAINER_TOOLTIP){
+            if(Configs.Admin.INSPECT_CONTAINER.getBooleanValue()){
                 if(Configs.Generic.INSPECT_CONTAINER.getKeybind().isKeybindHeld()){
-                    ItemStack stack = Configs.Actions.SHULKER_ITEM_STACK;
+                    ItemStack stack = Configs.Actions.CONTAINER_ITEM_STACK;
                     if(stack.getNbt() == null || !(stack.getNbt().getCompound("BlockEntityTag").contains("Items"))){
                         NbtCompound n = stack.getNbt();
                         NbtList lst = new NbtList();

@@ -110,14 +110,14 @@ public class ServerConnectionHandler {
             PacketTypes type = PacketType.identifierToType(packet.getData().readIdentifier());
 
             switch (type){
-                case SHULKER:
+                case CONTAINER:
 
                     if(!packet.getData().isReadable()){
                         Variables.LOGGER.error("Packet data is not readable");
                         return;
                     }
 
-                    if(!ServerConfigs.Generic.INSPECT_SHULKER.getBooleanValue()){
+                    if(!ServerConfigs.Generic.INSPECT_CONTAINER.getBooleanValue()){
                         return;
                     }
 
@@ -137,7 +137,7 @@ public class ServerConnectionHandler {
                     }
 
                     PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-                    buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.SHULKER));
+                    buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
                     buf.writeNbt(compound);
 
                     player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, buf));

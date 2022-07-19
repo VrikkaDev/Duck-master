@@ -5,9 +5,6 @@ import com.google.gson.*;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.utils.GameWorld;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.WorldSavePath;
-import net.minecraft.world.level.LevelInfo;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -160,7 +157,7 @@ public class ServerConfigs{
     }
 
     public static class Generic {
-        public static final ServerBoolean INSPECT_SHULKER = new ServerBoolean("InspectShulker", false);
-        public static ImmutableList<ServerBoolean> OPTIONS = ImmutableList.of(INSPECT_SHULKER);
+        public static final ServerBoolean INSPECT_CONTAINER = new ServerBoolean("inspectContainers", false);
+        public static ImmutableList<ServerBoolean> OPTIONS = ImmutableList.of(INSPECT_CONTAINER);
     }
 }
