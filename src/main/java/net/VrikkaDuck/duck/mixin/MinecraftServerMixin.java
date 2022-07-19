@@ -1,8 +1,6 @@
 package net.VrikkaDuck.duck.mixin;
 
-import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.ServerConfigs;
-import net.VrikkaDuck.duck.utils.GameWorld;
+import net.VrikkaDuck.duck.util.GameWorld;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;

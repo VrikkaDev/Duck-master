@@ -38,7 +38,9 @@ public class ClientTickHandler implements IClientTickHandler {
                         return;
                     }
 
-                    if(blockEntity.getType().equals(BlockEntityType.SHULKER_BOX)){
+                    if(blockEntity.getType().equals(BlockEntityType.SHULKER_BOX) ||
+                            blockEntity.getType().equals(BlockEntityType.BARREL) ||
+                            blockEntity.getType().equals(BlockEntityType.CHEST)){
 
                         PacketByteBuf buf = PacketByteBufs.create();
 

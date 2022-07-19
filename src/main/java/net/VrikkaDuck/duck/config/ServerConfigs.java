@@ -3,7 +3,7 @@ package net.VrikkaDuck.duck.config;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.utils.GameWorld;
+import net.VrikkaDuck.duck.util.GameWorld;
 import net.minecraft.client.MinecraftClient;
 
 import javax.annotation.Nullable;

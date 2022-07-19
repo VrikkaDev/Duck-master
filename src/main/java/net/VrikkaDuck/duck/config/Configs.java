@@ -34,6 +34,7 @@ public class Configs implements IConfigHandler {
 
     public static class Actions{
         public static boolean RENDER_CONTAINER_TOOLTIP = false;
+        public static boolean RENDER_DOUBLE_CHEST_TOOLTIP = false;
         public static ItemStack CONTAINER_ITEM_STACK;
     }
 

@@ -13,7 +13,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.*;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,7 +41,6 @@ public class ClientConnectionHandler {
     private void processNbt(NbtCompound nbt){
 
         List<IConfigBase> _list = new ArrayList<>();
-        //List<String> _keylist = List.copyOf(nbt.getKeys());
         for(IConfigBase base : Configs.Generic.DEFAULT_OPTIONS){
             if(nbt.getKeys().contains(base.getName())){
                 if(nbt.getBoolean(base.getName())){
@@ -75,8 +74,28 @@ public class ClientConnectionHandler {
                 nbt.put ("BlockEntityTag", tnbt);
                 ItemStack stc = new ItemStack(Items.WHITE_SHULKER_BOX);
                 stc.setNbt(nbt);
+                if(stc.getNbt() == null || !(stc.getNbt().getCompound("BlockEntityTag").contains("Items")) ||
+                        stc.getNbt().getCompound("BlockEntityTag").getList("Items", 10).isEmpty()){
+                    NbtCompound n = stc.getNbt();
+                    NbtList lst = new NbtList();
+                    NbtCompound a =  new NbtCompound();
+                    a.put("Count", NbtByte.of((byte) 1));
+                    lst.add(0,a);
+                    NbtCompound b =  new NbtCompound();
+                    b.put("Slot", NbtByte.of((byte) 1));
+                    lst.add(1,b);
+                    NbtCompound c =  new NbtCompound();
+                    c.put("Count", NbtString.of("minecraft:air"));
+                    lst.add(2,c);
+                    n.getCompound("BlockEntityTag").put("Items", lst);
+                    stc.setNbt(n);
+                }
+
+                stc.setNbt(nbt);
                 Configs.Actions.CONTAINER_ITEM_STACK = stc;
                 Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
+                Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = buf.readVarInt() == 1;
+
                 break;
             default:
                 Variables.LOGGER.error("Could not get viable PacketType");
