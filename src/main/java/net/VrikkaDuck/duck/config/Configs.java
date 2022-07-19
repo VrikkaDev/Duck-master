@@ -17,19 +17,19 @@ public class Configs implements IConfigHandler {
     private static final String CONFIG_FILE_NAME = Variables.MODID + ".json";
 
     public static class Generic {
-        public static final ConfigHotkey INSPECT_SHULKER = new ConfigHotkey("InspectShulker", "k", "Inspect Shulkerboxes when placed");
-        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_SHULKER);
+        public static final ConfigHotkey INSPECT_CONTAINER = new ConfigHotkey("inspectContainers", "k", "Inspect Shulkerboxes when placed");
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER);
 
-        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_SHULKER);
-        public static final ImmutableList<ConfigHotkey> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_SHULKER);
+        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER);
+        public static final ImmutableList<ConfigHotkey> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_CONTAINER);
     }
 
     public static class Admin {
-        public static final ConfigBoolean INSPECT_SHULKER = new ConfigBoolean("InspectShulker", false, "Inspect Shulkerboxes when placed");
+        public static final ConfigBoolean INSPECT_CONTAINER = new ConfigBoolean("inspectContainers", false, "Inspect Shulkerboxes when placed");
 
-        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_SHULKER);
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER);
 
-        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_SHULKER);
+        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER);
     }
 
     public static class Actions{

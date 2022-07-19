@@ -54,7 +54,6 @@ public class ClientConnectionHandler {
     private void processAdminNbt(NbtCompound nbt){
 
         List<IConfigBase> _list = new ArrayList<>();
-        //List<String> _keylist = List.copyOf(nbt.getKeys());
         for(IConfigBase base : Configs.Admin.DEFAULT_OPTIONS){
             if(nbt.getKeys().contains(base.getName())){
                 ((ConfigBoolean)base).setBooleanValue(nbt.getBoolean(base.getName()));
@@ -87,5 +86,6 @@ public class ClientConnectionHandler {
     @Inject(at = @At("RETURN"), method = "onGameJoin")
     private void onJoin(CallbackInfo ci){
         ServerConfigs.loadFromFile();
+        ClientNetworkHandler.refreshAdmin();
     }
 }

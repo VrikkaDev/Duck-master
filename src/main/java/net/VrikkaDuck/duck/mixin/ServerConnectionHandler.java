@@ -13,9 +13,11 @@ import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,6 +29,8 @@ import java.util.List;
 @Mixin(ServerPlayNetworkHandler.class)
 public class ServerConnectionHandler {
     @Shadow public ServerPlayerEntity player;
+
+    @Shadow @Final private MinecraftServer server;
 
     @Inject(at = @At("RETURN"),method = "onCustomPayload")
     private void onCustomPayload(CustomPayloadC2SPacket packet, CallbackInfo cb){
@@ -93,9 +97,13 @@ public class ServerConnectionHandler {
 
                 ServerConfigs.saveToFile();
 
-                ServerPlayerEntity player = ((ServerPlayNetworkHandler) (Object) this).getPlayer();
+               // ServerPlayerEntity player = ((ServerPlayNetworkHandler) (Object) this).getPlayer();
 
-                player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ADMINSETID, buf));
+                List<ServerPlayerEntity> players = this.server.getPlayerManager().getPlayerList();
+
+                for(ServerPlayerEntity player : players) {
+                    player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ADMINSETID, buf));
+                }
             }
         }else if(packet.getChannel().equals(Variables.ACTIONID)){
 

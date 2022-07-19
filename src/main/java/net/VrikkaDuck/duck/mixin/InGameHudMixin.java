@@ -20,7 +20,7 @@ public class InGameHudMixin {
     private void render(CallbackInfo cb){
         if(Configs.Actions.RENDER_SHULKER_TOOLTIP){
             if(Configs.Admin.INSPECT_SHULKER.getBooleanValue()){
-                if(Configs.Generic.INSPECT_SHULKER.getKeybind().isKeybindHeld()){
+                if(Configs.Generic.INSPECT_CONTAINER.getKeybind().isKeybindHeld()){
                     ItemStack stack = Configs.Actions.SHULKER_ITEM_STACK;
                     if(stack.getNbt() == null || !(stack.getNbt().getCompound("BlockEntityTag").contains("Items"))){
                         NbtCompound n = stack.getNbt();
