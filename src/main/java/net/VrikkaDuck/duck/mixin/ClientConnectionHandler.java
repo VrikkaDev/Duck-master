@@ -99,6 +99,8 @@ public class ClientConnectionHandler {
                 break;
             case FURNACE:
                 NbtCompound fnbt = buf.readNbt();
+                Configs.Actions.RENDER_FURNACE_TOOLTIP = true;
+                Configs.Actions.FURNACE_NBT = fnbt;
                 Variables.LOGGER.info(fnbt);
                 break;
             default:

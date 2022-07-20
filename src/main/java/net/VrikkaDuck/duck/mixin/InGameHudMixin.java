@@ -25,8 +25,10 @@ public class InGameHudMixin {
                     Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
                     return;
                 }
-                    if(Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP){
-
+                if(Configs.Actions.CONTAINER_ITEM_STACK == null){
+                    return;
+                }
+                if(Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP){
                         GuiRenderUtils.renderDoubleChestPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - 96,
                                 GuiUtils.getScaledWindowHeight() / 2 + 60, true);
                     }else{
@@ -34,6 +36,14 @@ public class InGameHudMixin {
                                 GuiUtils.getScaledWindowHeight() / 2 + 30, true);
                     }
 
+            }
+        }else if(Configs.Actions.RENDER_FURNACE_TOOLTIP){
+            if(Configs.Admin.INSPECT_FURNACE.getBooleanValue()){
+                if(!Configs.Generic.INSPECT_FURNACE.getKeybind().isKeybindHeld()){
+                    Configs.Actions.RENDER_FURNACE_TOOLTIP = false;
+                }
+                GuiRenderUtils.renderFurnacePreview(Configs.Actions.FURNACE_NBT, GuiUtils.getScaledWindowWidth() / 2 - 59,
+                        GuiUtils.getScaledWindowHeight() / 2 + 30, true);
             }
         }
     }

@@ -7,6 +7,7 @@ import fi.dy.masa.malilib.hotkeys.IHotkeyCallback;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
+import net.VrikkaDuck.duck.Main;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
@@ -40,6 +41,7 @@ public class Callbacks {
         }
         Hotkeys.OPEN_CONFIG_GUI.getKeybind().setCallback(callbackGeneric);
         Configs.Generic.INSPECT_CONTAINER.getKeybind().setCallback(callbackGeneric);
+        Configs.Generic.INSPECT_FURNACE.getKeybind().setCallback(callbackGeneric);
     }
     private static class KeyCallbackHotkeysGeneric implements IHotkeyCallback
     {
@@ -52,11 +54,9 @@ public class Callbacks {
                 GuiBase.openGui(new ConfigGui());
                 return true;
             }else if(key == Configs.Generic.INSPECT_CONTAINER.getKeybind()){
-                 HitResult blockHit = mc.player.raycast(5, 0.0F, false);
-                if(blockHit.getType() == HitResult.Type.BLOCK) {
-                    BlockPos blockPos = ((BlockHitResult) blockHit).getBlockPos();
-                    blockHitHandler.lookingNewBlock(blockPos, mc);
-                }
+                blockHitHandler.reload();
+            }else if(key == Configs.Generic.INSPECT_FURNACE.getKeybind()){
+                blockHitHandler.reload();
             }
             return false;
         }

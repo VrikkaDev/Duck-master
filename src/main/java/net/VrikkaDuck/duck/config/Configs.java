@@ -10,6 +10,7 @@ import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 
 import java.io.File;
 
@@ -38,6 +39,7 @@ public class Configs implements IConfigHandler {
         public static boolean RENDER_CONTAINER_TOOLTIP = false;
         public static boolean RENDER_DOUBLE_CHEST_TOOLTIP = false;
         public static boolean RENDER_FURNACE_TOOLTIP = false;
+        public static NbtCompound FURNACE_NBT;
         public static ItemStack CONTAINER_ITEM_STACK;
     }
 
