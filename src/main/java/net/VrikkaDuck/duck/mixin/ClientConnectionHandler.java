@@ -6,14 +6,17 @@ import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.config.ServerConfigs;
+import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.VrikkaDuck.duck.networking.PacketType;
 import net.VrikkaDuck.duck.networking.PacketTypes;
-import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.NbtByte;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -94,8 +97,18 @@ public class ClientConnectionHandler {
                 stc.setNbt(nbt);
                 Configs.Actions.CONTAINER_ITEM_STACK = stc;
                 Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
-                Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = buf.readVarInt() == 1;
+                Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = buf.readVarInt();
 
+                break;
+            case FURNACE:
+                NbtCompound fnbt = buf.readNbt();
+                Configs.Actions.RENDER_FURNACE_TOOLTIP = true;
+                Configs.Actions.FURNACE_NBT = fnbt;
+                break;
+            case BEEHIVE:
+                NbtCompound beenbt = buf.readNbt();
+                Configs.Actions.RENDER_BEEHIVE_PREVIEW = true;
+                Configs.Actions.BEEHIVE_NBT = beenbt;
                 break;
             default:
                 Variables.LOGGER.error("Could not get viable PacketType");

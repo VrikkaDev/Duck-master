@@ -1,5 +1,7 @@
 package net.VrikkaDuck.duck.networking;
 
 public enum PacketTypes {
-    CONTAINER
+    CONTAINER,
+    FURNACE,
+    BEEHIVE
 }

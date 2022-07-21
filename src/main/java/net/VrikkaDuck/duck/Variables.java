@@ -1,6 +1,5 @@
 package net.VrikkaDuck.duck;
 
-import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
