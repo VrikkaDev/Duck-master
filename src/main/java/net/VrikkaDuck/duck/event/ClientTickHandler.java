@@ -1,14 +1,7 @@
 package net.VrikkaDuck.duck.event;
 
 import fi.dy.masa.malilib.interfaces.IClientTickHandler;
-import net.VrikkaDuck.duck.config.Configs;
-import net.VrikkaDuck.duck.networking.PacketType;
-import net.VrikkaDuck.duck.networking.PacketTypes;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;

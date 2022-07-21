@@ -7,15 +7,10 @@ import fi.dy.masa.malilib.hotkeys.IHotkeyCallback;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
-import net.VrikkaDuck.duck.Main;
-import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.VrikkaDuck.duck.gui.ConfigGui;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 
 public class Callbacks {
 
@@ -42,6 +37,7 @@ public class Callbacks {
         Hotkeys.OPEN_CONFIG_GUI.getKeybind().setCallback(callbackGeneric);
         Configs.Generic.INSPECT_CONTAINER.getKeybind().setCallback(callbackGeneric);
         Configs.Generic.INSPECT_FURNACE.getKeybind().setCallback(callbackGeneric);
+        Configs.Generic.INSPECT_BEEHIVE.getKeybind().setCallback(callbackGeneric);
     }
     private static class KeyCallbackHotkeysGeneric implements IHotkeyCallback
     {
@@ -56,6 +52,8 @@ public class Callbacks {
             }else if(key == Configs.Generic.INSPECT_CONTAINER.getKeybind()){
                 blockHitHandler.reload();
             }else if(key == Configs.Generic.INSPECT_FURNACE.getKeybind()){
+                blockHitHandler.reload();
+            }else if (key == Configs.Generic.INSPECT_BEEHIVE.getKeybind()){
                 blockHitHandler.reload();
             }
             return false;

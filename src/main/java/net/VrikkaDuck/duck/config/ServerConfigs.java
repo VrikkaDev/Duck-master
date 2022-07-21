@@ -20,7 +20,9 @@ public class ServerConfigs{
     public static class Generic {
         public static final ServerBoolean INSPECT_CONTAINER = new ServerBoolean("inspectContainers", false);
         public static final ServerBoolean INSPECT_FURNACE = new ServerBoolean("inspectFurnace", false);
-        public static ImmutableList<ServerBoolean> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE);
+        public static final ServerBoolean INSPECT_BEEHIVE = new ServerBoolean("inspectBeehive", false);
+
+        public static ImmutableList<ServerBoolean> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE);
     }
 
     public static void loadFromFile()

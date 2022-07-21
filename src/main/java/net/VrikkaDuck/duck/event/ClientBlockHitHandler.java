@@ -47,7 +47,8 @@ public class ClientBlockHitHandler {
 
         if(blockEntity.getType().equals(BlockEntityType.SHULKER_BOX) ||
                 blockEntity.getType().equals(BlockEntityType.BARREL) ||
-                blockEntity.getType().equals(BlockEntityType.CHEST)){
+                blockEntity.getType().equals(BlockEntityType.CHEST) ||
+                blockEntity.getType().equals(BlockEntityType.HOPPER)){
 
             if(!Configs.Generic.INSPECT_CONTAINER.getKeybind().isKeybindHeld()){
                 return;
@@ -77,11 +78,24 @@ public class ClientBlockHitHandler {
             buf.writeBlockPos(blockPos);
 
             ClientNetworkHandler.sendAction(buf);
+        }else if(blockEntity.getType().equals(BlockEntityType.BEEHIVE)){
+            if(!Configs.Generic.INSPECT_BEEHIVE.getKeybind().isKeybindHeld()){
+                return;
+            }
+
+            PacketByteBuf buf = PacketByteBufs.create();
+
+            buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.BEEHIVE));
+
+            buf.writeBlockPos(blockPos);
+
+            ClientNetworkHandler.sendAction(buf);
         }
 
     }
     private void resetAll(){
         Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
         Configs.Actions.RENDER_FURNACE_TOOLTIP = false;
+        Configs.Actions.RENDER_BEEHIVE_PREVIEW = false;
     }
 }

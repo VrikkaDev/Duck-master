@@ -2,29 +2,23 @@ package net.VrikkaDuck.duck.mixin;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import fi.dy.masa.malilib.util.PacketUtils;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.networking.PacketType;
-import net.VrikkaDuck.duck.networking.PacketTypes;
 import net.VrikkaDuck.duck.config.ServerBoolean;
 import net.VrikkaDuck.duck.config.ServerConfigs;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.impl.networking.PacketCallbackListener;
+import net.VrikkaDuck.duck.networking.PacketType;
+import net.VrikkaDuck.duck.networking.PacketTypes;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
-import net.minecraft.block.DoubleBlockProperties;
-import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.block.entity.ShulkerBoxBlockEntity;
+import net.minecraft.block.entity.*;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.*;
+import net.minecraft.network.NetworkThreadUtils;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.recipe.AbstractCookingRecipe;
@@ -35,8 +29,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.profiling.jfr.event.PacketEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -180,6 +172,9 @@ public class ServerConnectionHandler {
                             buf.writeVarInt(0);
                         }
 
+                    }else if(blockEntity instanceof HopperBlockEntity){
+                        buf.writeNbt(compound);
+                        buf.writeVarInt(2);
                     }else{
                         buf.writeNbt(compound);
                         buf.writeVarInt(0);
@@ -228,7 +223,6 @@ public class ServerConnectionHandler {
                             Object2IntMap.Entry<Identifier> entry = (Object2IntMap.Entry)var4.next();
                             player.world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent((recipe) -> {
                                 list.add(recipe);
-                                //dropExperience(world, pos, entry.getIntValue(), ((AbstractCookingRecipe)recipe).getExperience());
                                 currentFurnaceXp = currentFurnaceXp + ( entry.getIntValue() * ((AbstractCookingRecipe)recipe).getExperience());
                             });
                         }
@@ -244,6 +238,42 @@ public class ServerConnectionHandler {
                     fbuf.writeNbt(fcompound);
 
                     player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, fbuf));
+                    break;
+                case BEEHIVE:
+
+                    if(!ServerConfigs.Generic.INSPECT_BEEHIVE.getBooleanValue()){
+                        return;
+                    }
+
+                    BlockPos beepos = packet.getData().readBlockPos();
+
+                    if(player.world.getBlockEntity(beepos) == null){
+                        Variables.LOGGER.error("Could not find BlockEntity from given position");
+                        return;
+                    }
+
+                    BlockEntity beeblockEntity = player.world.getBlockEntity(beepos);
+
+                    if(!(beeblockEntity instanceof BeehiveBlockEntity)){
+                        return;
+                    }
+
+                    BeehiveBlockEntity bbe = (BeehiveBlockEntity)beeblockEntity;
+
+                    int honeyLevel = BeehiveBlockEntity.getHoneyLevel(bbe.getCachedState());
+                    int beeCount = bbe.getBeeCount();
+
+                    NbtCompound beecompound = new NbtCompound();
+
+                    beecompound.putInt("HoneyLevel", honeyLevel);
+                    beecompound.putInt("BeeCount", beeCount);
+
+                    PacketByteBuf beebuf = new PacketByteBuf(Unpooled.buffer());
+                    beebuf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.BEEHIVE));
+                    beebuf.writeNbt(beecompound);
+
+                    player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, beebuf));
+
                     break;
                 default:
                     Variables.LOGGER.error("Could not get viable PacketType");

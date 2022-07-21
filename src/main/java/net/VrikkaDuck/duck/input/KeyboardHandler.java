@@ -1,9 +1,9 @@
 package net.VrikkaDuck.duck.input;
 
-import fi.dy.masa.malilib.config.options.ConfigHotkey;
-import fi.dy.masa.malilib.hotkeys.*;
-import fi.dy.masa.malilib.util.GuiUtils;
-import net.VrikkaDuck.duck.Main;
+import fi.dy.masa.malilib.hotkeys.IHotkey;
+import fi.dy.masa.malilib.hotkeys.IKeybindManager;
+import fi.dy.masa.malilib.hotkeys.IKeybindProvider;
+import fi.dy.masa.malilib.hotkeys.IKeyboardInputHandler;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Callbacks;
 import net.VrikkaDuck.duck.config.Configs;
