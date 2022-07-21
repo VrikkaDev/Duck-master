@@ -38,6 +38,7 @@ public class Callbacks {
         Configs.Generic.INSPECT_CONTAINER.getKeybind().setCallback(callbackGeneric);
         Configs.Generic.INSPECT_FURNACE.getKeybind().setCallback(callbackGeneric);
         Configs.Generic.INSPECT_BEEHIVE.getKeybind().setCallback(callbackGeneric);
+        Configs.Generic.INSPECT_PLAYER_INVENTORY.getKeybind().setCallback(callbackGeneric);
     }
     private static class KeyCallbackHotkeysGeneric implements IHotkeyCallback
     {
@@ -55,6 +56,8 @@ public class Callbacks {
                 blockHitHandler.reload();
             }else if (key == Configs.Generic.INSPECT_BEEHIVE.getKeybind()){
                 blockHitHandler.reload();
+            }else if (key == Configs.Generic.INSPECT_PLAYER_INVENTORY.getKeybind()){
+                blockHitHandler.lookingNewEntity(mc.targetedEntity);
             }
             return false;
         }

@@ -35,9 +35,9 @@
   "depends": {
     "fabricloader": ">=0.13.3",
     "fabric": "*",
-    "minecraft": "~1.18.2",
+    "minecraft": "~1.19",
     "java": ">=17",
-    "malilib": "0.12.x"
+    "malilib": "0.13.x"
   },
   "suggests": {
     "another-mod": "*"

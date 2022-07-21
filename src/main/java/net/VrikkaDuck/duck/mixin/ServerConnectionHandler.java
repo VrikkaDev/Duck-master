@@ -2,6 +2,7 @@ package net.VrikkaDuck.duck.mixin;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import fi.dy.masa.malilib.network.PacketSplitter;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -15,6 +16,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.*;
 import net.minecraft.block.enums.ChestType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.NetworkThreadUtils;
@@ -29,6 +31,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vec3i;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -40,10 +44,13 @@ import java.util.Iterator;
 import java.util.List;
 
 @Mixin(ServerPlayNetworkHandler.class)
-public class ServerConnectionHandler {
+public abstract class ServerConnectionHandler {
     @Shadow public ServerPlayerEntity player;
 
     @Shadow @Final private MinecraftServer server;
+
+    @Shadow public abstract ServerPlayerEntity getPlayer();
+
     private Object2IntOpenHashMap<Identifier> recipesUsed = new Object2IntOpenHashMap();
     private float currentFurnaceXp = 0f;
 
@@ -56,6 +63,7 @@ public class ServerConnectionHandler {
         if(packet.getChannel().equals(Variables.GENERICID)){
 
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            buf.writeVarInt(0);//GENERICID
 
             NbtCompound nbt = new NbtCompound();
 
@@ -67,10 +75,11 @@ public class ServerConnectionHandler {
 
             ServerPlayerEntity player = ((ServerPlayNetworkHandler)(Object)this).getPlayer();
 
-            player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.GENERICID, buf));
+            send(player.networkHandler ,Variables.GENERICID, buf);
 
         }else if(packet.getChannel().equals(Variables.ADMINID)){
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            buf.writeVarInt(1);//ADMINID
 
             NbtCompound nbt = new NbtCompound();
 
@@ -82,12 +91,12 @@ public class ServerConnectionHandler {
 
             ServerPlayerEntity player = ((ServerPlayNetworkHandler)(Object)this).getPlayer();
 
-            player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ADMINID, buf));
+            send(player.networkHandler ,Variables.ADMINID, buf);
 
         }else if(packet.getChannel().equals(Variables.ADMINSETID)){
 
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            buf.writeString(":)");
+            buf.writeVarInt(2);//ADMINSETID
 
             NbtCompound compound = packet.getData().readNbt();
 
@@ -116,8 +125,8 @@ public class ServerConnectionHandler {
 
                 List<ServerPlayerEntity> players = this.server.getPlayerManager().getPlayerList();
 
-                for(ServerPlayerEntity player : players) {
-                    player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ADMINSETID, buf));
+                for(ServerPlayerEntity player : players) {//TODO: check if player can recieve
+                    send(player.networkHandler ,Variables.ADMINSETID, buf);
                 }
             }
         }else if(packet.getChannel().equals(Variables.ACTIONID)){
@@ -181,7 +190,7 @@ public class ServerConnectionHandler {
                     }
 
 
-                    player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, buf));
+                    send(player.networkHandler ,Variables.ACTIONID, buf);
 
                     break;
                 case FURNACE:
@@ -237,7 +246,7 @@ public class ServerConnectionHandler {
                     fbuf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.FURNACE));
                     fbuf.writeNbt(fcompound);
 
-                    player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, fbuf));
+                    send(player.networkHandler ,Variables.ACTIONID, fbuf);
                     break;
                 case BEEHIVE:
 
@@ -272,7 +281,36 @@ public class ServerConnectionHandler {
                     beebuf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.BEEHIVE));
                     beebuf.writeNbt(beecompound);
 
-                    player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, beebuf));
+                    send(player.networkHandler ,Variables.ACTIONID, beebuf);
+
+                    break;
+                case PLAYERINVENTORY:
+                    if(!ServerConfigs.Generic.INSPECT_PLAYER_INVENTORY.getBooleanValue()){
+                        return;
+                    }
+
+                    PlayerEntity splayer = getPlayer().world.getPlayerByUuid(packet.getData().readUuid());
+
+                    if(splayer == null){
+                        Variables.LOGGER.warn("Couldnt find targeted player");
+                        return;
+                    }
+
+                    if(!splayer.getPos().isInRange(player.getPos(), 5)){
+                        Variables.LOGGER.warn("Targeted player is too far");
+                        return;
+                    }
+
+                    NbtList list = new NbtList();
+                    list = splayer.getInventory().writeNbt(list);
+                    NbtCompound playerInvCompound = new NbtCompound();
+                    playerInvCompound.put("Inventory", list);
+
+                    PacketByteBuf invBuf = new PacketByteBuf(Unpooled.buffer());
+                    invBuf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.PLAYERINVENTORY));
+                    invBuf.writeNbt(playerInvCompound);
+
+                    send(player.networkHandler ,Variables.ACTIONID, invBuf);
 
                     break;
                 default:
@@ -292,5 +330,8 @@ public class ServerConnectionHandler {
         }
         a.put("Items", list);
         return a;
+    }
+    private void send(ServerPlayNetworkHandler networkHandler, Identifier channel, PacketByteBuf packet){
+        PacketSplitter.send(networkHandler, channel, packet);
     }
 }
