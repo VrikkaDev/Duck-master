@@ -208,6 +208,10 @@ public class GuiRenderUtils {
 
         matrixStack.pop();
     }
+    public static void renderPlayerInventory(Inventory inventory, int x, int y){
+        InventoryOverlay.renderInventoryBackground(InventoryOverlay.InventoryRenderType.GENERIC, x-88, y-41, 9, 36, mc);
+        InventoryOverlay.renderInventoryStacks(InventoryOverlay.InventoryRenderType.GENERIC, inventory, x-88+8, y-41+8, 9, 0, 36, mc);
+    }
     private static void renderBackground(int x, int y){
 
         RenderUtils.setupBlend();

@@ -2,6 +2,7 @@ package net.VrikkaDuck.duck.config;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
+import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.minecraft.client.MinecraftClient;
@@ -21,8 +22,9 @@ public class ServerConfigs{
         public static final ServerBoolean INSPECT_CONTAINER = new ServerBoolean("inspectContainers", false);
         public static final ServerBoolean INSPECT_FURNACE = new ServerBoolean("inspectFurnace", false);
         public static final ServerBoolean INSPECT_BEEHIVE = new ServerBoolean("inspectBeehive", false);
+        public static final ServerBoolean INSPECT_PLAYER_INVENTORY = new ServerBoolean("inspectPlayerInventory", false);
 
-        public static ImmutableList<ServerBoolean> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE);
+        public static ImmutableList<ServerBoolean> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY);
     }
 
     public static void loadFromFile()

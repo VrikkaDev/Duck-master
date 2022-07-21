@@ -7,6 +7,7 @@ import fi.dy.masa.malilib.interfaces.IInitializationHandler;
 import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.event.ClientTickHandler;
 import net.VrikkaDuck.duck.input.KeyboardHandler;
+import net.VrikkaDuck.duck.networking.ClientPacketReciever;
 
 public class InitHandler implements IInitializationHandler {
     @Override
@@ -17,6 +18,7 @@ public class InitHandler implements IInitializationHandler {
         InputEventHandler.getKeybindManager().registerKeybindProvider(keyboardHandler);
         InputEventHandler.getInputManager().registerKeyboardInputHandler(keyboardHandler);
 
+        ClientPacketReciever clientPacketReciever = new ClientPacketReciever();
 
         TickHandler.getInstance().registerClientTickHandler(new ClientTickHandler());
 
