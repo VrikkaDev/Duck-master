@@ -2,11 +2,9 @@ package net.VrikkaDuck.duck.config;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
-import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.minecraft.client.MinecraftClient;
-import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import javax.annotation.Nullable;
 import java.io.*;
