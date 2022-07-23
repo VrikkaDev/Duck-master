@@ -6,6 +6,7 @@ import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.minecraft.client.MinecraftClient;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -33,9 +34,10 @@ public class ServerConfigs{
             return;
         }
 
-        if(!GameWorld.isSingleplayer()){
+       /* if(!GameWorld.isSingleplayer()){
             return;
-        }
+          }
+        */
 
         File configFile = new File(GameWorld.getDataFolder(), CONFIG_FILE_NAME);
 
@@ -57,9 +59,9 @@ public class ServerConfigs{
             return;
         }
 
-        if(!GameWorld.isSingleplayer()){
+       /* if(!GameWorld.isSingleplayer()){
             return;
-        }
+        }*/
 
         File dir = GameWorld.getDataFolder();
 
