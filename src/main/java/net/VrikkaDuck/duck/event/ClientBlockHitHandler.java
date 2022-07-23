@@ -41,10 +41,16 @@ public class ClientBlockHitHandler {
 
     public void lookingNewBlock(BlockPos blockPos){
 
+
         if(blockPos == null){
+            resetAll();
             return;
         }
 
+        if(mc.targetedEntity != null){
+            lookingNewEntity(mc.targetedEntity);
+            return;
+        }
 
         BlockEntity blockEntity = mc.world.getBlockEntity(blockPos);
 
@@ -110,8 +116,6 @@ public class ClientBlockHitHandler {
             resetEntity();
             return;
         }
-
-        System.out.println(mc.world.getEntityById(entity.getId()).getType());
 
         if(entity.getType().equals(EntityType.PLAYER)){
             PacketByteBuf buf = PacketByteBufs.create();

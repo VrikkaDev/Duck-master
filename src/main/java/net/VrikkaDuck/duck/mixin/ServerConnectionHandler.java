@@ -2,7 +2,6 @@ package net.VrikkaDuck.duck.mixin;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import fi.dy.masa.malilib.network.PacketSplitter;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -42,14 +41,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerConnectionHandler {
-    @Shadow public ServerPlayerEntity player;
+    @Shadow private ServerPlayerEntity player;
 
     @Shadow @Final private MinecraftServer server;
-
-    @Shadow public abstract ServerPlayerEntity getPlayer();
 
     private Object2IntOpenHashMap<Identifier> recipesUsed = new Object2IntOpenHashMap();
     private float currentFurnaceXp = 0f;
@@ -303,6 +301,7 @@ public abstract class ServerConnectionHandler {
 
                     NbtList list = new NbtList();
                     list = splayer.getInventory().writeNbt(list);
+                    //list = player.getInventory().writeNbt(list);
                     NbtCompound playerInvCompound = new NbtCompound();
                     playerInvCompound.put("Inventory", list);
 
@@ -331,7 +330,40 @@ public abstract class ServerConnectionHandler {
         a.put("Items", list);
         return a;
     }
-    private void send(ServerPlayNetworkHandler networkHandler, Identifier channel, PacketByteBuf packet){
+    /*private void send(ServerPlayNetworkHandler networkHandler, Identifier channel, PacketByteBuf packet){
         PacketSplitter.send(networkHandler, channel, packet);
+    }*/
+    public void send(ServerPlayNetworkHandler networkHandler, Identifier channel, PacketByteBuf packet)
+    {
+        send(packet, 1048576-5, buf -> networkHandler.sendPacket(new CustomPayloadS2CPacket(channel, buf)));
+    }
+    private void send(PacketByteBuf packet, int payloadLimit, Consumer<PacketByteBuf> sender)
+    {
+        int len = packet.writerIndex();
+
+        packet.resetReaderIndex();
+
+        for (int offset = 0; offset < len; offset += payloadLimit)
+        {
+            int thisLen = Math.min(len - offset, payloadLimit);
+            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer(thisLen));
+
+            buf.resetWriterIndex();
+
+            if (offset == 0)
+            {
+                buf.writeVarInt(len);
+            }
+
+            buf.writeBytes(packet, thisLen);
+
+            sender.accept(buf);
+        }
+
+        packet.release();
+    }
+
+    public ServerPlayerEntity getPlayer(){
+        return player;
     }
 }

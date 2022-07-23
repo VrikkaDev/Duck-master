@@ -29,6 +29,10 @@ public class ServerConfigs{
 
     public static void loadFromFile()
     {
+        if(GameWorld.getServer() == null){
+            return;
+        }
+
         if(!GameWorld.isSingleplayer()){
             return;
         }
@@ -49,6 +53,9 @@ public class ServerConfigs{
     }
     public static void saveToFile()
     {
+        if(GameWorld.getServer() == null){
+            return;
+        }
 
         if(!GameWorld.isSingleplayer()){
             return;
