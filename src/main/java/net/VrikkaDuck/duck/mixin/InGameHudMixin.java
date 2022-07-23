@@ -40,6 +40,7 @@ public class InGameHudMixin {
             if(Configs.Admin.INSPECT_FURNACE.getBooleanValue()){
                 if(!Configs.Generic.INSPECT_FURNACE.getKeybind().isKeybindHeld()){
                     Configs.Actions.RENDER_FURNACE_TOOLTIP = false;
+                    return;
                 }
                 GuiRenderUtils.renderFurnacePreview(Configs.Actions.FURNACE_NBT, GuiUtils.getScaledWindowWidth() / 2 - 59,
                         GuiUtils.getScaledWindowHeight() / 2 + 30, true);
@@ -48,6 +49,7 @@ public class InGameHudMixin {
             if(Configs.Admin.INSPECT_BEEHIVE.getBooleanValue()){
                 if(!Configs.Generic.INSPECT_BEEHIVE.getKeybind().isKeybindHeld()){
                     Configs.Actions.RENDER_BEEHIVE_PREVIEW = false;
+                    return;
                 }
                 GuiRenderUtils.renderBeehivePreview(Configs.Actions.BEEHIVE_NBT, GuiUtils.getScaledWindowWidth() / 2,
                         GuiUtils.getScaledWindowHeight() / 2);
@@ -56,6 +58,7 @@ public class InGameHudMixin {
             if(Configs.Admin.INSPECT_PLAYER_INVENTORY.getBooleanValue()){
                 if(!Configs.Generic.INSPECT_PLAYER_INVENTORY.getKeybind().isKeybindHeld()){
                     Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW = false;
+                    return;
                 }
                 GuiRenderUtils.renderPlayerInventory(Configs.Actions.TARGET_PLAYER_INVENTORY, GuiUtils.getScaledWindowWidth() / 2,
                         GuiUtils.getScaledWindowHeight() / 2);

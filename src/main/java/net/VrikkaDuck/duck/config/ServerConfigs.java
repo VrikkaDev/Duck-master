@@ -2,7 +2,6 @@ package net.VrikkaDuck.duck.config;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
-import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.minecraft.client.MinecraftClient;
@@ -29,9 +28,14 @@ public class ServerConfigs{
 
     public static void loadFromFile()
     {
-        if(!GameWorld.isSingleplayer()){
+        if(GameWorld.getServer() == null){
             return;
         }
+
+       /* if(!GameWorld.isSingleplayer()){
+            return;
+          }
+        */
 
         File configFile = new File(GameWorld.getDataFolder(), CONFIG_FILE_NAME);
 
@@ -49,10 +53,13 @@ public class ServerConfigs{
     }
     public static void saveToFile()
     {
-
-        if(!GameWorld.isSingleplayer()){
+        if(GameWorld.getServer() == null){
             return;
         }
+
+       /* if(!GameWorld.isSingleplayer()){
+            return;
+        }*/
 
         File dir = GameWorld.getDataFolder();
 

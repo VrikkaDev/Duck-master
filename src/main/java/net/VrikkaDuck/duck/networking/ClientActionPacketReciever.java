@@ -5,8 +5,6 @@ import fi.dy.masa.malilib.util.InventoryUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
@@ -77,12 +75,15 @@ public class ClientActionPacketReciever implements IPluginChannelHandler {
             case PLAYERINVENTORY:
                 NbtCompound invnbt = buf.readNbt();
                 NbtList invList = invnbt.getList("Inventory", 10);
-                if(invList.size() == 0){
-                    invList.add(new ItemStack(Items.AIR).getOrCreateNbt());
-                }
-                DefaultedList<ItemStack> itemsasstack = DefaultedList.of();
+                DefaultedList<ItemStack> itemsasstack = DefaultedList.ofSize(121, new ItemStack(Items.AIR));
+
                 for(NbtElement a : invList){
-                    itemsasstack.add(ItemStack.fromNbt((NbtCompound) a));
+                    ItemStack sst = ItemStack.fromNbt((NbtCompound)a);
+                    if(((NbtCompound) a).getByte("Slot") == -106){
+                        itemsasstack.set(120, sst);
+                    }else{
+                        itemsasstack.set(((NbtCompound) a).getByte("Slot"), sst);
+                    }
                 }
                 Configs.Actions.TARGET_PLAYER_INVENTORY = InventoryUtils.getAsInventory(itemsasstack);
                 Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW = true;
