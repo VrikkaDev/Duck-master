@@ -24,12 +24,13 @@ public class ConfigGui extends GuiConfigsBase {
     public static List<?> listWidgets;
     private static List<String> hoverText(){
       return List.of("This feature is disabled", "in this server!");
-    };
-    private static boolean isOn = false;
+    }
+    static boolean isOn = false;
 
     public ConfigGui()
     {
         super(10, 50, Variables.MODID, null, "duck.gui.title.configs", String.format("%s", Variables.MODVERSION));
+        tab = ConfigGuiTab.GENERIC;
     }
 
     @Override
@@ -50,7 +51,11 @@ public class ConfigGui extends GuiConfigsBase {
     @Override
     public void drawContents(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        this.getListWidget().drawContents(matrixStack, mouseX, mouseY, partialTicks);
+        try {
+            this.getListWidget().drawContents(matrixStack, mouseX, mouseY, partialTicks);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         if(ConfigGui.tab == ConfigGuiTab.ADMIN){
             return;
         }
