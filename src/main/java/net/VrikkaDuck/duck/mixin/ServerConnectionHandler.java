@@ -7,14 +7,15 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.ServerBoolean;
 import net.VrikkaDuck.duck.config.ServerConfigs;
+import net.VrikkaDuck.duck.config.options.ConfigLevel;
 import net.VrikkaDuck.duck.networking.PacketType;
 import net.VrikkaDuck.duck.networking.PacketTypes;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.*;
 import net.minecraft.block.enums.ChestType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.NetworkThreadUtils;
@@ -38,12 +39,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Mixin(ServerPlayNetworkHandler.class)
-public class ServerConnectionHandler {
-    @Shadow public ServerPlayerEntity player;
+public abstract class ServerConnectionHandler {
+    @Shadow private ServerPlayerEntity player;
 
     @Shadow @Final private MinecraftServer server;
+
     private Object2IntOpenHashMap<Identifier> recipesUsed = new Object2IntOpenHashMap();
     private float currentFurnaceXp = 0f;
 
@@ -54,57 +57,62 @@ public class ServerConnectionHandler {
                 ((ServerPlayNetworkHandler)(Object)this).player.getWorld());
 
         if(packet.getChannel().equals(Variables.GENERICID)){
-
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            buf.writeVarInt(0);//GENERICID
 
             NbtCompound nbt = new NbtCompound();
 
-            for(ServerBoolean base : ServerConfigs.Generic.OPTIONS){
+            for(ConfigLevel base : ServerConfigs.Generic.OPTIONS){
                 nbt.putBoolean(base.getName(), base.getBooleanValue());
+                nbt.putInt(base.getName()+",level", base.getPermissionLevel());
             }
 
             buf.writeNbt(nbt);
 
             ServerPlayerEntity player = ((ServerPlayNetworkHandler)(Object)this).getPlayer();
 
-            player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.GENERICID, buf));
+            send(player.networkHandler ,Variables.GENERICID, buf);
 
         }else if(packet.getChannel().equals(Variables.ADMINID)){
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            buf.writeVarInt(1);//ADMINID
 
             NbtCompound nbt = new NbtCompound();
 
-            for(ServerBoolean base : ServerConfigs.Generic.OPTIONS){
+            for(ConfigLevel base : ServerConfigs.Generic.OPTIONS){
                 nbt.putBoolean(base.getName(), base.getBooleanValue());
+                nbt.putInt(base.getName()+",level", base.getPermissionLevel());
             }
 
             buf.writeNbt(nbt);
 
             ServerPlayerEntity player = ((ServerPlayNetworkHandler)(Object)this).getPlayer();
 
-            player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ADMINID, buf));
+            send(player.networkHandler ,Variables.ADMINID, buf);
 
         }else if(packet.getChannel().equals(Variables.ADMINSETID)){
-
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            buf.writeString(":)");
+            buf.writeVarInt(2);//ADMINSETID
 
             NbtCompound compound = packet.getData().readNbt();
 
             if(!compound.isEmpty()) {
-                    String name = compound.getKeys().stream().toList().get(0);
+                   // String name = compound.getKeys().stream().toList().get(0);
+                String name = packet.getData().readString();
                 if(name.isEmpty()){
                     Variables.LOGGER.error("Option name is empty", name);
                     return;
                 }
                 boolean value = compound.getBoolean(name);
-                if (((ServerPlayNetworkHandler) (Object) this).getPlayer().hasPermissionLevel(Variables.PERMISSIONLEVEL)) {
+                int pvalue = compound.getInt("level");
+                if (player.hasPermissionLevel(Variables.PERMISSIONLEVEL)) {
 
-                    List<ServerBoolean> _list = List.copyOf(ServerConfigs.Generic.OPTIONS);
+                    List<ConfigLevel> _list = List.copyOf(ServerConfigs.Generic.OPTIONS);
 
-                    for (ServerBoolean base : _list) {
+                    for (ConfigLevel base : _list) {
                         if (base.getName().equals(name)) {
                             base.setBooleanValue(value);
+                            base.setPermissionLevel(pvalue);
                         }
                     }
                     ServerConfigs.Generic.OPTIONS = ImmutableList.copyOf(_list);
@@ -112,12 +120,10 @@ public class ServerConnectionHandler {
 
                 ServerConfigs.saveToFile();
 
-               // ServerPlayerEntity player = ((ServerPlayNetworkHandler) (Object) this).getPlayer();
-
                 List<ServerPlayerEntity> players = this.server.getPlayerManager().getPlayerList();
 
-                for(ServerPlayerEntity player : players) {
-                    player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ADMINSETID, buf));
+                for(ServerPlayerEntity player : players) {//TODO: check if player can recieve
+                    send(player.networkHandler ,Variables.ADMINSETID, buf);
                 }
             }
         }else if(packet.getChannel().equals(Variables.ACTIONID)){
@@ -132,7 +138,8 @@ public class ServerConnectionHandler {
             switch (type){
                 case CONTAINER:
 
-                    if(!ServerConfigs.Generic.INSPECT_CONTAINER.getBooleanValue()){
+                    if(!ServerConfigs.Generic.INSPECT_CONTAINER.getBooleanValue()
+                            || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_CONTAINER.getPermissionLevel())){
                         return;
                     }
 
@@ -181,12 +188,13 @@ public class ServerConnectionHandler {
                     }
 
 
-                    player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, buf));
+                    send(player.networkHandler ,Variables.ACTIONID, buf);
 
                     break;
                 case FURNACE:
 
-                    if(!ServerConfigs.Generic.INSPECT_FURNACE.getBooleanValue()){
+                    if(!ServerConfigs.Generic.INSPECT_FURNACE.getBooleanValue()
+                            || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_CONTAINER.getPermissionLevel())){
                         return;
                     }
 
@@ -237,11 +245,12 @@ public class ServerConnectionHandler {
                     fbuf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.FURNACE));
                     fbuf.writeNbt(fcompound);
 
-                    player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, fbuf));
+                    send(player.networkHandler ,Variables.ACTIONID, fbuf);
                     break;
                 case BEEHIVE:
 
-                    if(!ServerConfigs.Generic.INSPECT_BEEHIVE.getBooleanValue()){
+                    if(!ServerConfigs.Generic.INSPECT_BEEHIVE.getBooleanValue()
+                            || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_CONTAINER.getPermissionLevel())){
                         return;
                     }
 
@@ -272,7 +281,37 @@ public class ServerConnectionHandler {
                     beebuf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.BEEHIVE));
                     beebuf.writeNbt(beecompound);
 
-                    player.networkHandler.getConnection().send(new CustomPayloadS2CPacket(Variables.ACTIONID, beebuf));
+                    send(player.networkHandler ,Variables.ACTIONID, beebuf);
+
+                    break;
+                case PLAYERINVENTORY:
+                    if(!ServerConfigs.Generic.INSPECT_PLAYER_INVENTORY.getBooleanValue()){
+                        return;
+                    }
+
+                    PlayerEntity splayer = getPlayer().world.getPlayerByUuid(packet.getData().readUuid());
+
+                    if(splayer == null){
+                        Variables.LOGGER.warn("Couldnt find targeted player");
+                        return;
+                    }
+
+                    if(!splayer.getPos().isInRange(player.getPos(), 5)){
+                        Variables.LOGGER.warn("Targeted player is too far");
+                        return;
+                    }
+
+                    NbtList list = new NbtList();
+                    list = splayer.getInventory().writeNbt(list);
+                    //list = player.getInventory().writeNbt(list);
+                    NbtCompound playerInvCompound = new NbtCompound();
+                    playerInvCompound.put("Inventory", list);
+
+                    PacketByteBuf invBuf = new PacketByteBuf(Unpooled.buffer());
+                    invBuf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.PLAYERINVENTORY));
+                    invBuf.writeNbt(playerInvCompound);
+
+                    send(player.networkHandler ,Variables.ACTIONID, invBuf);
 
                     break;
                 default:
@@ -292,5 +331,41 @@ public class ServerConnectionHandler {
         }
         a.put("Items", list);
         return a;
+    }
+    /*private void send(ServerPlayNetworkHandler networkHandler, Identifier channel, PacketByteBuf packet){
+        PacketSplitter.send(networkHandler, channel, packet);
+    }*/
+    public void send(ServerPlayNetworkHandler networkHandler, Identifier channel, PacketByteBuf packet)
+    {
+        send(packet, 1048576-5, buf -> networkHandler.sendPacket(new CustomPayloadS2CPacket(channel, buf)));
+    }
+    private void send(PacketByteBuf packet, int payloadLimit, Consumer<PacketByteBuf> sender)
+    {
+        int len = packet.writerIndex();
+
+        packet.resetReaderIndex();
+
+        for (int offset = 0; offset < len; offset += payloadLimit)
+        {
+            int thisLen = Math.min(len - offset, payloadLimit);
+            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer(thisLen));
+
+            buf.resetWriterIndex();
+
+            if (offset == 0)
+            {
+                buf.writeVarInt(len);
+            }
+
+            buf.writeBytes(packet, thisLen);
+
+            sender.accept(buf);
+        }
+
+        packet.release();
+    }
+
+    public ServerPlayerEntity getPlayer(){
+        return player;
     }
 }

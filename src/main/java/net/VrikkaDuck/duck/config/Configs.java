@@ -3,14 +3,21 @@ package net.VrikkaDuck.duck.config;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.ConfigUtils;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
+import fi.dy.masa.malilib.config.options.ConfigColor;
 import fi.dy.masa.malilib.config.options.ConfigHotkey;
+import fi.dy.masa.malilib.gui.widgets.WidgetSlider;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 import net.VrikkaDuck.duck.Variables;
+import net.VrikkaDuck.duck.config.options.ConfigLevel;
+import net.VrikkaDuck.duck.util.PermissionLevel;
+import net.minecraft.client.gui.widget.SliderWidget;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 
@@ -23,28 +30,32 @@ public class Configs implements IConfigHandler {
         public static final ConfigHotkey INSPECT_CONTAINER = new ConfigHotkey("inspectContainers", "k", "Inspect Containers when placed");
         public static final ConfigHotkey INSPECT_FURNACE = new ConfigHotkey("inspectFurnace", "k", "Inspect Furnaces when placed");
         public static final ConfigHotkey INSPECT_BEEHIVE = new ConfigHotkey("inspectBeehive", "k" , "Inspect beehives when on ground");
-        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE);
+        public static final ConfigHotkey INSPECT_PLAYER_INVENTORY = new ConfigHotkey("inspectPlayerInventory", "k", "inspect entity inventory");
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY);
 
-        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE);
-        public static final ImmutableList<ConfigHotkey> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE);
+        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY);
+        public static final ImmutableList<ConfigHotkey> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY);
     }
 
     public static class Admin {
-        public static final ConfigBoolean INSPECT_CONTAINER = new ConfigBoolean("inspectContainers", false, "Inspect Containers when placed");
-        public static final ConfigBoolean INSPECT_FURNACE = new ConfigBoolean("inspectFurnace", false, "Inspect furnaces when placed");
-        public static final ConfigBoolean INSPECT_BEEHIVE = new ConfigBoolean("inspectBeehive", false , "Inspect beehives when on ground");
-        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE);
+        public static final ConfigLevel INSPECT_CONTAINER = new ConfigLevel("inspectContainers", false, PermissionLevel.NORMAL ,"Inspect Containers when placed");
+        public static final ConfigLevel INSPECT_FURNACE = new ConfigLevel("inspectFurnace", false, PermissionLevel.NORMAL,"Inspect furnaces when placed");
+        public static final ConfigLevel INSPECT_BEEHIVE = new ConfigLevel("inspectBeehive", false , PermissionLevel.NORMAL,"Inspect beehives when on ground");
+        public static final ConfigLevel INSPECT_PLAYER_INVENTORY = new ConfigLevel("inspectPlayerInventory", false, PermissionLevel.NORMAL,"inspect entity inventory");
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY);
 
-        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE);
+        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY);
     }
 
     public static class Actions{
         public static boolean RENDER_CONTAINER_TOOLTIP = false;
         public static boolean RENDER_FURNACE_TOOLTIP = false;
         public static boolean RENDER_BEEHIVE_PREVIEW = false;
+        public static boolean RENDER_PLAYER_INVENTORY_PREVIEW = false;
         public static int RENDER_DOUBLE_CHEST_TOOLTIP = 0;
         public static NbtCompound FURNACE_NBT;
         public static NbtCompound BEEHIVE_NBT;
+        public static Inventory TARGET_PLAYER_INVENTORY;
         public static ItemStack CONTAINER_ITEM_STACK;
     }
 

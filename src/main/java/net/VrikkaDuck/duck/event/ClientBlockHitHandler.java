@@ -7,6 +7,8 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -22,25 +24,31 @@ public class ClientBlockHitHandler {
     private static MinecraftClient mc = MinecraftClient.getInstance();
 
     public void reload(){
+
         HitResult blockHit = mc.player.raycast(5, 0.0F, false);
         if(blockHit.getType() == HitResult.Type.BLOCK) {
             BlockPos blockPos = ((BlockHitResult) blockHit).getBlockPos();
-            lookingNewBlock(blockPos, mc);
+            lookingNewBlock(blockPos);
         }
     }
 
-    public void lookingNewBlock(BlockPos blockPos, MinecraftClient mc){
+    public void lookingNewBlock(BlockPos blockPos){
 
-        resetAll();
 
         if(blockPos == null){
+            resetAll();
             return;
         }
 
+        if(mc.targetedEntity != null){
+            lookingNewEntity(mc.targetedEntity);
+            return;
+        }
 
         BlockEntity blockEntity = mc.world.getBlockEntity(blockPos);
 
         if(blockEntity == null){
+            resetAll();
             return;
         }
 
@@ -90,12 +98,38 @@ public class ClientBlockHitHandler {
             buf.writeBlockPos(blockPos);
 
             ClientNetworkHandler.sendAction(buf);
+        }else{
+            resetAll();
         }
 
+    }
+    public void lookingNewEntity(Entity entity){
+
+        if(entity == null){
+            resetEntity();
+            return;
+        }
+
+        if(entity.getType().equals(EntityType.PLAYER)){
+            PacketByteBuf buf = PacketByteBufs.create();
+
+            buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.PLAYERINVENTORY));
+            buf.writeUuid(entity.getUuid());
+
+            ClientNetworkHandler.sendAction(buf);
+        }else{
+            resetAll();
+        }
     }
     private void resetAll(){
         Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
         Configs.Actions.RENDER_FURNACE_TOOLTIP = false;
         Configs.Actions.RENDER_BEEHIVE_PREVIEW = false;
+        if(mc.targetedEntity == null){
+            resetEntity();
+        }
+    }
+    private void resetEntity(){
+        Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW = false;
     }
 }

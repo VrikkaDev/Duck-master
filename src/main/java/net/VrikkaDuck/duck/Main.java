@@ -7,7 +7,6 @@ public class Main implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
-        //TODO: Inspect beehives
-        //TODO: Inspect playerInventory
+        //make it so admins can set permission required to use feature
     }
 }

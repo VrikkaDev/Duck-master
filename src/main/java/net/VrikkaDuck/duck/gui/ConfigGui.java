@@ -12,6 +12,7 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
+import net.VrikkaDuck.duck.config.options.ConfigLevel;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 
@@ -24,12 +25,13 @@ public class ConfigGui extends GuiConfigsBase {
     public static List<?> listWidgets;
     private static List<String> hoverText(){
       return List.of("This feature is disabled", "in this server!");
-    };
-    private static boolean isOn = false;
+    }
+    static boolean isOn = false;
 
     public ConfigGui()
     {
         super(10, 50, Variables.MODID, null, "duck.gui.title.configs", String.format("%s", Variables.MODVERSION));
+        tab = ConfigGuiTab.GENERIC;
     }
 
     @Override
@@ -50,7 +52,11 @@ public class ConfigGui extends GuiConfigsBase {
     @Override
     public void drawContents(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        this.getListWidget().drawContents(matrixStack, mouseX, mouseY, partialTicks);
+        try {
+            this.getListWidget().drawContents(matrixStack, mouseX, mouseY, partialTicks);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         if(ConfigGui.tab == ConfigGuiTab.ADMIN){
             return;
         }
@@ -66,7 +72,10 @@ public class ConfigGui extends GuiConfigsBase {
                     isOn = false;
                     for(IConfigBase ob : Configs.Admin.OPTIONS){
                         if(ob.getName().equals(w.getEntry().getConfig().getName())){
-                            isOn = ((ConfigBoolean)ob).getBooleanValue();
+                            if(ob instanceof ConfigLevel) {
+                                ConfigLevel cl = ((ConfigLevel) ob);
+                                isOn = cl.getPermissionLevel() > mc.world.getServer().getOpPermissionLevel() ? false : cl.getBooleanValue();
+                            }
                             break;
                         }
                     }

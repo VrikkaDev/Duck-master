@@ -26,13 +26,13 @@ public class ClientNetworkHandler {
             e.printStackTrace();
         }
     }
-    public static void setAdminBoolean(String optionName, boolean value){
+    public static void setAdminBoolean(String optionName, boolean value, int permissionLevel){
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         NbtCompound nbt = new NbtCompound();
         nbt.putBoolean(optionName, value);
+        nbt.putInt("level", permissionLevel);
         buf.writeNbt(nbt);
         buf.writeString(optionName);
-
         try {
         MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CustomPayloadC2SPacket(Variables.ADMINSETID,
                 buf));
