@@ -12,6 +12,7 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
+import net.VrikkaDuck.duck.config.options.ConfigLevel;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 
@@ -71,7 +72,10 @@ public class ConfigGui extends GuiConfigsBase {
                     isOn = false;
                     for(IConfigBase ob : Configs.Admin.OPTIONS){
                         if(ob.getName().equals(w.getEntry().getConfig().getName())){
-                            isOn = ((ConfigBoolean)ob).getBooleanValue();
+                            if(ob instanceof ConfigLevel) {
+                                ConfigLevel cl = ((ConfigLevel) ob);
+                                isOn = cl.getPermissionLevel() > mc.world.getServer().getOpPermissionLevel() ? false : cl.getBooleanValue();
+                            }
                             break;
                         }
                     }

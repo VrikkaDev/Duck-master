@@ -10,7 +10,8 @@
   "client": [
     "ClientConnectionHandler",
     "InGameHudMixin",
-    "WidgetListBaseMixin"
+    "WidgetListBaseMixin",
+    "WidgetConfigOptionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

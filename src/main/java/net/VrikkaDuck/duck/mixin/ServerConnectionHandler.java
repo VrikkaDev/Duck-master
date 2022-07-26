@@ -7,8 +7,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.ServerBoolean;
 import net.VrikkaDuck.duck.config.ServerConfigs;
+import net.VrikkaDuck.duck.config.options.ConfigLevel;
 import net.VrikkaDuck.duck.networking.PacketType;
 import net.VrikkaDuck.duck.networking.PacketTypes;
 import net.minecraft.block.BlockState;
@@ -57,14 +57,14 @@ public abstract class ServerConnectionHandler {
                 ((ServerPlayNetworkHandler)(Object)this).player.getWorld());
 
         if(packet.getChannel().equals(Variables.GENERICID)){
-
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             buf.writeVarInt(0);//GENERICID
 
             NbtCompound nbt = new NbtCompound();
 
-            for(ServerBoolean base : ServerConfigs.Generic.OPTIONS){
+            for(ConfigLevel base : ServerConfigs.Generic.OPTIONS){
                 nbt.putBoolean(base.getName(), base.getBooleanValue());
+                nbt.putInt(base.getName()+",level", base.getPermissionLevel());
             }
 
             buf.writeNbt(nbt);
@@ -79,8 +79,9 @@ public abstract class ServerConnectionHandler {
 
             NbtCompound nbt = new NbtCompound();
 
-            for(ServerBoolean base : ServerConfigs.Generic.OPTIONS){
+            for(ConfigLevel base : ServerConfigs.Generic.OPTIONS){
                 nbt.putBoolean(base.getName(), base.getBooleanValue());
+                nbt.putInt(base.getName()+",level", base.getPermissionLevel());
             }
 
             buf.writeNbt(nbt);
@@ -90,34 +91,34 @@ public abstract class ServerConnectionHandler {
             send(player.networkHandler ,Variables.ADMINID, buf);
 
         }else if(packet.getChannel().equals(Variables.ADMINSETID)){
-
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             buf.writeVarInt(2);//ADMINSETID
 
             NbtCompound compound = packet.getData().readNbt();
 
             if(!compound.isEmpty()) {
-                    String name = compound.getKeys().stream().toList().get(0);
+                   // String name = compound.getKeys().stream().toList().get(0);
+                String name = packet.getData().readString();
                 if(name.isEmpty()){
                     Variables.LOGGER.error("Option name is empty", name);
                     return;
                 }
                 boolean value = compound.getBoolean(name);
-                if (((ServerPlayNetworkHandler) (Object) this).getPlayer().hasPermissionLevel(Variables.PERMISSIONLEVEL)) {
+                int pvalue = compound.getInt("level");
+                if (player.hasPermissionLevel(Variables.PERMISSIONLEVEL)) {
 
-                    List<ServerBoolean> _list = List.copyOf(ServerConfigs.Generic.OPTIONS);
+                    List<ConfigLevel> _list = List.copyOf(ServerConfigs.Generic.OPTIONS);
 
-                    for (ServerBoolean base : _list) {
+                    for (ConfigLevel base : _list) {
                         if (base.getName().equals(name)) {
                             base.setBooleanValue(value);
+                            base.setPermissionLevel(pvalue);
                         }
                     }
                     ServerConfigs.Generic.OPTIONS = ImmutableList.copyOf(_list);
                 }
 
                 ServerConfigs.saveToFile();
-
-               // ServerPlayerEntity player = ((ServerPlayNetworkHandler) (Object) this).getPlayer();
 
                 List<ServerPlayerEntity> players = this.server.getPlayerManager().getPlayerList();
 
@@ -137,7 +138,8 @@ public abstract class ServerConnectionHandler {
             switch (type){
                 case CONTAINER:
 
-                    if(!ServerConfigs.Generic.INSPECT_CONTAINER.getBooleanValue()){
+                    if(!ServerConfigs.Generic.INSPECT_CONTAINER.getBooleanValue()
+                            || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_CONTAINER.getPermissionLevel())){
                         return;
                     }
 
@@ -191,7 +193,8 @@ public abstract class ServerConnectionHandler {
                     break;
                 case FURNACE:
 
-                    if(!ServerConfigs.Generic.INSPECT_FURNACE.getBooleanValue()){
+                    if(!ServerConfigs.Generic.INSPECT_FURNACE.getBooleanValue()
+                            || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_CONTAINER.getPermissionLevel())){
                         return;
                     }
 
@@ -246,7 +249,8 @@ public abstract class ServerConnectionHandler {
                     break;
                 case BEEHIVE:
 
-                    if(!ServerConfigs.Generic.INSPECT_BEEHIVE.getBooleanValue()){
+                    if(!ServerConfigs.Generic.INSPECT_BEEHIVE.getBooleanValue()
+                            || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_CONTAINER.getPermissionLevel())){
                         return;
                     }
 

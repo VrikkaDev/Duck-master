@@ -3,6 +3,7 @@ package net.VrikkaDuck.duck.config;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import net.VrikkaDuck.duck.Variables;
+import net.VrikkaDuck.duck.config.options.ConfigLevel;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.minecraft.client.MinecraftClient;
 
@@ -18,12 +19,12 @@ public class ServerConfigs{
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static class Generic {
-        public static final ServerBoolean INSPECT_CONTAINER = new ServerBoolean("inspectContainers", false);
-        public static final ServerBoolean INSPECT_FURNACE = new ServerBoolean("inspectFurnace", false);
-        public static final ServerBoolean INSPECT_BEEHIVE = new ServerBoolean("inspectBeehive", false);
-        public static final ServerBoolean INSPECT_PLAYER_INVENTORY = new ServerBoolean("inspectPlayerInventory", false);
+        public static final ConfigLevel INSPECT_CONTAINER = new ConfigLevel("inspectContainers", false, 1);
+        public static final ConfigLevel INSPECT_FURNACE = new ConfigLevel("inspectFurnace", false, 1);
+        public static final ConfigLevel INSPECT_BEEHIVE = new ConfigLevel("inspectBeehive", false, 1);
+        public static final ConfigLevel INSPECT_PLAYER_INVENTORY = new ConfigLevel("inspectPlayerInventory", false, 1);
 
-        public static ImmutableList<ServerBoolean> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY);
+        public static ImmutableList<ConfigLevel> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY);
     }
 
     public static void loadFromFile()
@@ -72,13 +73,13 @@ public class ServerConfigs{
             writeJsonToFile(root, new File(dir, CONFIG_FILE_NAME));
         }
     }
-    private static void readConfigBase(JsonObject root, String category, List<? extends ServerBoolean> options)
+    private static void readConfigBase(JsonObject root, String category, List<? extends ConfigLevel> options)
     {
         JsonObject obj = getNestedObject(root, category, false);
 
         if (obj != null)
         {
-            for (ServerBoolean option : options)
+            for (ConfigLevel option : options)
             {
                 String name = option.getName();
 
@@ -90,11 +91,11 @@ public class ServerConfigs{
         }
     }
 
-    private static void writeConfigBase(JsonObject root, String category, List<? extends ServerBoolean> options)
+    private static void writeConfigBase(JsonObject root, String category, List<? extends ConfigLevel> options)
     {
         JsonObject obj = getNestedObject(root, category, true);
 
-        for (ServerBoolean option : options)
+        for (ConfigLevel option : options)
         {
             obj.add(option.getName(), option.getAsJsonElement());
         }
