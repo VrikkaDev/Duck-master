@@ -7,8 +7,8 @@ public class PermissionLevel {
         return "UNKNOWN";
     }
     public static int nextInt(int currentInt){
-        return currentInt == NORMAL ? 4 : 1;
+        return currentInt == NORMAL ? 4 : 0;
     }
-    public static final int NORMAL = 1;
+    public static final int NORMAL = 0;
     public static final int OP = 4;
 }

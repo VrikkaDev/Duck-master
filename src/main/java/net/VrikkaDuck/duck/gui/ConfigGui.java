@@ -13,6 +13,7 @@ import fi.dy.masa.malilib.util.StringUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.config.options.ConfigLevel;
+import net.VrikkaDuck.duck.util.GameWorld;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 
@@ -73,15 +74,14 @@ public class ConfigGui extends GuiConfigsBase {
                     for(IConfigBase ob : Configs.Admin.OPTIONS){
                         if(ob.getName().equals(w.getEntry().getConfig().getName())){
                             if(ob instanceof ConfigLevel) {
-                                ConfigLevel cl = ((ConfigLevel) ob);
-                                isOn = cl.getPermissionLevel() > mc.world.getServer().getOpPermissionLevel() ? false : cl.getBooleanValue();
+                                isOn = GameWorld.hasPermissionLevel(((ConfigLevel) ob).getPermissionLevel(), mc) ? ((ConfigLevel) ob).getBooleanValue() : false;
                             }
                             break;
                         }
                     }
                     if(!isOn){
                         RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
-                        if(w.isMouseOver(mouseX, mouseY)){
+                        if(w.isMouseOver(mouseX, mouseY) && mouseX > w.getWidth()/3){
                             RenderUtils.drawHoverText(mouseX, mouseY, hoverText(), matrixStack);
                         }
                     }

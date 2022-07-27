@@ -8,7 +8,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.ServerConfigs;
-import net.VrikkaDuck.duck.config.options.ConfigLevel;
+import net.VrikkaDuck.duck.config.options.ServerLevel;
 import net.VrikkaDuck.duck.networking.PacketType;
 import net.VrikkaDuck.duck.networking.PacketTypes;
 import net.minecraft.block.BlockState;
@@ -62,7 +62,7 @@ public abstract class ServerConnectionHandler {
 
             NbtCompound nbt = new NbtCompound();
 
-            for(ConfigLevel base : ServerConfigs.Generic.OPTIONS){
+            for(ServerLevel base : ServerConfigs.Generic.OPTIONS){
                 nbt.putBoolean(base.getName(), base.getBooleanValue());
                 nbt.putInt(base.getName()+",level", base.getPermissionLevel());
             }
@@ -79,7 +79,7 @@ public abstract class ServerConnectionHandler {
 
             NbtCompound nbt = new NbtCompound();
 
-            for(ConfigLevel base : ServerConfigs.Generic.OPTIONS){
+            for(ServerLevel base : ServerConfigs.Generic.OPTIONS){
                 nbt.putBoolean(base.getName(), base.getBooleanValue());
                 nbt.putInt(base.getName()+",level", base.getPermissionLevel());
             }
@@ -107,9 +107,9 @@ public abstract class ServerConnectionHandler {
                 int pvalue = compound.getInt("level");
                 if (player.hasPermissionLevel(Variables.PERMISSIONLEVEL)) {
 
-                    List<ConfigLevel> _list = List.copyOf(ServerConfigs.Generic.OPTIONS);
+                    List<ServerLevel> _list = List.copyOf(ServerConfigs.Generic.OPTIONS);
 
-                    for (ConfigLevel base : _list) {
+                    for (ServerLevel base : _list) {
                         if (base.getName().equals(name)) {
                             base.setBooleanValue(value);
                             base.setPermissionLevel(pvalue);
@@ -194,7 +194,7 @@ public abstract class ServerConnectionHandler {
                 case FURNACE:
 
                     if(!ServerConfigs.Generic.INSPECT_FURNACE.getBooleanValue()
-                            || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_CONTAINER.getPermissionLevel())){
+                            || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_FURNACE.getPermissionLevel())){
                         return;
                     }
 
@@ -250,7 +250,7 @@ public abstract class ServerConnectionHandler {
                 case BEEHIVE:
 
                     if(!ServerConfigs.Generic.INSPECT_BEEHIVE.getBooleanValue()
-                            || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_CONTAINER.getPermissionLevel())){
+                            || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_BEEHIVE.getPermissionLevel())){
                         return;
                     }
 
@@ -285,7 +285,8 @@ public abstract class ServerConnectionHandler {
 
                     break;
                 case PLAYERINVENTORY:
-                    if(!ServerConfigs.Generic.INSPECT_PLAYER_INVENTORY.getBooleanValue()){
+                    if(!ServerConfigs.Generic.INSPECT_PLAYER_INVENTORY.getBooleanValue()
+                            || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_PLAYER_INVENTORY.getPermissionLevel())){
                         return;
                     }
 

@@ -35,12 +35,6 @@ public class WidgetConfigOptionMixin extends WidgetConfigOptionBase<GuiConfigsBa
         super(x, y, width, height, parent, entry, listIndex);
     }
 
-    @Shadow ImmutableList<String> initialStringList;
-    @Shadow private boolean initialBoolean;
-    @Shadow @Final KeybindSettings initialKeybindSettings;
-    @Shadow @Final GuiConfigsBase.ConfigOptionWrapper wrapper;
-    private boolean yes = false;
-
     @Inject(method = "addConfigOption", at = @At("TAIL"), remap = false)
     public void addConfigOption(int x, int y, float zLevel, int labelWidth, int configWidth, IConfigBase config, CallbackInfo ci){
         ConfigType type = config.getType();

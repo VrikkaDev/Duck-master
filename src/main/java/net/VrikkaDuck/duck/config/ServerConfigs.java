@@ -4,7 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.options.ConfigLevel;
+import net.VrikkaDuck.duck.config.options.ServerLevel;
 import net.VrikkaDuck.duck.util.GameWorld;
+import net.VrikkaDuck.duck.util.PermissionLevel;
 import net.minecraft.client.MinecraftClient;
 
 import javax.annotation.Nullable;
@@ -19,12 +21,12 @@ public class ServerConfigs{
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static class Generic {
-        public static final ConfigLevel INSPECT_CONTAINER = new ConfigLevel("inspectContainers", false, 1);
-        public static final ConfigLevel INSPECT_FURNACE = new ConfigLevel("inspectFurnace", false, 1);
-        public static final ConfigLevel INSPECT_BEEHIVE = new ConfigLevel("inspectBeehive", false, 1);
-        public static final ConfigLevel INSPECT_PLAYER_INVENTORY = new ConfigLevel("inspectPlayerInventory", false, 1);
+        public static final ServerLevel INSPECT_CONTAINER = new ServerLevel("inspectContainers", false, PermissionLevel.NORMAL);
+        public static final ServerLevel INSPECT_FURNACE = new ServerLevel("inspectFurnace", false, PermissionLevel.NORMAL);
+        public static final ServerLevel INSPECT_BEEHIVE = new ServerLevel("inspectBeehive", false, PermissionLevel.NORMAL);
+        public static final ServerLevel INSPECT_PLAYER_INVENTORY = new ServerLevel("inspectPlayerInventory", false, PermissionLevel.NORMAL);
 
-        public static ImmutableList<ConfigLevel> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY);
+        public static ImmutableList<ServerLevel> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY);
     }
 
     public static void loadFromFile()
@@ -73,13 +75,13 @@ public class ServerConfigs{
             writeJsonToFile(root, new File(dir, CONFIG_FILE_NAME));
         }
     }
-    private static void readConfigBase(JsonObject root, String category, List<? extends ConfigLevel> options)
+    private static void readConfigBase(JsonObject root, String category, List<? extends ServerLevel> options)
     {
         JsonObject obj = getNestedObject(root, category, false);
 
         if (obj != null)
         {
-            for (ConfigLevel option : options)
+            for (ServerLevel option : options)
             {
                 String name = option.getName();
 
@@ -91,11 +93,11 @@ public class ServerConfigs{
         }
     }
 
-    private static void writeConfigBase(JsonObject root, String category, List<? extends ConfigLevel> options)
+    private static void writeConfigBase(JsonObject root, String category, List<? extends ServerLevel> options)
     {
         JsonObject obj = getNestedObject(root, category, true);
 
-        for (ConfigLevel option : options)
+        for (ServerLevel option : options)
         {
             obj.add(option.getName(), option.getAsJsonElement());
         }

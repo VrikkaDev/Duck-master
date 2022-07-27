@@ -1,5 +1,6 @@
 package net.VrikkaDuck.duck.util;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.World;
@@ -10,9 +11,21 @@ public class GameWorld {
 
     private static MinecraftServer server;
     private static World world;
+    private static MinecraftClient mc;
 
     public static MinecraftServer getServer() {
         return server;
+    }
+
+    public static MinecraftClient getClient(){
+        if(getServer().getOverworld().isClient){
+            if(mc == null){
+                mc = MinecraftClient.getInstance();
+            }
+            return mc;
+        }else{
+            return null;
+        }
     }
 
     public static void setServer(MinecraftServer server) {
@@ -33,5 +46,9 @@ public class GameWorld {
 
     public static File getDataFolder(){
         return GameWorld.getServer().getSavePath(WorldSavePath.ROOT).resolve("data").toFile();
+    }
+
+    public static boolean hasPermissionLevel(int level, MinecraftClient player){
+        return player.player.hasPermissionLevel(level);
     }
 }
