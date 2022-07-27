@@ -7,6 +7,6 @@ public class Main implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
-        //player inspect miminuhugd infolines centered
+        //make it so admins can set permission required to use feature
     }
 }

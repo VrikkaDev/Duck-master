@@ -7,6 +7,7 @@ import fi.dy.masa.malilib.network.ClientPacketChannelHandler;
 import fi.dy.masa.malilib.network.IPluginChannelHandler;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
+import net.VrikkaDuck.duck.config.options.ConfigLevel;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -37,7 +38,6 @@ public class ClientPacketReciever implements IPluginChannelHandler {
         }
     }
     private void processNbt(NbtCompound nbt){
-
         List<IConfigBase> _list = new ArrayList<>();
         for(IConfigBase base : Configs.Generic.DEFAULT_OPTIONS){
             if(nbt.getKeys().contains(base.getName())){
@@ -49,11 +49,11 @@ public class ClientPacketReciever implements IPluginChannelHandler {
         Configs.Generic.OPTIONS = ImmutableList.copyOf(_list);
     }
     private void processAdminNbt(NbtCompound nbt){
-
         List<IConfigBase> _list = new ArrayList<>();
         for(IConfigBase base : Configs.Admin.DEFAULT_OPTIONS){
             if(nbt.getKeys().contains(base.getName())){
-                ((ConfigBoolean)base).setBooleanValue(nbt.getBoolean(base.getName()));
+                ((ConfigLevel)base).setBooleanValue(nbt.getBoolean(base.getName()));
+                ((ConfigLevel)base).setPermissionLevel(nbt.getInt(base.getName()+",level"));
                 _list.add(base);
             }
         }

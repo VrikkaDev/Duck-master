@@ -201,7 +201,7 @@ public class GuiRenderUtils {
 
         String xpString = nbt.contains("xp") ? String.valueOf(nbt.getFloat("xp")) : "0";
 
-        mc.textRenderer.draw(matrixStack, Text.of("xp: " + xpString),x+32, y+54, 0x8F4F4F4F);
+        mc.textRenderer.draw(matrixStack, Text.of("xp: " + xpString),x+32, y+54, 4210752);//white = 0xffffffff
 
         matrixStack.pop();
 
@@ -282,16 +282,6 @@ public class GuiRenderUtils {
             Identifier texture = new Identifier("minecraft:item/empty_armor_slot_shield");
             RenderUtils.renderSprite(x + 28 + 1, y + 3 * 18 + 7 + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, texture, matrixStack);
         }
-
-        /*for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
-        {
-            final EquipmentSlot eqSlot = VALID_EQUIPMENT_SLOTS[i];
-            if (entity.getEquippedStack(eqSlot).isEmpty())
-            {
-                Identifier texture = EMPTY_SLOT_TEXTURES[eqSlot.getEntitySlotId()];
-                RenderUtils.renderSprite(x + xOff + 1, y + yOff + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, texture, matrixStack);
-            }
-        }*/
 
         //Render equipment stacks
 

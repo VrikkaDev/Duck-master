@@ -1,12 +1,14 @@
 package net.VrikkaDuck.duck.config;
 
 import fi.dy.masa.malilib.config.IConfigBase;
+import fi.dy.masa.malilib.config.IConfigValue;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.hotkeys.IHotkeyCallback;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
+import net.VrikkaDuck.duck.config.options.ConfigLevel;
 import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.VrikkaDuck.duck.gui.ConfigGui;
@@ -17,12 +19,12 @@ public class Callbacks {
     private static ClientBlockHitHandler blockHitHandler = ClientBlockHitHandler.INSTANCE();
     private static MinecraftClient mc = MinecraftClient.getInstance();
 
-    public static class AdminFeatureCallback implements IValueChangeCallback<ConfigBoolean>
+    public static class AdminFeatureCallback implements IValueChangeCallback<ConfigLevel>
     {
         @Override
-        public void onValueChanged(ConfigBoolean config)
+        public void onValueChanged(ConfigLevel config)
         {
-            ClientNetworkHandler.setAdminBoolean(config.getName(), config.getBooleanValue());
+            ClientNetworkHandler.setAdminBoolean(config.getName(), config.getBooleanValue(), config.getPermissionLevel());
         }
     }
 
@@ -32,7 +34,9 @@ public class Callbacks {
         AdminFeatureCallback adminCallback = new AdminFeatureCallback();
 
         for(IConfigBase base : Configs.Admin.DEFAULT_OPTIONS){
-            ((ConfigBoolean)base).setValueChangeCallback(adminCallback);
+           if(base instanceof ConfigLevel){
+               ((ConfigLevel)base).setValueChangeCallback(adminCallback);
+           }
         }
         Hotkeys.OPEN_CONFIG_GUI.getKeybind().setCallback(callbackGeneric);
         Configs.Generic.INSPECT_CONTAINER.getKeybind().setCallback(callbackGeneric);
