@@ -25,8 +25,15 @@ public class ServerConfigs{
         public static final ServerLevel INSPECT_FURNACE = new ServerLevel("inspectFurnace", false, PermissionLevel.NORMAL);
         public static final ServerLevel INSPECT_BEEHIVE = new ServerLevel("inspectBeehive", false, PermissionLevel.NORMAL);
         public static final ServerLevel INSPECT_PLAYER_INVENTORY = new ServerLevel("inspectPlayerInventory", false, PermissionLevel.NORMAL);
+        public static final ServerLevel INSPECT_VILLAGER_TRADES = new ServerLevel("inspectVillagerTrades", false, PermissionLevel.NORMAL);
 
-        public static ImmutableList<ServerLevel> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY);
+        public static ImmutableList<ServerLevel> OPTIONS = ImmutableList.of(
+                INSPECT_CONTAINER,
+                INSPECT_FURNACE,
+                INSPECT_BEEHIVE,
+                INSPECT_PLAYER_INVENTORY,
+                INSPECT_VILLAGER_TRADES
+        );
     }
 
     public static void loadFromFile()

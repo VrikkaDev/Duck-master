@@ -4,5 +4,6 @@ public enum PacketTypes {
     CONTAINER,
     FURNACE,
     BEEHIVE,
-    PLAYERINVENTORY
+    PLAYERINVENTORY,
+    VILLAGERTRADES
 }

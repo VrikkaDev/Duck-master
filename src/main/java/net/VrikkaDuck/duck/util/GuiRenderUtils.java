@@ -18,11 +18,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradeOfferList;
 
 import static fi.dy.masa.malilib.render.InventoryOverlay.*;
 import static fi.dy.masa.malilib.render.RenderUtils.*;
@@ -36,6 +39,7 @@ public class GuiRenderUtils {
             new Identifier("item/empty_armor_slot_leggings"),
             new Identifier("item/empty_armor_slot_chestplate"),
             new Identifier("item/empty_armor_slot_helmet") };
+    private static final Identifier MERCHANT_TEXTURE = new Identifier("textures/gui/container/villager2.png");
 
     private static ItemStack getEquippedStack(EquipmentSlot slot, Inventory inv){
         if(slot.getArmorStandSlotId() == EquipmentSlot.CHEST.getArmorStandSlotId()){
@@ -337,6 +341,33 @@ public class GuiRenderUtils {
 
         matrixStack.pop();
         RenderSystem.applyModelViewMatrix();
+    }
+    public static void renderTrades(TradeOfferList trades, int x, int y){
+
+        System.out.println("ääää");
+
+        MatrixStack matrices = RenderSystem.getModelViewStack();
+
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
+        int i = 50;
+        int j = 50;
+        RenderUtils.drawTexturedRect(i, j, 0, 0,  0, 100,100);
+        if (!trades.isEmpty()) {
+            int k = 0;
+            /*if (k < 0 || k >= trades.size()) {
+                return;
+            }*/
+
+            TradeOffer tradeOffer = (TradeOffer)trades.get(k);
+            if (tradeOffer.isDisabled()) {
+                RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                RenderUtils.drawTexturedRect(50, 50, 0, 0, 50, 50);
+              //  drawTexture(matrices, this.x + 83 + 99, this.y + 35, this.getZOffset(), 311.0F, 0.0F, 28, 21, 512, 256);
+            }
+        }
     }
     private static void renderBackground(int x, int y){
 

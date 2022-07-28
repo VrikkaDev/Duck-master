@@ -15,6 +15,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.*;
 import net.minecraft.block.enums.ChestType;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -313,6 +315,29 @@ public abstract class ServerConnectionHandler {
                     invBuf.writeNbt(playerInvCompound);
 
                     send(player.networkHandler ,Variables.ACTIONID, invBuf);
+
+                    break;
+                case VILLAGERTRADES:
+
+                    if(!ServerConfigs.Generic.INSPECT_VILLAGER_TRADES.getBooleanValue()
+                            || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_VILLAGER_TRADES.getPermissionLevel())){
+                        return;
+                    }
+
+                    int id = packet.getData().readInt();
+                    Entity e = player.world.getEntityById(id);
+
+                    if(!(e instanceof VillagerEntity)){
+                       return;
+                    }
+
+                    VillagerEntity ve = (VillagerEntity) e;
+
+                    PacketByteBuf veBuf = new PacketByteBuf(Unpooled.buffer());
+                    veBuf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.VILLAGERTRADES));
+                    ve.getOffers().toPacket(veBuf);
+
+                    send(player.networkHandler, Variables.ACTIONID, veBuf);
 
                     break;
                 default:

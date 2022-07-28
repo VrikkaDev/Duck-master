@@ -2,11 +2,8 @@ package net.VrikkaDuck.duck.config.options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.options.ConfigBase;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.ConfigTypes;
 import net.VrikkaDuck.duck.config.IConfigLevel;
 import net.VrikkaDuck.duck.util.PermissionLevel;
 

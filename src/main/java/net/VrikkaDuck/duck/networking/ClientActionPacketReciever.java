@@ -11,6 +11,7 @@ import net.minecraft.nbt.*;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.village.TradeOfferList;
 
 import java.util.List;
 
@@ -87,6 +88,12 @@ public class ClientActionPacketReciever implements IPluginChannelHandler {
                 }
                 Configs.Actions.TARGET_PLAYER_INVENTORY = InventoryUtils.getAsInventory(itemsasstack);
                 Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW = true;
+                break;
+            case VILLAGERTRADES:
+                TradeOfferList veList = TradeOfferList.fromPacket(buf);
+                Configs.Actions.RENDER_VILLAGER_TRADES = true;
+                Configs.Actions.VILLAGER_TRADES = veList;
+                System.out.println(veList.toNbt());
                 break;
             default:
                 Variables.LOGGER.error("Could not get viable PacketType");

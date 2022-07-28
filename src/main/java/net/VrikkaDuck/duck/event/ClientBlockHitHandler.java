@@ -117,7 +117,14 @@ public class ClientBlockHitHandler {
             buf.writeUuid(entity.getUuid());
 
             ClientNetworkHandler.sendAction(buf);
-        }else{
+        }else if(entity.getType().equals(EntityType.VILLAGER)){
+            PacketByteBuf buf = PacketByteBufs.create();
+
+            buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.VILLAGERTRADES));
+            buf.writeInt(entity.getId());
+
+            ClientNetworkHandler.sendAction(buf);
+        } else{
             resetAll();
         }
     }
@@ -131,5 +138,6 @@ public class ClientBlockHitHandler {
     }
     private void resetEntity(){
         Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW = false;
+        Configs.Actions.RENDER_VILLAGER_TRADES = false;
     }
 }

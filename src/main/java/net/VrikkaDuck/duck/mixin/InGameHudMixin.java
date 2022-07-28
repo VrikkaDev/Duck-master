@@ -63,6 +63,15 @@ public class InGameHudMixin {
                 GuiRenderUtils.renderPlayerInventory(Configs.Actions.TARGET_PLAYER_INVENTORY, GuiUtils.getScaledWindowWidth() / 2,
                         GuiUtils.getScaledWindowHeight() / 2);
             }
+        } else if (Configs.Actions.RENDER_VILLAGER_TRADES) {
+            if(Configs.Admin.INSPECT_VILLAGER_TRADES.getBooleanValue()){
+                if(!Configs.Generic.INSPECT_VILLAGER_TRADES.getKeybind().isKeybindHeld()){
+                    Configs.Actions.RENDER_VILLAGER_TRADES = false;
+                    return;
+                }
+                GuiRenderUtils.renderTrades(Configs.Actions.VILLAGER_TRADES, GuiUtils.getScaledWindowWidth() / 2,
+                        GuiUtils.getScaledWindowHeight() / 2);
+            }
         }
     }
 }
