@@ -56,7 +56,10 @@ public class ClientBlockHitHandler {
         if(blockEntity.getType().equals(BlockEntityType.SHULKER_BOX) ||
                 blockEntity.getType().equals(BlockEntityType.BARREL) ||
                 blockEntity.getType().equals(BlockEntityType.CHEST) ||
-                blockEntity.getType().equals(BlockEntityType.HOPPER)){
+                blockEntity.getType().equals(BlockEntityType.TRAPPED_CHEST) ||
+                blockEntity.getType().equals(BlockEntityType.HOPPER) ||
+                blockEntity.getType().equals(BlockEntityType.DISPENSER) ||
+                blockEntity.getType().equals(BlockEntityType.DROPPER)){
 
             if(!Configs.Generic.INSPECT_CONTAINER.getKeybind().isKeybindHeld()){
                 return;

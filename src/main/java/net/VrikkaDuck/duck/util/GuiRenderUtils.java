@@ -381,7 +381,7 @@ public class GuiRenderUtils {
         //top
         drawTexture(matrices, x+9, y, 5, 0, 0, 93, h, 512, 256);//left
         drawTexture(matrices, x+102, y, 5, 100, 0, 7, h, 512, 256);//mid line
-        drawTexture(matrices, x+105, y, 5, 4, 0, 88, h, 512, 256);//mid right
+        drawTexture(matrices, x+105, y, 5, 4, 0, 90, h, 512, 256);//mid right
         drawTexture(matrices, x+105+87, y, 5, 100, 0, 2, h, 512, 256);//rightleft WHAT???
         drawTexture(matrices, x+105+89, y, 5, 273, 0, 3, h, 512, 256);//right
 
@@ -390,7 +390,7 @@ public class GuiRenderUtils {
         //bottom
         drawTexture(matrices, x+9, y, 5, 0, 124, 93, 42, 512, 256);//left
         drawTexture(matrices, x+102, y, 5, 100, 124, 7, 42, 512, 256);//mid line
-        drawTexture(matrices, x+105, y, 5, 4, 124, 88, 42, 512, 256);//mid right
+        drawTexture(matrices, x+105, y, 5, 4, 124, 90, 42, 512, 256);//mid right
         drawTexture(matrices, x+105+87, y, 5, 100, 124, 2, 42, 512, 256);//rightleft WHAT???
         drawTexture(matrices, x+105+89, y, 5, 273, 124, 3, 42, 512, 256);//right
         // drawTexture(matrices, x+105+89, y, 5, 273, 0, 3, 166, 512, 256);//right
@@ -479,6 +479,7 @@ public class GuiRenderUtils {
         RenderSystem.enableBlend();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
+        x -= 10;
         if (tradeOffer.isDisabled()) {
             drawTexture(matrices, x + 5 + 35 + 20, y + 3, 700, 25.0F, 171.0F, 10, 9, 512, 256);
         } else {
@@ -519,6 +520,17 @@ public class GuiRenderUtils {
         drawTexture(matrices, x+32-7, y-1, 100, 142, 66, 58, 20);//left
         drawTexture(matrices, x-5, y-1, 100, 0, 66, 35, 20);//right
         matrices.pop();
+    }
+
+
+    public static void renderDispenserPreview(ItemStack stack, int x, int y){
+
+        DefaultedList<ItemStack> items = InventoryUtils.getStoredItems(stack, -1);
+
+        Inventory inv = fi.dy.masa.malilib.util.InventoryUtils.getAsInventory(items);
+
+        InventoryOverlay.renderInventoryBackground(InventoryRenderType.DISPENSER, x, y, 3, 9, mc());
+        InventoryOverlay.renderInventoryStacks(InventoryRenderType.DISPENSER, inv, x + 8, y + 8, 3, 0, 9 ,mc());
     }
 
     private static void renderBackground(int x, int y){
