@@ -375,9 +375,29 @@ public class GuiRenderUtils {
         y -= 82;
 
         //Render Background
-        drawTexture(matrices, x, y, 5, 0.0F, 0.0F, 105, 166, 512, 256);
-        drawTexture(matrices, x+105, y, 5, 4.0F, 0.0F, 97, 166, 512, 256);
-        drawTexture(matrices, x+105+97, y, 5, 272.0F, 0.0F, 4, 166, 512, 256);
+
+        int h = 84;
+
+        //top
+        drawTexture(matrices, x+9, y, 5, 0, 0, 93, h, 512, 256);//left
+        drawTexture(matrices, x+102, y, 5, 100, 0, 7, h, 512, 256);//mid line
+        drawTexture(matrices, x+105, y, 5, 4, 0, 88, h, 512, 256);//mid right
+        drawTexture(matrices, x+105+87, y, 5, 100, 0, 2, h, 512, 256);//rightleft WHAT???
+        drawTexture(matrices, x+105+89, y, 5, 273, 0, 3, h, 512, 256);//right
+
+        y+=84;
+
+        //bottom
+        drawTexture(matrices, x+9, y, 5, 0, 124, 93, 42, 512, 256);//left
+        drawTexture(matrices, x+102, y, 5, 100, 124, 7, 42, 512, 256);//mid line
+        drawTexture(matrices, x+105, y, 5, 4, 124, 88, 42, 512, 256);//mid right
+        drawTexture(matrices, x+105+87, y, 5, 100, 124, 2, 42, 512, 256);//rightleft WHAT???
+        drawTexture(matrices, x+105+89, y, 5, 273, 124, 3, 42, 512, 256);//right
+        // drawTexture(matrices, x+105+89, y, 5, 273, 0, 3, 166, 512, 256);//right
+
+
+        y-=84;
+
 
         matrices.pop();
         matrices.push();
@@ -390,14 +410,15 @@ public class GuiRenderUtils {
         if (!trades.isEmpty()) {
             //int i = (this.width - this.backgroundWidth) / 2;
             //int j = (this.height - this.backgroundHeight) / 2;
+            x+=9;
             int k = y + 16 + 1;
             int l = x + 5 + 5;
             RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            int m = 0;
             Iterator<TradeOffer> var11 = trades.iterator();
 
                 TradeOffer tradeOffer;
+                int e = 0;
                 while(var11.hasNext()) {
                     tradeOffer = (TradeOffer)var11.next();
                         ItemStack itemStack = tradeOffer.getOriginalFirstBuyItem();
@@ -406,25 +427,28 @@ public class GuiRenderUtils {
                         ItemStack itemStack4 = tradeOffer.getSellItem();
 
                         itemRenderer.zOffset = 500.0F;
-                        int n = k + 2;
-                                                            //Make this thing 5x2
-                    renderArrow(matrices, tradeOffer, x, n);
-                    renderTradeButton(matrices, l,n);
 
-                    renderFirstBuyItem(matrices, itemStack2, itemStack, l, n);
-                   if (!itemStack3.isEmpty()) {
-                        itemRenderer.renderInGui(itemStack3, x + 5 + 35, n);
-                        itemRenderer.renderGuiItemOverlay(mc.textRenderer, itemStack3, x + 5 + 35, n);
+                    if(e == 5){
+                        l = x + 5 + 5 + 93 - 2;
+                        k = y + 16 + 1;
                     }
 
-                    itemRenderer.renderInGui(itemStack4, x + 5 + 68, n);
-                    itemRenderer.renderGuiItemOverlay(mc.textRenderer, itemStack4, x + 5 + 68, n);
-                    itemRenderer.zOffset = 0.0F;
-                    k += 20;
-                    ++m;
+                    int n = k + 2;
 
+                        renderArrow(matrices, tradeOffer, l, n);
+                        renderTradeButton(matrices, l,n);
 
-                    //renderTradeButton(matrices, l, n);
+                        renderFirstBuyItem(matrices, itemStack2, itemStack, l, n);
+                       if (!itemStack3.isEmpty()) {
+                            itemRenderer.renderInGui(itemStack3, l + 30, n);
+                            itemRenderer.renderGuiItemOverlay(mc.textRenderer, itemStack3, l + 30, n);
+                        }
+
+                        itemRenderer.renderInGui(itemStack4, l + 63, n);
+                        itemRenderer.renderGuiItemOverlay(mc.textRenderer, itemStack4, l + 63, n);
+                        itemRenderer.zOffset = 0.0F;
+                        k += 20;
+                        e++;
                 }
 
                 RenderSystem.enableDepthTest();
@@ -492,8 +516,8 @@ public class GuiRenderUtils {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
-        drawTexture(matrices, x+32-7, y-1, 100, 142, 66, 57, 20);//left
-        drawTexture(matrices, x-5, y-1, 100, 0, 66, 32, 20);//right
+        drawTexture(matrices, x+32-7, y-1, 100, 142, 66, 58, 20);//left
+        drawTexture(matrices, x-5, y-1, 100, 0, 66, 35, 20);//right
         matrices.pop();
     }
 
