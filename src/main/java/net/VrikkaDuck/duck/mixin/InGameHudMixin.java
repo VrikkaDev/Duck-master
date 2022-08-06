@@ -43,7 +43,7 @@ public class InGameHudMixin {
                     return;
                 }
                 GuiRenderUtils.renderFurnacePreview(Configs.Actions.FURNACE_NBT, GuiUtils.getScaledWindowWidth() / 2 - 59,
-                        GuiUtils.getScaledWindowHeight() / 2 + 30, true);
+                        GuiUtils.getScaledWindowHeight() / 2 + 30);
             }
         }else if(Configs.Actions.RENDER_BEEHIVE_PREVIEW){
             if(Configs.Admin.INSPECT_BEEHIVE.getBooleanValue()){

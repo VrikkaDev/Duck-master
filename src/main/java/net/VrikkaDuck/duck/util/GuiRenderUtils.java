@@ -10,6 +10,7 @@ import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.inventory.Inventory;
@@ -18,19 +19,30 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
+
+import java.util.Iterator;
 
 import static fi.dy.masa.malilib.render.InventoryOverlay.*;
 import static fi.dy.masa.malilib.render.RenderUtils.*;
 
 public class GuiRenderUtils {
+    /*
+    -----------------------------------------------
+
+    This whole class is one BIG mess ☺
+    need to clean up at some point
+
+    -----------------------------------------------
+     */
+
     private static final MinecraftClient mc = MinecraftClient.getInstance();
     private static float refreshFurnace = 0;
     private static final EquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
@@ -40,6 +52,8 @@ public class GuiRenderUtils {
             new Identifier("item/empty_armor_slot_chestplate"),
             new Identifier("item/empty_armor_slot_helmet") };
     private static final Identifier MERCHANT_TEXTURE = new Identifier("textures/gui/container/villager2.png");
+    private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
+    private static final ItemRenderer itemRenderer = mc.getItemRenderer();
 
     private static ItemStack getEquippedStack(EquipmentSlot slot, Inventory inv){
         if(slot.getArmorStandSlotId() == EquipmentSlot.CHEST.getArmorStandSlotId()){
@@ -147,7 +161,7 @@ public class GuiRenderUtils {
             RenderSystem.applyModelViewMatrix();
         }
     }
-    public static void renderFurnacePreview(NbtCompound nbt, int baseX, int baseY, boolean useBgColors){
+    public static void renderFurnacePreview(NbtCompound nbt, int baseX, int baseY){
 
         if(nbt.isEmpty()){
             return;
@@ -294,7 +308,7 @@ public class GuiRenderUtils {
             final EquipmentSlot eqSlot = VALID_EQUIPMENT_SLOTS[i];
             ItemStack stack = getEquippedStack(eqSlot, inventory);
 
-            if (stack.isEmpty() == false)
+            if (!stack.isEmpty())
             {
                 renderStackAt(stack, x + xOff + 1, y + yOff + 1, 1, mc);
             }
@@ -304,7 +318,7 @@ public class GuiRenderUtils {
             final EquipmentSlot eqSlot = VALID_EQUIPMENT_SLOTS[i];
             ItemStack stack = getEquippedStack(eqSlot, inventory);
 
-            if (stack.isEmpty() == false)
+            if (!stack.isEmpty())
             {
                 renderStackAt(stack, x + xOff + 1, y + yOff + 1, 1, mc);
             }
@@ -312,7 +326,7 @@ public class GuiRenderUtils {
 
         ItemStack stack = getEquippedStack(EquipmentSlot.OFFHAND, inventory);
 
-        if (stack.isEmpty() == false)
+        if (!stack.isEmpty())
         {
             renderStackAt(stack, x + 25+1, y + 3 * 19 + 7 + 1, 1, mc);
         }
@@ -344,31 +358,145 @@ public class GuiRenderUtils {
     }
     public static void renderTrades(TradeOfferList trades, int x, int y){
 
-        System.out.println("ääää");
-
         MatrixStack matrices = RenderSystem.getModelViewStack();
 
+        matrices.push();
+
+        RenderSystem.applyModelViewMatrix();
+
+        matrices.loadIdentity();
+
+        RenderUtils.setupBlend();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
-        int i = 50;
-        int j = 50;
-        RenderUtils.drawTexturedRect(i, j, 0, 0,  0, 100,100);
-        if (!trades.isEmpty()) {
-            int k = 0;
-            /*if (k < 0 || k >= trades.size()) {
-                return;
-            }*/
 
-            TradeOffer tradeOffer = (TradeOffer)trades.get(k);
-            if (tradeOffer.isDisabled()) {
-                RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                RenderUtils.drawTexturedRect(50, 50, 0, 0, 50, 50);
-              //  drawTexture(matrices, this.x + 83 + 99, this.y + 35, this.getZOffset(), 311.0F, 0.0F, 28, 21, 512, 256);
-            }
+        x -= 105;
+        y -= 82;
+
+        //Render Background
+        drawTexture(matrices, x, y, 5, 0.0F, 0.0F, 105, 166, 512, 256);
+        drawTexture(matrices, x+105, y, 5, 4.0F, 0.0F, 97, 166, 512, 256);
+        drawTexture(matrices, x+105+97, y, 5, 272.0F, 0.0F, 4, 166, 512, 256);
+
+        matrices.pop();
+        matrices.push();
+
+        RenderUtils.setupBlend();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
+
+        if (!trades.isEmpty()) {
+            //int i = (this.width - this.backgroundWidth) / 2;
+            //int j = (this.height - this.backgroundHeight) / 2;
+            int k = y + 16 + 1;
+            int l = x + 5 + 5;
+            RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            int m = 0;
+            Iterator<TradeOffer> var11 = trades.iterator();
+
+                TradeOffer tradeOffer;
+                while(var11.hasNext()) {
+                    tradeOffer = (TradeOffer)var11.next();
+                        ItemStack itemStack = tradeOffer.getOriginalFirstBuyItem();
+                        ItemStack itemStack2 = tradeOffer.getAdjustedFirstBuyItem();
+                        ItemStack itemStack3 = tradeOffer.getSecondBuyItem();
+                        ItemStack itemStack4 = tradeOffer.getSellItem();
+
+                        itemRenderer.zOffset = 500.0F;
+                        int n = k + 2;
+                                                            //Make this thing 5x2
+                    renderArrow(matrices, tradeOffer, x, n);
+                    renderTradeButton(matrices, l,n);
+
+                    renderFirstBuyItem(matrices, itemStack2, itemStack, l, n);
+                   if (!itemStack3.isEmpty()) {
+                        itemRenderer.renderInGui(itemStack3, x + 5 + 35, n);
+                        itemRenderer.renderGuiItemOverlay(mc.textRenderer, itemStack3, x + 5 + 35, n);
+                    }
+
+                    itemRenderer.renderInGui(itemStack4, x + 5 + 68, n);
+                    itemRenderer.renderGuiItemOverlay(mc.textRenderer, itemStack4, x + 5 + 68, n);
+                    itemRenderer.zOffset = 0.0F;
+                    k += 20;
+                    ++m;
+
+
+                    //renderTradeButton(matrices, l, n);
+                }
+
+                RenderSystem.enableDepthTest();
         }
+
+
+
+        matrices.pop();
     }
+    private static void renderFirstBuyItem(MatrixStack matrices, ItemStack adjustedFirstBuyItem, ItemStack originalFirstBuyItem, int x, int y) {
+        itemRenderer.renderInGui(adjustedFirstBuyItem, x, y);
+        if (originalFirstBuyItem.getCount() == adjustedFirstBuyItem.getCount()) {
+            itemRenderer.renderGuiItemOverlay(mc.textRenderer, adjustedFirstBuyItem, x, y);
+        } else {
+            itemRenderer.renderGuiItemOverlay(mc.textRenderer, originalFirstBuyItem, x, y, originalFirstBuyItem.getCount() == 1 ? "1" : null);
+            itemRenderer.renderGuiItemOverlay(mc.textRenderer, adjustedFirstBuyItem, x + 14, y, adjustedFirstBuyItem.getCount() == 1 ? "1" : null);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
+            drawTexture(matrices, x + 7, y + 12, 300, 0.0F, 176.0F, 9, 2, 512, 256);
+        }
+
+    }
+
+    private static void renderArrow(MatrixStack matricess, TradeOffer tradeOffer, int x, int y) {
+        MatrixStack matrices = RenderSystem.getModelViewStack();
+        matrices.push();
+        matrices.loadIdentity();
+        RenderSystem.enableBlend();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
+        if (tradeOffer.isDisabled()) {
+            drawTexture(matrices, x + 5 + 35 + 20, y + 3, 700, 25.0F, 171.0F, 10, 9, 512, 256);
+        } else {
+            drawTexture(matrices, x + 5 + 35 + 20, y + 3, 770, 15.0F, 171.0F, 10, 9, 512, 256);
+        }
+        matrices.pop();
+    }
+
+    public static void drawTexture(MatrixStack matrices, int x, int y, int z, int u, int v, int width, int height) {
+        drawTexture(matrices, x, y, z, (float)u, (float)v, width, height, 256, 256);
+    }
+
+    public static void drawTexture(MatrixStack matrices, int x, int y, int z, float u, float v, int width, int height, int textureWidth, int textureHeight) {
+        drawTexture(matrices, x, x + width, y, y + height, z, width, height, u, v, textureWidth, textureHeight);
+    }
+    private static void drawTexture(MatrixStack matrices, int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight) {
+        drawTexturedQuad(matrices.peek().getPositionMatrix(), x0, x1, y0, y1, z, (u + 0.0F) / (float)textureWidth, (u + (float)regionWidth) / (float)textureWidth, (v + 0.0F) / (float)textureHeight, (v + (float)regionHeight) / (float)textureHeight);
+    }
+    private static void drawTexturedQuad(Matrix4f matrix, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.vertex(matrix, (float)x0, (float)y1, (float)z).texture(u0, v1).next();
+        bufferBuilder.vertex(matrix, (float)x1, (float)y1, (float)z).texture(u1, v1).next();
+        bufferBuilder.vertex(matrix, (float)x1, (float)y0, (float)z).texture(u1, v0).next();
+        bufferBuilder.vertex(matrix, (float)x0, (float)y0, (float)z).texture(u0, v0).next();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
+    }
+
+    private static void renderTradeButton(MatrixStack matricess,int x, int y){
+        MatrixStack matrices = RenderSystem.getModelViewStack();
+        matrices.push();
+        matrices.loadIdentity();
+        RenderUtils.setupBlend();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
+        drawTexture(matrices, x+32-7, y-1, 100, 142, 66, 57, 20);//left
+        drawTexture(matrices, x-5, y-1, 100, 0, 66, 32, 20);//right
+        matrices.pop();
+    }
+
     private static void renderBackground(int x, int y){
 
         RenderUtils.setupBlend();
