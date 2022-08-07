@@ -30,6 +30,9 @@ public class InGameHudMixin {
 
                     GuiRenderUtils.renderHopperPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - (52+8),
                             GuiUtils.getScaledWindowHeight() / 2 + (16+16), true);
+                }else if (Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP == 3){
+                    GuiRenderUtils.renderDispenserPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - 34,
+                            GuiUtils.getScaledWindowHeight() / 2 - 43);
                 }else{
                     RenderUtils.renderShulkerBoxPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - 96,
                             GuiUtils.getScaledWindowHeight() / 2 + 30, true);

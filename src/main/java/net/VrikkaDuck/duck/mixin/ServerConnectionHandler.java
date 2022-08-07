@@ -184,7 +184,11 @@ public abstract class ServerConnectionHandler {
                     }else if(blockEntity instanceof HopperBlockEntity){
                         buf.writeNbt(compound);
                         buf.writeVarInt(2);
-                    }else{
+                    }else if(blockEntity instanceof DispenserBlockEntity
+                            ||blockEntity instanceof DropperBlockEntity){
+                        buf.writeNbt(compound);
+                        buf.writeVarInt(3);
+                    } else{
                         buf.writeNbt(compound);
                         buf.writeVarInt(0);
                     }
