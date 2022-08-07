@@ -382,8 +382,8 @@ public class GuiRenderUtils {
         drawTexture(matrices, x+9, y, 5, 0, 0, 93, h, 512, 256);//left
         drawTexture(matrices, x+102, y, 5, 100, 0, 7, h, 512, 256);//mid line
         drawTexture(matrices, x+105, y, 5, 4, 0, 90, h, 512, 256);//mid right
-        drawTexture(matrices, x+105+87, y, 5, 100, 0, 2, h, 512, 256);//rightleft WHAT???
-        drawTexture(matrices, x+105+89, y, 5, 273, 0, 3, h, 512, 256);//right
+        drawTexture(matrices, x+105+90, y, 5, 100, 0, 2, h, 512, 256);//rightleft WHAT???
+        drawTexture(matrices, x+105+92, y, 5, 273, 0, 3, h, 512, 256);//right
 
         y+=84;
 
@@ -391,10 +391,8 @@ public class GuiRenderUtils {
         drawTexture(matrices, x+9, y, 5, 0, 124, 93, 42, 512, 256);//left
         drawTexture(matrices, x+102, y, 5, 100, 124, 7, 42, 512, 256);//mid line
         drawTexture(matrices, x+105, y, 5, 4, 124, 90, 42, 512, 256);//mid right
-        drawTexture(matrices, x+105+87, y, 5, 100, 124, 2, 42, 512, 256);//rightleft WHAT???
-        drawTexture(matrices, x+105+89, y, 5, 273, 124, 3, 42, 512, 256);//right
-        // drawTexture(matrices, x+105+89, y, 5, 273, 0, 3, 166, 512, 256);//right
-
+        drawTexture(matrices, x+105+90, y, 5, 100, 124, 2, 42, 512, 256);//rightleft WHAT???
+        drawTexture(matrices, x+105+92, y, 5, 273, 124, 3, 42, 512, 256);//right
 
         y-=84;
 
@@ -408,8 +406,6 @@ public class GuiRenderUtils {
         RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
 
         if (!trades.isEmpty()) {
-            //int i = (this.width - this.backgroundWidth) / 2;
-            //int j = (this.height - this.backgroundHeight) / 2;
             x+=9;
             int k = y + 16 + 1;
             int l = x + 5 + 5;
@@ -420,7 +416,7 @@ public class GuiRenderUtils {
                 TradeOffer tradeOffer;
                 int e = 0;
                 while(var11.hasNext()) {
-                    tradeOffer = (TradeOffer)var11.next();
+                    tradeOffer = var11.next();
                         ItemStack itemStack = tradeOffer.getOriginalFirstBuyItem();
                         ItemStack itemStack2 = tradeOffer.getAdjustedFirstBuyItem();
                         ItemStack itemStack3 = tradeOffer.getSecondBuyItem();
@@ -429,14 +425,14 @@ public class GuiRenderUtils {
                         itemRenderer.zOffset = 500.0F;
 
                     if(e == 5){
-                        l = x + 5 + 5 + 93 - 2;
+                        l = x + 5 + 5 + 93 - 1;
                         k = y + 16 + 1;
                     }
 
                     int n = k + 2;
 
-                        renderArrow(matrices, tradeOffer, l, n);
-                        renderTradeButton(matrices, l,n);
+                        renderArrow(tradeOffer, l, n);
+                        renderTradeButton(l,n);
 
                         renderFirstBuyItem(matrices, itemStack2, itemStack, l, n);
                        if (!itemStack3.isEmpty()) {
@@ -472,7 +468,7 @@ public class GuiRenderUtils {
 
     }
 
-    private static void renderArrow(MatrixStack matricess, TradeOffer tradeOffer, int x, int y) {
+    private static void renderArrow(TradeOffer tradeOffer, int x, int y) {
         MatrixStack matrices = RenderSystem.getModelViewStack();
         matrices.push();
         matrices.loadIdentity();
@@ -509,7 +505,7 @@ public class GuiRenderUtils {
         BufferRenderer.drawWithShader(bufferBuilder.end());
     }
 
-    private static void renderTradeButton(MatrixStack matricess,int x, int y){
+    private static void renderTradeButton(int x, int y){
         MatrixStack matrices = RenderSystem.getModelViewStack();
         matrices.push();
         matrices.loadIdentity();
