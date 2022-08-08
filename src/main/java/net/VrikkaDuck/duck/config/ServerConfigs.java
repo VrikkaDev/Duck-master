@@ -3,7 +3,6 @@ package net.VrikkaDuck.duck.config;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.options.ConfigLevel;
 import net.VrikkaDuck.duck.config.options.ServerLevel;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.VrikkaDuck.duck.util.PermissionLevel;

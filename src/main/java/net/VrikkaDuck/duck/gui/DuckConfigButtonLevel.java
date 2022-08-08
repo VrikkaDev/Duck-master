@@ -1,7 +1,6 @@
 package net.VrikkaDuck.duck.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import fi.dy.masa.malilib.config.IConfigBoolean;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -9,7 +8,6 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import net.VrikkaDuck.duck.config.IConfigLevel;
 import net.VrikkaDuck.duck.util.PermissionLevel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;

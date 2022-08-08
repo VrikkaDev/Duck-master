@@ -2,7 +2,6 @@ package net.VrikkaDuck.duck.networking;
 
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.IConfigBase;
-import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import fi.dy.masa.malilib.network.ClientPacketChannelHandler;
 import fi.dy.masa.malilib.network.IPluginChannelHandler;
 import net.VrikkaDuck.duck.Variables;
