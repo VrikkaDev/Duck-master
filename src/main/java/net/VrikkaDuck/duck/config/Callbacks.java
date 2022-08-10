@@ -1,8 +1,6 @@
 package net.VrikkaDuck.duck.config;
 
 import fi.dy.masa.malilib.config.IConfigBase;
-import fi.dy.masa.malilib.config.IConfigValue;
-import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.hotkeys.IHotkeyCallback;
 import fi.dy.masa.malilib.hotkeys.IKeybind;

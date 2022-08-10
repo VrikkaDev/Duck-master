@@ -1,7 +1,6 @@
 package net.VrikkaDuck.duck.gui;
 
 import fi.dy.masa.malilib.config.IConfigBase;
-import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import fi.dy.masa.malilib.gui.GuiConfigsBase;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
