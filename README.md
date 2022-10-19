@@ -2,6 +2,8 @@
 
 ## About
 
+This code is bad and i need to rewrite it at some point
+
 [Malilib](https://www.curseforge.com/minecraft/mc-mods/malilib) required to use this mod
 
 Y+C to open Config Gui
