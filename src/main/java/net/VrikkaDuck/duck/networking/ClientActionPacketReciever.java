@@ -93,7 +93,6 @@ public class ClientActionPacketReciever implements IPluginChannelHandler {
                 TradeOfferList veList = TradeOfferList.fromPacket(buf);
                 Configs.Actions.RENDER_VILLAGER_TRADES = true;
                 Configs.Actions.VILLAGER_TRADES = veList;
-                System.out.println(veList.toNbt());
                 break;
             default:
                 Variables.LOGGER.error("Could not get viable PacketType");

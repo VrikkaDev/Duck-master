@@ -9,6 +9,7 @@ import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -24,9 +25,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
+import org.joml.Matrix4f;
 
 import java.util.Iterator;
 
@@ -69,7 +70,11 @@ public class GuiRenderUtils {
         }
     }
 
-    public static void renderHopperPreview(ItemStack stack, int baseX, int baseY, boolean useBgColors){
+    public static DrawContext createDrawContext(){
+        return new DrawContext(mc(), mc().getBufferBuilders().getEntityVertexConsumers());
+    }
+
+    public static void renderHopperPreview(ItemStack stack, int baseX, int baseY, boolean useBgColors, DrawContext context){
         if (stack.hasNbt())
         {
             DefaultedList<ItemStack> items = InventoryUtils.getStoredItems(stack, -1);
@@ -98,9 +103,6 @@ public class GuiRenderUtils {
             }
 
             disableDiffuseLighting();
-            MatrixStack matrixStack = RenderSystem.getModelViewStack();
-            matrixStack.push();
-            matrixStack.translate(0, 0, 500);
             RenderSystem.applyModelViewMatrix();
 
             InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, items.size(), mc());
@@ -108,14 +110,13 @@ public class GuiRenderUtils {
             enableDiffuseLightingGui3D();
 
             Inventory inv = fi.dy.masa.malilib.util.InventoryUtils.getAsInventory(items);
-            InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, mc());
+            InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, mc(), context);
 
-            matrixStack.pop();
             RenderSystem.applyModelViewMatrix();
         }
     }
 
-    public static void renderDoubleChestPreview(ItemStack stack, int baseX, int baseY, boolean useBgColors)
+    public static void renderDoubleChestPreview(ItemStack stack, int baseX, int baseY, boolean useBgColors, DrawContext context)
     {
         if (stack.hasNbt())
         {
@@ -145,23 +146,18 @@ public class GuiRenderUtils {
             }
 
             disableDiffuseLighting();
-            MatrixStack matrixStack = RenderSystem.getModelViewStack();
-            matrixStack.push();
-            matrixStack.translate(0, 0, 500);
-            RenderSystem.applyModelViewMatrix();
 
             InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, items.size(), mc());
 
             enableDiffuseLightingGui3D();
 
             Inventory inv = fi.dy.masa.malilib.util.InventoryUtils.getAsInventory(items);
-            InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, mc());
+            InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, mc(), context);
 
-            matrixStack.pop();
             RenderSystem.applyModelViewMatrix();
         }
     }
-    public static void renderFurnacePreview(NbtCompound nbt, int baseX, int baseY){
+    public static void renderFurnacePreview(NbtCompound nbt, int baseX, int baseY, DrawContext context){
 
         if(nbt.isEmpty()){
             return;
@@ -200,11 +196,11 @@ public class GuiRenderUtils {
             }
         }
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 
-        renderStackAt(slot0, x +   8, y +  8, 1, mc);
-        renderStackAt(slot1, x +   8, y + 44, 1, mc);
-        renderStackAt(slot2, x +  68, y + 26, 1, mc);
+        renderStackAt(slot0, x +   8, y +  8, 1, mc, context);
+        renderStackAt(slot1, x +   8, y + 44, 1, mc, context);
+        renderStackAt(slot2, x +  68, y + 26, 1, mc, context);
 
         matrixStack.push();
 
@@ -219,7 +215,10 @@ public class GuiRenderUtils {
 
         String xpString = nbt.contains("xp") ? String.valueOf(nbt.getFloat("xp")) : "0";
 
-        mc.textRenderer.draw(matrixStack, Text.of("xp: " + xpString),x+32, y+54, 4210752);//white = 0xffffffff
+        DrawContext dc = new DrawContext(mc(), mc().getBufferBuilders().getEntityVertexConsumers());
+
+
+        dc.drawText(mc.textRenderer, Text.of("xp: " + xpString),x+32, y+54, 4210752, false);//white = 0xffffffff
 
         matrixStack.pop();
 
@@ -232,32 +231,21 @@ public class GuiRenderUtils {
             refreshFurnace = 0;
         }
     }
-    public static void renderBeehivePreview(NbtCompound nbt, int baseX, int baseY){
+    public static void renderBeehivePreview(NbtCompound nbt, int baseX, int baseY, DrawContext context){
         renderBackground(baseX-35, baseY-31);
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
-        matrixStack.push();
-
-        matrixStack.loadIdentity();
 
         String honeyCount = nbt.contains("HoneyLevel") ? String.valueOf(nbt.getInt("HoneyLevel")) : "0";
         String beeCount = nbt.contains("BeeCount") ? String.valueOf(nbt.getInt("BeeCount")) : "0";
 
-        mc.textRenderer.draw(matrixStack, "Honey: " + honeyCount, baseX-28, baseY-22,5);
-        mc.textRenderer.draw(matrixStack, "Bees: " + beeCount, baseX-28, baseY-10,5);
-
-        matrixStack.pop();
+        context.drawText(mc.textRenderer, "Honey: " + honeyCount, baseX-28, baseY-22,5, false);
+        context.drawText(mc.textRenderer, "Bees: " + beeCount, baseX-28, baseY-10,5, false);
     }
-    public static void renderPlayerInventory(Inventory inventory, int x, int y){
+    public static void renderPlayerInventory(Inventory inventory, int x, int y, DrawContext context){
 
        // InventoryOverlay.renderInventoryBackground(InventoryOverlay.InventoryRenderType.GENERIC, x-88, y-41, 9, 36, mc);
 
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
-
         x-=65;
         y-=50;
-
-        matrixStack.push();
-
 
         //Render Equipment background
 
@@ -267,7 +255,7 @@ public class GuiRenderUtils {
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.applyModelViewMatrix();
         buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 
@@ -298,7 +286,10 @@ public class GuiRenderUtils {
         if (inventory.getStack(120).isEmpty())
         {
             Identifier texture = new Identifier("minecraft:item/empty_armor_slot_shield");
-            RenderUtils.renderSprite(x + 28 + 1, y + 3 * 18 + 7 + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, texture, matrixStack);
+
+            DrawContext dc = new DrawContext(mc(), mc().getBufferBuilders().getEntityVertexConsumers());
+
+            RenderUtils.renderSprite(x + 28 + 1, y + 3 * 18 + 7 + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, texture, dc);
         }
 
         //Render equipment stacks
@@ -310,7 +301,7 @@ public class GuiRenderUtils {
 
             if (!stack.isEmpty())
             {
-                renderStackAt(stack, x + xOff + 1, y + yOff + 1, 1, mc);
+                renderStackAt(stack, x + xOff + 1, y + yOff + 1, 1, mc, context);
             }
         }
         for (int i = 2, xOff = 25, yOff = 7; i < 4; ++i, yOff += 18)
@@ -320,7 +311,7 @@ public class GuiRenderUtils {
 
             if (!stack.isEmpty())
             {
-                renderStackAt(stack, x + xOff + 1, y + yOff + 1, 1, mc);
+                renderStackAt(stack, x + xOff + 1, y + yOff + 1, 1, mc, context);
             }
         }
 
@@ -328,7 +319,7 @@ public class GuiRenderUtils {
 
         if (!stack.isEmpty())
         {
-            renderStackAt(stack, x + 25+1, y + 3 * 19 + 7 + 1, 1, mc);
+            renderStackAt(stack, x + 25+1, y + 3 * 19 + 7 + 1, 1, mc, context);
         }
 
         x+=50+90-15;
@@ -336,7 +327,7 @@ public class GuiRenderUtils {
         RenderUtils.setupBlend();
         Tessellator atessellator = Tessellator.getInstance();
         BufferBuilder abuffer = atessellator.getBuffer();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.applyModelViewMatrix();
         abuffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 
@@ -349,25 +340,21 @@ public class GuiRenderUtils {
         x -= 90-18;
         y += 7;
 
-        InventoryOverlay.renderInventoryStacks(InventoryRenderType.FIXED_27, Configs.Actions.TARGET_PLAYER_INVENTORY, x, y,9,9, 27, mc);
-        y += 58;
-        InventoryOverlay.renderInventoryStacks(InventoryRenderType.FIXED_27, Configs.Actions.TARGET_PLAYER_INVENTORY, x, y,9,0, 9, mc);
+        DrawContext dc = new DrawContext(mc(), mc().getBufferBuilders().getEntityVertexConsumers());
 
-        matrixStack.pop();
+        InventoryOverlay.renderInventoryStacks(InventoryRenderType.FIXED_27, Configs.Actions.TARGET_PLAYER_INVENTORY, x, y,9,9, 27, mc, dc);
+        y += 58;
+        InventoryOverlay.renderInventoryStacks(InventoryRenderType.FIXED_27, Configs.Actions.TARGET_PLAYER_INVENTORY, x, y,9,0, 9, mc, dc);
+
         RenderSystem.applyModelViewMatrix();
     }
-    public static void renderTrades(TradeOfferList trades, int x, int y){
+    public static void renderTrades(TradeOfferList trades, int x, int y, DrawContext context){
 
-        MatrixStack matrices = RenderSystem.getModelViewStack();
-
-        matrices.push();
 
         RenderSystem.applyModelViewMatrix();
 
-        matrices.loadIdentity();
-
         RenderUtils.setupBlend();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
 
@@ -379,29 +366,26 @@ public class GuiRenderUtils {
         int h = 84;
 
         //top
-        drawTexture(matrices, x+9, y, 5, 0, 0, 93, h, 512, 256);//left
-        drawTexture(matrices, x+102, y, 5, 100, 0, 7, h, 512, 256);//mid line
-        drawTexture(matrices, x+105, y, 5, 4, 0, 90, h, 512, 256);//mid right
-        drawTexture(matrices, x+105+90, y, 5, 100, 0, 2, h, 512, 256);//rightleft WHAT???
-        drawTexture(matrices, x+105+92, y, 5, 273, 0, 3, h, 512, 256);//right
+        drawTexture(context, x+9, y, 5, 0, 0, 93, h, 512, 256);//left
+        drawTexture(context, x+102, y, 5, 100, 0, 7, h, 512, 256);//mid line
+        drawTexture(context, x+105, y, 5, 4, 0, 90, h, 512, 256);//mid right
+        drawTexture(context, x+105+90, y, 5, 100, 0, 2, h, 512, 256);//rightleft WHAT???
+        drawTexture(context, x+105+92, y, 5, 273, 0, 3, h, 512, 256);//right
 
         y+=84;
 
         //bottom
-        drawTexture(matrices, x+9, y, 5, 0, 124, 93, 42, 512, 256);//left
-        drawTexture(matrices, x+102, y, 5, 100, 124, 7, 42, 512, 256);//mid line
-        drawTexture(matrices, x+105, y, 5, 4, 124, 90, 42, 512, 256);//mid right
-        drawTexture(matrices, x+105+90, y, 5, 100, 124, 2, 42, 512, 256);//rightleft WHAT???
-        drawTexture(matrices, x+105+92, y, 5, 273, 124, 3, 42, 512, 256);//right
+        drawTexture(context, x+9, y, 5, 0, 124, 93, 42, 512, 256);//left
+        drawTexture(context, x+102, y, 5, 100, 124, 7, 42, 512, 256);//mid line
+        drawTexture(context, x+105, y, 5, 4, 124, 90, 42, 512, 256);//mid right
+        drawTexture(context, x+105+90, y, 5, 100, 124, 2, 42, 512, 256);//rightleft WHAT???
+        drawTexture(context, x+105+92, y, 5, 273, 124, 3, 42, 512, 256);//right
 
         y-=84;
 
 
-        matrices.pop();
-        matrices.push();
-
         RenderUtils.setupBlend();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
 
@@ -410,7 +394,7 @@ public class GuiRenderUtils {
             int k = y + 16 + 1;
             int l = x + 5 + 5;
             RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             Iterator<TradeOffer> var11 = trades.iterator();
 
                 TradeOffer tradeOffer;
@@ -422,7 +406,7 @@ public class GuiRenderUtils {
                         ItemStack itemStack3 = tradeOffer.getSecondBuyItem();
                         ItemStack itemStack4 = tradeOffer.getSellItem();
 
-                        itemRenderer.zOffset = 500.0F;
+                        //itemRenderer.zOffset = 500.0F;
 
                     if(e == 5){
                         l = x + 5 + 5 + 93 - 1;
@@ -431,102 +415,102 @@ public class GuiRenderUtils {
 
                     int n = k + 2;
 
-                        renderArrow(tradeOffer, l, n);
-                        renderTradeButton(l,n);
+                        renderArrow(tradeOffer, l, n, context);
+                        renderTradeButton(l,n, context);
 
-                        renderFirstBuyItem(matrices, itemStack2, itemStack, l, n);
-                       if (!itemStack3.isEmpty()) {
-                            itemRenderer.renderInGui(itemStack3, l + 30, n);
-                            itemRenderer.renderGuiItemOverlay(mc.textRenderer, itemStack3, l + 30, n);
+                        renderFirstBuyItem(context, itemStack2, itemStack, l, n);
+                        if (!itemStack3.isEmpty()) {
+                           context.drawItem(itemStack3, l + 30, n);
+                           context.drawItemInSlot(mc.textRenderer, itemStack3, l + 30, n);
+
+                           //itemRenderer.renderInGui(itemStack3, l + 30, n);
+                           //itemRenderer.renderGuiItemOverlay(mc.textRenderer, itemStack3, l + 30, n);
                         }
 
-                        itemRenderer.renderInGui(itemStack4, l + 63, n);
-                        itemRenderer.renderGuiItemOverlay(mc.textRenderer, itemStack4, l + 63, n);
-                        itemRenderer.zOffset = 0.0F;
+                        context.drawItem(itemStack4, l + 63, n);
+                        context.drawItemInSlot(mc.textRenderer, itemStack4, l + 63, n);
+
+                        //itemRenderer.renderInGui(itemStack4, l + 63, n);
+                        //itemRenderer.renderGuiItemOverlay(mc.textRenderer, itemStack4, l + 63, n);
+                        //itemRenderer.zOffset = 0.0F;
+
                         k += 20;
                         e++;
                 }
 
                 RenderSystem.enableDepthTest();
         }
-
-
-
-        matrices.pop();
     }
-    private static void renderFirstBuyItem(MatrixStack matrices, ItemStack adjustedFirstBuyItem, ItemStack originalFirstBuyItem, int x, int y) {
-        itemRenderer.renderInGui(adjustedFirstBuyItem, x, y);
+    private static void renderFirstBuyItem(DrawContext context, ItemStack adjustedFirstBuyItem, ItemStack originalFirstBuyItem, int x, int y) {
+        context.drawItem(adjustedFirstBuyItem, x, y);
         if (originalFirstBuyItem.getCount() == adjustedFirstBuyItem.getCount()) {
-            itemRenderer.renderGuiItemOverlay(mc.textRenderer, adjustedFirstBuyItem, x, y);
+            context.drawItemInSlot(mc.textRenderer, adjustedFirstBuyItem, x, y);
+            //itemRenderer.renderGuiItemOverlay(mc.textRenderer, adjustedFirstBuyItem, x, y);
         } else {
-            itemRenderer.renderGuiItemOverlay(mc.textRenderer, originalFirstBuyItem, x, y, originalFirstBuyItem.getCount() == 1 ? "1" : null);
-            itemRenderer.renderGuiItemOverlay(mc.textRenderer, adjustedFirstBuyItem, x + 14, y, adjustedFirstBuyItem.getCount() == 1 ? "1" : null);
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            context.drawItemInSlot(mc.textRenderer, originalFirstBuyItem, x, y, originalFirstBuyItem.getCount() == 1 ? "1" : null);
+            context.drawItemInSlot(mc.textRenderer, adjustedFirstBuyItem, x + 14, y, adjustedFirstBuyItem.getCount() == 1 ? "1" : null);
+            //itemRenderer.renderGuiItemOverlay(mc.textRenderer, originalFirstBuyItem, x, y, originalFirstBuyItem.getCount() == 1 ? "1" : null);
+            //itemRenderer.renderGuiItemOverlay(mc.textRenderer, adjustedFirstBuyItem, x + 14, y, adjustedFirstBuyItem.getCount() == 1 ? "1" : null);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
-            drawTexture(matrices, x + 7, y + 12, 300, 0.0F, 176.0F, 9, 2, 512, 256);
+            drawTexture(context, x + 7, y + 12, 300, 0.0F, 176.0F, 9, 2, 512, 256);
         }
 
     }
 
-    private static void renderArrow(TradeOffer tradeOffer, int x, int y) {
-        MatrixStack matrices = RenderSystem.getModelViewStack();
-        matrices.push();
-        matrices.loadIdentity();
+    private static void renderArrow(TradeOffer tradeOffer, int x, int y, DrawContext context) {
         RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
         x -= 10;
         if (tradeOffer.isDisabled()) {
-            drawTexture(matrices, x + 5 + 35 + 20, y + 3, 700, 25.0F, 171.0F, 10, 9, 512, 256);
+            drawTexture(context, x + 5 + 35 + 20, y + 3, 700, 25.0F, 171.0F, 10, 9, 512, 256);
         } else {
-            drawTexture(matrices, x + 5 + 35 + 20, y + 3, 770, 15.0F, 171.0F, 10, 9, 512, 256);
+            drawTexture(context, x + 5 + 35 + 20, y + 3, 770, 15.0F, 171.0F, 10, 9, 512, 256);
         }
-        matrices.pop();
     }
 
-    public static void drawTexture(MatrixStack matrices, int x, int y, int z, int u, int v, int width, int height) {
-        drawTexture(matrices, x, y, z, (float)u, (float)v, width, height, 256, 256);
+    public static void drawTexture(DrawContext context, int x, int y, int z, int u, int v, int width, int height) {
+        drawTexture(context, x, y, z, (float)u, (float)v, width, height, 256, 256);
     }
 
-    public static void drawTexture(MatrixStack matrices, int x, int y, int z, float u, float v, int width, int height, int textureWidth, int textureHeight) {
-        drawTexture(matrices, x, x + width, y, y + height, z, width, height, u, v, textureWidth, textureHeight);
+    public static void drawTexture(DrawContext context, int x, int y, int z, float u, float v, int width, int height, int textureWidth, int textureHeight) {
+        drawTexture(context, x, x + width, y, y + height, z, width, height, u, v, textureWidth, textureHeight);
     }
-    private static void drawTexture(MatrixStack matrices, int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight) {
-        drawTexturedQuad(matrices.peek().getPositionMatrix(), x0, x1, y0, y1, z, (u + 0.0F) / (float)textureWidth, (u + (float)regionWidth) / (float)textureWidth, (v + 0.0F) / (float)textureHeight, (v + (float)regionHeight) / (float)textureHeight);
+    private static void drawTexture(DrawContext context, int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight) {
+        drawTexturedQuad(context.getMatrices().peek().getPositionMatrix(), x0, x1, y0, y1, z, (u + 0.0F) / (float)textureWidth, (u + (float)regionWidth) / (float)textureWidth, (v + 0.0F) / (float)textureHeight, (v + (float)regionHeight) / (float)textureHeight);
     }
     private static void drawTexturedQuad(Matrix4f matrix, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(matrix, (float)x0, (float)y1, (float)z).texture(u0, v1).next();
         bufferBuilder.vertex(matrix, (float)x1, (float)y1, (float)z).texture(u1, v1).next();
         bufferBuilder.vertex(matrix, (float)x1, (float)y0, (float)z).texture(u1, v0).next();
         bufferBuilder.vertex(matrix, (float)x0, (float)y0, (float)z).texture(u0, v0).next();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
     }
 
-    private static void renderTradeButton(int x, int y){
-        MatrixStack matrices = RenderSystem.getModelViewStack();
-        matrices.push();
-        matrices.loadIdentity();
+    private static void renderTradeButton(int x, int y, DrawContext context){
         RenderUtils.setupBlend();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
-        drawTexture(matrices, x+32-7, y-1, 100, 142, 66, 58, 20);//left
-        drawTexture(matrices, x-5, y-1, 100, 0, 66, 35, 20);//right
-        matrices.pop();
+        //context.drawTexture(WIDGETS_TEXTURE, x+32-7, y-1, 100, 142, 66, 58);//left
+        //context.drawTexture(WIDGETS_TEXTURE, x-5, y-1, 100, 0, 66, 35);//right
+        drawTexture(context, x+35, y-2, 5,153, 65, 48, 21, 256, 256);//right
+        drawTexture(context, x-5, y-2,5, 0, 65, 45, 21, 256, 256);//left
     }
 
 
-    public static void renderDispenserPreview(ItemStack stack, int x, int y){
+    public static void renderDispenserPreview(ItemStack stack, int x, int y, DrawContext context){
 
         DefaultedList<ItemStack> items = InventoryUtils.getStoredItems(stack, -1);
 
         Inventory inv = fi.dy.masa.malilib.util.InventoryUtils.getAsInventory(items);
 
         InventoryOverlay.renderInventoryBackground(InventoryRenderType.DISPENSER, x, y, 3, 9, mc());
-        InventoryOverlay.renderInventoryStacks(InventoryRenderType.DISPENSER, inv, x + 8, y + 8, 3, 0, 9 ,mc());
+        InventoryOverlay.renderInventoryStacks(InventoryRenderType.DISPENSER, inv, x + 8, y + 8, 3, 0, 9 ,mc(), context);
     }
 
     private static void renderBackground(int x, int y){
@@ -534,7 +518,7 @@ public class GuiRenderUtils {
         RenderUtils.setupBlend();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.applyModelViewMatrix();
         buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 

@@ -14,6 +14,7 @@ import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.config.options.ConfigLevel;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.Collections;
@@ -50,10 +51,10 @@ public class ConfigGui extends GuiConfigsBase {
     }
 
     @Override
-    public void drawContents(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void drawContents(DrawContext context, int mouseX, int mouseY, float partialTicks)
     {
         try {
-            this.getListWidget().drawContents(matrixStack, mouseX, mouseY, partialTicks);
+            this.getListWidget().drawContents(context, mouseX, mouseY, partialTicks);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -81,7 +82,7 @@ public class ConfigGui extends GuiConfigsBase {
                     if(!isOn){
                         RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
                         if(w.isMouseOver(mouseX, mouseY) && mouseX > w.getWidth()/3){
-                            RenderUtils.drawHoverText(mouseX, mouseY, hoverText(), matrixStack);
+                            RenderUtils.drawHoverText(mouseX, mouseY, hoverText(), context);
                         }
                     }
                 }
@@ -95,7 +96,7 @@ public class ConfigGui extends GuiConfigsBase {
     protected WidgetListConfigOptions createListWidget(int listX, int listY)
     {
         return new WidgetListConfigOptions(listX, listY,
-                this.getBrowserWidth(), this.getBrowserHeight(), this.getConfigWidth(), this.getZOffset(), this.useKeybindSearch(), this);
+                this.getBrowserWidth(), this.getBrowserHeight(), this.getConfigWidth(), 10f, this.useKeybindSearch(), this);
     }
 
 

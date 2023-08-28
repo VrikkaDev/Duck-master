@@ -56,7 +56,7 @@ public abstract class ServerConnectionHandler {
     private void onCustomPayload(CustomPayloadC2SPacket packet, CallbackInfo cb){
 
         NetworkThreadUtils.forceMainThread(packet, ((ServerPlayNetworkHandler)(Object)this),
-                ((ServerPlayNetworkHandler)(Object)this).player.getWorld());
+                ((ServerPlayNetworkHandler)(Object)this).player.getServerWorld());
 
         if(packet.getChannel().equals(Variables.GENERICID)){
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
@@ -147,12 +147,12 @@ public abstract class ServerConnectionHandler {
 
                     BlockPos pos = packet.getData().readBlockPos();
 
-                    if(player.world.getBlockEntity(pos) == null){
+                    if(player.getWorld().getBlockEntity(pos) == null){
                         Variables.LOGGER.error("Could not find BlockEntity from given position");
                         return;
                     }
 
-                    BlockEntity blockEntity = player.world.getBlockEntity(pos);
+                    BlockEntity blockEntity = player.getWorld().getBlockEntity(pos);
 
                     NbtCompound compound = blockEntity.createNbtWithId();
 
@@ -168,7 +168,7 @@ public abstract class ServerConnectionHandler {
                         BlockState state = sbEntity.getCachedState();
                         if(!state.get(ChestBlock.CHEST_TYPE).equals(ChestType.SINGLE)){
                             Direction direction = ChestBlock.getFacing(state);
-                            ChestBlockEntity doubleChest = (ChestBlockEntity) player.world.getBlockEntity(sbEntity.getPos().offset(direction, 1));
+                            ChestBlockEntity doubleChest = (ChestBlockEntity) player.getWorld().getBlockEntity(sbEntity.getPos().offset(direction, 1));
                             if(state.get(ChestBlock.CHEST_TYPE).equals(ChestType.RIGHT)){
                                 compound = getDoubleChestNbt(sbEntity.createNbtWithId(), doubleChest.createNbtWithId());
                             }else{
@@ -206,12 +206,12 @@ public abstract class ServerConnectionHandler {
 
                     BlockPos fpos = packet.getData().readBlockPos();
 
-                    if(player.world.getBlockEntity(fpos) == null){
+                    if(player.getWorld().getBlockEntity(fpos) == null){
                         Variables.LOGGER.error("Could not find BlockEntity from given position");
                         return;
                     }
 
-                    BlockEntity fblockEntity = player.world.getBlockEntity(fpos);
+                    BlockEntity fblockEntity = player.getWorld().getBlockEntity(fpos);
 
                     NbtCompound fcompound = fblockEntity.createNbtWithId();
 
@@ -235,7 +235,7 @@ public abstract class ServerConnectionHandler {
 
                         while(var4.hasNext()) {
                             Object2IntMap.Entry<Identifier> entry = (Object2IntMap.Entry)var4.next();
-                            player.world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent((recipe) -> {
+                            player.getWorld().getRecipeManager().get((Identifier)entry.getKey()).ifPresent((recipe) -> {
                                 list.add(recipe);
                                 currentFurnaceXp = currentFurnaceXp + ( entry.getIntValue() * ((AbstractCookingRecipe)recipe).getExperience());
                             });
@@ -262,12 +262,12 @@ public abstract class ServerConnectionHandler {
 
                     BlockPos beepos = packet.getData().readBlockPos();
 
-                    if(player.world.getBlockEntity(beepos) == null){
+                    if(player.getWorld().getBlockEntity(beepos) == null){
                         Variables.LOGGER.error("Could not find BlockEntity from given position");
                         return;
                     }
 
-                    BlockEntity beeblockEntity = player.world.getBlockEntity(beepos);
+                    BlockEntity beeblockEntity = player.getWorld().getBlockEntity(beepos);
 
                     if(!(beeblockEntity instanceof BeehiveBlockEntity)){
                         return;
@@ -296,7 +296,7 @@ public abstract class ServerConnectionHandler {
                         return;
                     }
 
-                    PlayerEntity splayer = getPlayer().world.getPlayerByUuid(packet.getData().readUuid());
+                    PlayerEntity splayer = getPlayer().getWorld().getPlayerByUuid(packet.getData().readUuid());
 
                     if(splayer == null){
                         Variables.LOGGER.warn("Couldnt find targeted player");
@@ -329,7 +329,7 @@ public abstract class ServerConnectionHandler {
                     }
 
                     int id = packet.getData().readInt();
-                    Entity e = player.world.getEntityById(id);
+                    Entity e = player.getWorld().getEntityById(id);
 
                     if(!(e instanceof VillagerEntity)){
                        return;

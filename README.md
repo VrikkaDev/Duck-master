@@ -1,15 +1,20 @@
 # Duck Mod
+## [MaLilib](https://www.curseforge.com/minecraft/mc-mods/malilib) IS REQUIRED FOR CLIENT!
+Duck Mod is a server-client mod. In other words, must installed on the server and the client for features to be accessed.
 
-## About
+## Default Open Config GUI:
+Y+C
 
-This code is bad and i need to rewrite it at some point
+## Features:
+**Block entity peaking**: see block entity contents without opening their inventory.  
+Works for all block entities that have an inventory, including Furnaces.
 
-[Malilib](https://www.curseforge.com/minecraft/mc-mods/malilib) required to use this mod
+**Furnace XP display**: see the current amount of XP stored in Furnaces, Blast Furnaces, and Smokers
 
-Y+C to open Config Gui
+**Bee block fill level display**: see the fill level of Bee Nests and Hives
 
-Duck Mod is server-client mod wich allows all kinds of features/tweaks to the game
+**Player inventory peaking**: inspect players inventory
 
-###### Credits
-Made by VrikkaDuck,
-Tested by Heirde
+**Villager trade peaking**: inspect a villager's trades
+
+All features are configurable to use desired keybinds on client, but all functionalities require an OP'ed player to set desired features as `OP not needed` or `OP needed`

@@ -7,6 +7,7 @@ import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.render.RenderUtils;
 import net.VrikkaDuck.duck.config.IConfigLevel;
 import net.VrikkaDuck.duck.util.PermissionLevel;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,7 +46,7 @@ public class DuckConfigButtonLevel extends ButtonGeneric {
         this.displayString = GuiBase.TXT_WHITE + valueStr + GuiBase.TXT_RST;
     }
     @Override
-    public void render(int mouseX, int mouseY, boolean selected, MatrixStack matrixStack)
+    public void render(int mouseX, int mouseY, boolean selected, DrawContext context)
     {
         if (this.visible)
         {
@@ -93,7 +94,7 @@ public class DuckConfigButtonLevel extends ButtonGeneric {
 
                 if (this.textCentered)
                 {
-                    this.drawCenteredStringWithShadow(this.x + this.width / 2, y, color, this.displayString, matrixStack);
+                    this.drawCenteredStringWithShadow(this.x + this.width / 2, y, color, this.displayString, context);
                 }
                 else
                 {
@@ -104,12 +105,12 @@ public class DuckConfigButtonLevel extends ButtonGeneric {
                         x += this.icon.getWidth() + 2;
                     }
 
-                    this.drawStringWithShadow(x, y, color, this.displayString, matrixStack);
+                    this.drawStringWithShadow(x, y, color, this.displayString, context);
                 }
             }
 
             if(this.hovered){
-                RenderUtils.drawHoverText(mouseX,mouseY,hoverText(), matrixStack);
+                RenderUtils.drawHoverText(mouseX,mouseY,hoverText(), context);
             }
 
         }
