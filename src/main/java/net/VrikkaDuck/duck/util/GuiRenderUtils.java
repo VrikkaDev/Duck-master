@@ -286,10 +286,7 @@ public class GuiRenderUtils {
         if (inventory.getStack(120).isEmpty())
         {
             Identifier texture = new Identifier("minecraft:item/empty_armor_slot_shield");
-
-            DrawContext dc = new DrawContext(mc(), mc().getBufferBuilders().getEntityVertexConsumers());
-
-            RenderUtils.renderSprite(x + 28 + 1, y + 3 * 18 + 7 + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, texture, dc);
+            RenderUtils.renderSprite(x + 28 - 2, y + 3 * 18 + 7 + 4, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, texture, context);
         }
 
         //Render equipment stacks
@@ -498,7 +495,7 @@ public class GuiRenderUtils {
         RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
         //context.drawTexture(WIDGETS_TEXTURE, x+32-7, y-1, 100, 142, 66, 58);//left
         //context.drawTexture(WIDGETS_TEXTURE, x-5, y-1, 100, 0, 66, 35);//right
-        drawTexture(context, x+35, y-2, 5,153, 65, 48, 21, 256, 256);//right
+        drawTexture(context, x+35, y-2, 5,152, 65, 48, 21, 256, 256);//right
         drawTexture(context, x-5, y-2,5, 0, 65, 45, 21, 256, 256);//left
     }
 

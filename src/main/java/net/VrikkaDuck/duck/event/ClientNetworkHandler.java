@@ -33,6 +33,8 @@ public class ClientNetworkHandler {
         nbt.putInt("level", permissionLevel);
         buf.writeNbt(nbt);
         buf.writeString(optionName);
+
+
         try {
         MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CustomPayloadC2SPacket(Variables.ADMINSETID,
                 buf));

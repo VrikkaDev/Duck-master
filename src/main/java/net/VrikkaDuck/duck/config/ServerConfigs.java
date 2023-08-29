@@ -48,6 +48,7 @@ public class ServerConfigs{
 
         File configFile = new File(GameWorld.getDataFolder(), CONFIG_FILE_NAME);
 
+
         if (configFile.exists() && configFile.isFile() && configFile.canRead())
         {
             JsonElement element = parseJsonFile(configFile);

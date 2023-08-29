@@ -3,6 +3,7 @@ package net.VrikkaDuck.duck.mixin;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import net.VrikkaDuck.duck.config.Configs;
+import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.util.GuiRenderUtils;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -24,17 +25,16 @@ public class InGameHudMixin {
                 if(Configs.Actions.CONTAINER_ITEM_STACK == null){
                     return;
                 }
-                if(Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP == 1){
+                if(Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP == ContainerType.DOUBLE_CHEST.Value){ // DOUBLE CHEST
                         GuiRenderUtils.renderDoubleChestPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - 96,
                                 GuiUtils.getScaledWindowHeight() / 2 + 60, true, context);
-                }else if(Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP == 2){
-
+                }else if(Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP == ContainerType.HOPPER.Value){ // HOPPER
                     GuiRenderUtils.renderHopperPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - (52+8),
                             GuiUtils.getScaledWindowHeight() / 2 + (16+16), true, context);
-                }else if (Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP == 3){
+                }else if (Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP == ContainerType.DISPENSER.Value){ // DISPENSER
                     GuiRenderUtils.renderDispenserPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - 34,
                             GuiUtils.getScaledWindowHeight() / 2 - 43, context);
-                }else{
+                }else{ // SHULKER BOX or CHEST
                     RenderUtils.renderShulkerBoxPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - 96,
                             GuiUtils.getScaledWindowHeight() / 2 + 30, true, context);
                 }

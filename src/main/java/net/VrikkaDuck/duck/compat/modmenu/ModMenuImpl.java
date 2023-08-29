@@ -1,6 +1,6 @@
 package net.VrikkaDuck.duck.compat.modmenu;
 
-import com.terraformersmc.modmenu.api.ConfigScreenFactory;
+import  com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import net.VrikkaDuck.duck.gui.ConfigGui;
 

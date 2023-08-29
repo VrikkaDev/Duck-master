@@ -1,6 +1,7 @@
 package net.VrikkaDuck.duck.event;
 
 import net.VrikkaDuck.duck.config.Configs;
+import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.networking.PacketType;
 import net.VrikkaDuck.duck.networking.PacketTypes;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -9,6 +10,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -52,20 +54,18 @@ public class ClientBlockHitHandler {
             return;
         }
 
+        ContainerType ct = ContainerType.fromBlockEntity(blockEntity);
 
-        if(blockEntity.getType().equals(BlockEntityType.SHULKER_BOX) ||
-                blockEntity.getType().equals(BlockEntityType.BARREL) ||
-                blockEntity.getType().equals(BlockEntityType.CHEST) ||
-                blockEntity.getType().equals(BlockEntityType.TRAPPED_CHEST) ||
-                blockEntity.getType().equals(BlockEntityType.HOPPER) ||
-                blockEntity.getType().equals(BlockEntityType.DISPENSER) ||
-                blockEntity.getType().equals(BlockEntityType.DROPPER)){
+        // Checks if targeted block is one of the supported container blocks
+        if(ct != null){
 
             if(!Configs.Generic.INSPECT_CONTAINER.getKeybind().isKeybindHeld()){
                 return;
             }
 
             Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
+            Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = ct.Value;
+            Configs.Actions.CONTAINER_ITEM_STACK = ItemStack.EMPTY;
 
             PacketByteBuf buf = PacketByteBufs.create();
 

@@ -1,5 +1,6 @@
 package net.VrikkaDuck.duck.mixin;
 
+import net.VrikkaDuck.duck.config.ServerConfigs;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -17,5 +18,7 @@ public abstract class MinecraftServerMixin {
     private void init(CallbackInfo ci){
         GameWorld.setWorld(this.getOverworld());
         GameWorld.setServer(((MinecraftServer)(Object)this));
+
+        ServerConfigs.loadFromFile();
     }
 }

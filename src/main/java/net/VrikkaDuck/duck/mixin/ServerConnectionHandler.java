@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.ServerConfigs;
 import net.VrikkaDuck.duck.config.options.ServerLevel;
+import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.networking.PacketType;
 import net.VrikkaDuck.duck.networking.PacketTypes;
 import net.minecraft.block.BlockState;
@@ -22,6 +23,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.recipe.AbstractCookingRecipe;
@@ -53,7 +55,9 @@ public abstract class ServerConnectionHandler {
     private float currentFurnaceXp = 0f;
 
     @Inject(at = @At("RETURN"),method = "onCustomPayload")
-    private void onCustomPayload(CustomPayloadC2SPacket packet, CallbackInfo cb){
+    private void onCustomPayload(CustomPayloadC2SPacket pak, CallbackInfo cb){
+
+        CustomPayloadC2SPacket packet = new CustomPayloadC2SPacket(pak.getChannel(), new PacketByteBuf(pak.getData().copy()));
 
         NetworkThreadUtils.forceMainThread(packet, ((ServerPlayNetworkHandler)(Object)this),
                 ((ServerPlayNetworkHandler)(Object)this).player.getServerWorld());
@@ -148,7 +152,7 @@ public abstract class ServerConnectionHandler {
                     BlockPos pos = packet.getData().readBlockPos();
 
                     if(player.getWorld().getBlockEntity(pos) == null){
-                        Variables.LOGGER.error("Could not find BlockEntity from given position");
+                        Variables.LOGGER.warn("Could not find BlockEntity from given position");
                         return;
                     }
 
@@ -175,22 +179,22 @@ public abstract class ServerConnectionHandler {
                                 compound = getDoubleChestNbt(doubleChest.createNbtWithId(), sbEntity.createNbtWithId());
                             }
                             buf.writeNbt(compound);
-                            buf.writeVarInt(1);
+                            buf.writeVarInt(ContainerType.DOUBLE_CHEST.Value);
                         }else{
                             buf.writeNbt(compound);
-                            buf.writeVarInt(0);
+                            buf.writeVarInt(ContainerType.CHEST.Value);
                         }
 
                     }else if(blockEntity instanceof HopperBlockEntity){
                         buf.writeNbt(compound);
-                        buf.writeVarInt(2);
+                        buf.writeVarInt(ContainerType.HOPPER.Value);
                     }else if(blockEntity instanceof DispenserBlockEntity
                             ||blockEntity instanceof DropperBlockEntity){
                         buf.writeNbt(compound);
-                        buf.writeVarInt(3);
+                        buf.writeVarInt(ContainerType.DISPENSER.Value);
                     } else{
                         buf.writeNbt(compound);
-                        buf.writeVarInt(0);
+                        buf.writeVarInt(ContainerType.SHULKER.Value);
                     }
 
 

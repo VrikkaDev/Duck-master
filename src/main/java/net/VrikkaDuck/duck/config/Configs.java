@@ -23,11 +23,11 @@ public class Configs implements IConfigHandler {
     private static final String CONFIG_FILE_NAME = Variables.MODID + ".json";
 
     public static class Generic {
-        public static final ConfigHotkey INSPECT_CONTAINER = new ConfigHotkey("inspectContainers", "k", "Inspect Containers when placed");
-        public static final ConfigHotkey INSPECT_FURNACE = new ConfigHotkey("inspectFurnace", "k", "Inspect Furnaces when placed");
-        public static final ConfigHotkey INSPECT_BEEHIVE = new ConfigHotkey("inspectBeehive", "k" , "Inspect beehives when on ground");
-        public static final ConfigHotkey INSPECT_PLAYER_INVENTORY = new ConfigHotkey("inspectPlayerInventory", "k", "inspect entity inventory");
-        public static final ConfigHotkey INSPECT_VILLAGER_TRADES = new ConfigHotkey("inspectVillagerTrades", "", "Inspect villager trades");
+        public static final ConfigHotkey INSPECT_CONTAINER = new ConfigHotkey("inspectContainers", "LEFT_SHIFT", "Allows you to inspect containers while they are placed.");
+        public static final ConfigHotkey INSPECT_FURNACE = new ConfigHotkey("inspectFurnace", "LEFT_SHIFT", "Allows you to inspect furnaces while they are placed");
+        public static final ConfigHotkey INSPECT_BEEHIVE = new ConfigHotkey("inspectBeehive", "LEFT_SHIFT" , "Allows you to inspect beehives while they are placed");
+        public static final ConfigHotkey INSPECT_PLAYER_INVENTORY = new ConfigHotkey("inspectPlayerInventory", "LEFT_SHIFT", "Inspect player entity inventory");
+        public static final ConfigHotkey INSPECT_VILLAGER_TRADES = new ConfigHotkey("inspectVillagerTrades", "LEFT_SHIFT", "Inspect villager trades");
         public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
 
         public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
@@ -84,7 +84,7 @@ public class Configs implements IConfigHandler {
         {
             JsonObject root = new JsonObject();
 
-            ConfigUtils.writeConfigBase(root, "Generic", Configs.Generic.OPTIONS);
+            ConfigUtils.writeConfigBase(root, "Generic", Generic.CONFIG_HOTKEYS);
 
             JsonUtils.writeJsonToFile(root, new File(dir, CONFIG_FILE_NAME));
         }

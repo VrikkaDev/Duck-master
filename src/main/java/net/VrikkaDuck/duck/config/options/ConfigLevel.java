@@ -48,6 +48,14 @@ public class ConfigLevel extends ConfigBase<ConfigLevel> implements IConfigLevel
         }
     }
 
+    /*public void setBooleanValue(boolean value, boolean internal){
+        if (internal){
+            this.value = value;
+        }else{
+            setBooleanValue(value);
+        }
+    }*/
+
     @Override
     public void setPermissionLevel(int level) {
         int oldValue = this.levelValue;
@@ -58,6 +66,14 @@ public class ConfigLevel extends ConfigBase<ConfigLevel> implements IConfigLevel
             this.onValueChanged();
         }
     }
+
+    /*public void setPermissionLevel(int level, boolean internal){
+        if(internal){
+            this.levelValue = level;
+        }else{
+            setPermissionLevel(level);
+        }
+    }*/
 
     @Override
     public int getPermissionLevel() {

@@ -124,14 +124,6 @@ public class ConfigGui extends GuiConfigsBase {
         {
             return 120;
         }
-        /*else if (tab == ConfigGuiTab.FIXES)
-        {
-            return 60;
-        }
-        else if (tab == ConfigGuiTab.LISTS)
-        {
-            return 200;
-        }*/
 
         return 260;
     }
@@ -139,9 +131,7 @@ public class ConfigGui extends GuiConfigsBase {
     @Override
     protected boolean useKeybindSearch()
     {
-        return false;/*GuiConfigs.tab == ConfigGuiTab.TWEAKS ||
-                GuiConfigs.tab == ConfigGuiTab.GENERIC_HOTKEYS ||
-                GuiConfigs.tab == ConfigGuiTab.DISABLES;*/
+        return false;
     }
 
     @Override
