@@ -74,7 +74,11 @@ public class ConfigGui extends GuiConfigsBase {
                     for(IConfigBase ob : Configs.Admin.OPTIONS){
                         if(ob.getName().equals(w.getEntry().getConfig().getName())){
                             if(ob instanceof ConfigLevel) {
-                                isOn = GameWorld.hasPermissionLevel(((ConfigLevel) ob).getPermissionLevel(), mc) ? ((ConfigLevel) ob).getBooleanValue() : false;
+                                if(MinecraftClient.getInstance().world == null){
+                                    isOn = true;
+                                }else{
+                                    isOn = GameWorld.hasPermissionLevel(((ConfigLevel) ob).getPermissionLevel(), mc) && ((ConfigLevel) ob).getBooleanValue();
+                                }
                             }
                             break;
                         }
@@ -103,6 +107,9 @@ public class ConfigGui extends GuiConfigsBase {
     private int createButton(int x, int y, int width, ConfigGuiTab tab)
     {
         if(tab.equals(ConfigGuiTab.ADMIN)){
+            if(MinecraftClient.getInstance().player == null){
+                return 0;
+            }
             if(!MinecraftClient.getInstance().player.hasPermissionLevel(Variables.PERMISSIONLEVEL)){
                 return 0;
             }

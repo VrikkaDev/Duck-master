@@ -2,6 +2,7 @@ package net.VrikkaDuck.duck.config.options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.options.ConfigBase;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.IConfigLevel;
@@ -48,14 +49,6 @@ public class ConfigLevel extends ConfigBase<ConfigLevel> implements IConfigLevel
         }
     }
 
-    /*public void setBooleanValue(boolean value, boolean internal){
-        if (internal){
-            this.value = value;
-        }else{
-            setBooleanValue(value);
-        }
-    }*/
-
     @Override
     public void setPermissionLevel(int level) {
         int oldValue = this.levelValue;
@@ -66,14 +59,6 @@ public class ConfigLevel extends ConfigBase<ConfigLevel> implements IConfigLevel
             this.onValueChanged();
         }
     }
-
-    /*public void setPermissionLevel(int level, boolean internal){
-        if(internal){
-            this.levelValue = level;
-        }else{
-            setPermissionLevel(level);
-        }
-    }*/
 
     @Override
     public int getPermissionLevel() {
@@ -92,7 +77,7 @@ public class ConfigLevel extends ConfigBase<ConfigLevel> implements IConfigLevel
             if (element.isJsonPrimitive())
             {
                 String[] values = element.getAsString().split(",");
-                this.value = values[0].isEmpty() ? false : Boolean.parseBoolean(values[0]);
+                this.value = !values[0].isEmpty() && Boolean.parseBoolean(values[0]);
                 this.levelValue = values[1].isEmpty() ? PermissionLevel.OP : Integer.valueOf(values[1]);
             }
             else

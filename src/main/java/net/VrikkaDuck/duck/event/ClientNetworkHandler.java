@@ -12,7 +12,7 @@ public class ClientNetworkHandler {
         try {
             MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CustomPayloadC2SPacket(Variables.GENERICID,
                     new PacketByteBuf(Unpooled.buffer())
-                            .writeString(":)")));
+                            .writeString(Variables.MODVERSION)));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -21,7 +21,7 @@ public class ClientNetworkHandler {
         try {
         MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CustomPayloadC2SPacket(Variables.ADMINID,
                 new PacketByteBuf(Unpooled.buffer())
-                        .writeString(":)")));
+                        .writeString(Variables.MODVERSION)));
         } catch (Exception e) {
             e.printStackTrace();
         }
