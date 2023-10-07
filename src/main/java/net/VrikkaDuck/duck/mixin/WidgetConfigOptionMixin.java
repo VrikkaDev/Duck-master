@@ -56,8 +56,4 @@ public abstract class WidgetConfigOptionMixin extends WidgetConfigOptionBase<Gui
             }
         }
     }
-
-    @Override
-    public void applyNewValueToConfig() {
-    }
 }
