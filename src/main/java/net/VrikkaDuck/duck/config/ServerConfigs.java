@@ -3,6 +3,7 @@ package net.VrikkaDuck.duck.config;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import net.VrikkaDuck.duck.Variables;
+import net.VrikkaDuck.duck.config.options.ServerDouble;
 import net.VrikkaDuck.duck.config.options.ServerLevel;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.VrikkaDuck.duck.util.PermissionLevel;
@@ -14,67 +15,56 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
-public class ServerConfigs{
+public class ServerConfigs {
 
     private static final String CONFIG_FILE_NAME = Variables.MODID + "-server" + ".json";
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static class Generic {
-        public static final ServerLevel INSPECT_CONTAINER = new ServerLevel("inspectContainers", false, PermissionLevel.NORMAL);
-        public static final ServerLevel INSPECT_FURNACE = new ServerLevel("inspectFurnace", false, PermissionLevel.NORMAL);
-        public static final ServerLevel INSPECT_BEEHIVE = new ServerLevel("inspectBeehive", false, PermissionLevel.NORMAL);
-        public static final ServerLevel INSPECT_PLAYER_INVENTORY = new ServerLevel("inspectPlayerInventory", false, PermissionLevel.NORMAL);
-        public static final ServerLevel INSPECT_VILLAGER_TRADES = new ServerLevel("inspectVillagerTrades", false, PermissionLevel.NORMAL);
+        public static final IServerLevel INSPECT_CONTAINER = new ServerLevel("inspectContainers", false, PermissionLevel.NORMAL);
+        public static final IServerLevel INSPECT_FURNACE = new ServerLevel("inspectFurnace", false, PermissionLevel.NORMAL);
+        public static final IServerLevel INSPECT_BEEHIVE = new ServerLevel("inspectBeehive", false, PermissionLevel.NORMAL);
+        public static final IServerLevel INSPECT_PLAYER_INVENTORY = new ServerLevel("inspectPlayerInventory", false, PermissionLevel.NORMAL);
+        public static final IServerLevel INSPECT_VILLAGER_TRADES = new ServerLevel("inspectVillagerTrades", false, PermissionLevel.NORMAL);
 
-        public static ImmutableList<ServerLevel> OPTIONS = ImmutableList.of(
+        public static final IServerLevel INSPECT_DISTANCE = new ServerDouble("inspectDistance", 5);
+
+        public static ImmutableList<IServerLevel> OPTIONS = ImmutableList.of(
                 INSPECT_CONTAINER,
                 INSPECT_FURNACE,
                 INSPECT_BEEHIVE,
                 INSPECT_PLAYER_INVENTORY,
                 INSPECT_VILLAGER_TRADES
+                //INSPECT_DISTANCE
         );
     }
 
-    public static void loadFromFile()
-    {
-        if(GameWorld.getServer() == null){
+    public static void loadFromFile() {
+        if (GameWorld.getServer() == null) {
             return;
         }
 
-       /* if(!GameWorld.isSingleplayer()){
-            return;
-          }
-        */
-
         File configFile = new File(GameWorld.getDataFolder(), CONFIG_FILE_NAME);
 
-
-        if (configFile.exists() && configFile.isFile() && configFile.canRead())
-        {
+        if (configFile.exists() && configFile.isFile() && configFile.canRead()) {
             JsonElement element = parseJsonFile(configFile);
 
-            if (element != null && element.isJsonObject())
-            {
+            if (element != null && element.isJsonObject()) {
                 JsonObject root = element.getAsJsonObject();
 
                 readConfigBase(root, "Admin", Generic.OPTIONS);
             }
         }
     }
-    public static void saveToFile()
-    {
-        if(GameWorld.getServer() == null){
+
+    public static void saveToFile() {
+        if (GameWorld.getServer() == null) {
             return;
         }
 
-       /* if(!GameWorld.isSingleplayer()){
-            return;
-        }*/
-
         File dir = GameWorld.getDataFolder();
 
-        if ((dir.exists() && dir.isDirectory()) || dir.mkdirs())
-        {
+        if ((dir.exists() && dir.isDirectory()) || dir.mkdirs()) {
             JsonObject root = new JsonObject();
 
             writeConfigBase(root, "Admin", Generic.OPTIONS);
@@ -82,52 +72,41 @@ public class ServerConfigs{
             writeJsonToFile(root, new File(dir, CONFIG_FILE_NAME));
         }
     }
-    private static void readConfigBase(JsonObject root, String category, List<? extends ServerLevel> options)
-    {
+
+    private static void readConfigBase(JsonObject root, String category, List<? extends IServerLevel> options) {
         JsonObject obj = getNestedObject(root, category, false);
 
-        if (obj != null)
-        {
-            for (ServerLevel option : options)
-            {
+        if (obj != null) {
+            for (IServerLevel option : options) {
                 String name = option.getName();
 
-                if (obj.has(name))
-                {
+                if (obj.has(name)) {
                     option.setValueFromJsonElement(obj.get(name));
                 }
             }
         }
     }
 
-    private static void writeConfigBase(JsonObject root, String category, List<? extends ServerLevel> options)
-    {
+    private static void writeConfigBase(JsonObject root, String category, List<? extends IServerLevel> options) {
         JsonObject obj = getNestedObject(root, category, true);
 
-        for (ServerLevel option : options)
-        {
+        for (IServerLevel option : options) {
             obj.add(option.getName(), option.getAsJsonElement());
         }
     }
 
-    public static File getConfigDirectory()
-    {
+    public static File getConfigDirectory() {
         return new File(MinecraftClient.getInstance().runDirectory, "config");
     }
 
     @Nullable
-    public static JsonElement parseJsonFile(File file)
-    {
-        if (file != null && file.exists() && file.isFile() && file.canRead())
-        {
+    public static JsonElement parseJsonFile(File file) {
+        if (file != null && file.exists() && file.isFile() && file.canRead()) {
             String fileName = file.getAbsolutePath();
 
-            try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
-            {
+            try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
                 return JsonParser.parseReader(reader);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 Variables.LOGGER.error("Failed to parse the JSON file '{}'", fileName, e);
             }
         }
@@ -136,48 +115,37 @@ public class ServerConfigs{
     }
 
     @Nullable
-    public static JsonObject getNestedObject(JsonObject parent, String key, boolean create)
-    {
-        if (parent.has(key) == false || parent.get(key).isJsonObject() == false)
-        {
-            if (create == false)
-            {
+    public static JsonObject getNestedObject(JsonObject parent, String key, boolean create) {
+        if (parent.has(key) == false || parent.get(key).isJsonObject() == false) {
+            if (create == false) {
                 return null;
             }
 
             JsonObject obj = new JsonObject();
             parent.add(key, obj);
             return obj;
-        }
-        else
-        {
+        } else {
             return parent.get(key).getAsJsonObject();
         }
     }
 
-    public static boolean writeJsonToFile(JsonObject root, File file)
-    {
+    public static boolean writeJsonToFile(JsonObject root, File file) {
         File fileTmp = new File(file.getParentFile(), file.getName() + ".tmp");
 
-        if (fileTmp.exists())
-        {
+        if (fileTmp.exists()) {
             fileTmp = new File(file.getParentFile(), UUID.randomUUID() + ".tmp");
         }
 
-        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(fileTmp), StandardCharsets.UTF_8))
-        {
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(fileTmp), StandardCharsets.UTF_8)) {
             writer.write(GSON.toJson(root));
             writer.close();
 
-            if (file.exists() && file.isFile() && file.delete() == false)
-            {
+            if (file.exists() && file.isFile() && file.delete() == false) {
                 Variables.LOGGER.warn("Failed to delete file '{}'", file.getAbsolutePath());
             }
 
             return fileTmp.renameTo(file);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             Variables.LOGGER.warn("Failed to write JSON data to file '{}'", fileTmp.getAbsolutePath(), e);
         }
 

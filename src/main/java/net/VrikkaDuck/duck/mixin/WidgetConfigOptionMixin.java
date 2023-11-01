@@ -12,7 +12,7 @@ import fi.dy.masa.malilib.gui.widgets.WidgetConfigOptionBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetListConfigOptionsBase;
 import net.VrikkaDuck.duck.config.IConfigLevel;
 import net.VrikkaDuck.duck.config.gui.ConfigOptionListenerResetConfigs;
-import net.VrikkaDuck.duck.config.options.ConfigLevel;
+import net.VrikkaDuck.duck.config.options.DuckConfigLevel;
 import net.VrikkaDuck.duck.gui.ConfigGui;
 import net.VrikkaDuck.duck.gui.DuckConfigButtonBoolean;
 import net.VrikkaDuck.duck.gui.DuckConfigButtonLevel;
@@ -42,7 +42,7 @@ public abstract class WidgetConfigOptionMixin extends WidgetConfigOptionBase<Gui
         ConfigType type = config.getType();
         int configHeight = 20;
         if(type == null){
-            if(config instanceof ConfigLevel){
+            if(config instanceof DuckConfigLevel){
                 DuckConfigButtonBoolean optionButton = new DuckConfigButtonBoolean(x, y, configWidth-63, configHeight, (IConfigLevel) config);
                 DuckConfigButtonLevel levelButton = new DuckConfigButtonLevel(x+configWidth/2,y,configWidth/2, configHeight, (IConfigLevel) config);
                 ButtonGeneric resetButton = this.createResetButton(x + configWidth + 2, y, (IConfigResettable) config);

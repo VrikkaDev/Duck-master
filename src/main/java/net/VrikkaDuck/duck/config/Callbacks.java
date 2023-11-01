@@ -6,7 +6,8 @@ import fi.dy.masa.malilib.hotkeys.IHotkeyCallback;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
-import net.VrikkaDuck.duck.config.options.ConfigLevel;
+import net.VrikkaDuck.duck.config.options.DuckConfigDouble;
+import net.VrikkaDuck.duck.config.options.DuckConfigLevel;
 import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.VrikkaDuck.duck.gui.ConfigGui;
@@ -17,23 +18,34 @@ public class Callbacks {
     private static ClientBlockHitHandler blockHitHandler = ClientBlockHitHandler.INSTANCE();
     private static MinecraftClient mc = MinecraftClient.getInstance();
 
-    public static class AdminFeatureCallback implements IValueChangeCallback<ConfigLevel>
+    public static class AdminLevelCallback implements IValueChangeCallback<DuckConfigLevel>
     {
         @Override
-        public void onValueChanged(ConfigLevel config)
+        public void onValueChanged(DuckConfigLevel config)
         {
             ClientNetworkHandler.setAdminBoolean(config.getName(), config.getBooleanValue(), config.getPermissionLevel());
+        }
+    }
+    public static class AdminDoubleCallback implements IValueChangeCallback<DuckConfigDouble>
+    {
+        @Override
+        public void onValueChanged(DuckConfigDouble config)
+        {
+            ClientNetworkHandler.setAdminDouble(config.getName(), config.getDoubleValue());
         }
     }
 
 
     public static void setCallbacks(){
         KeyCallbackHotkeysGeneric callbackGeneric = new KeyCallbackHotkeysGeneric();
-        AdminFeatureCallback adminCallback = new AdminFeatureCallback();
+        AdminLevelCallback adminCallback = new AdminLevelCallback();
+        AdminDoubleCallback adminDoubleCallback = new AdminDoubleCallback();
 
         for(IConfigBase base : Configs.Admin.DEFAULT_OPTIONS){
-           if(base instanceof ConfigLevel){
-               ((ConfigLevel)base).setValueChangeCallback(adminCallback);
+           if(base instanceof DuckConfigLevel){
+               ((DuckConfigLevel)base).setValueChangeCallback(adminCallback);
+           }else if(base instanceof DuckConfigDouble){
+               ((DuckConfigDouble)base).setValueChangeCallback(adminDoubleCallback);
            }
         }
         Hotkeys.OPEN_CONFIG_GUI.getKeybind().setCallback(callbackGeneric);

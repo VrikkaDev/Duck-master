@@ -2,11 +2,13 @@ package net.VrikkaDuck.duck.networking;
 
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.IConfigBase;
+import fi.dy.masa.malilib.config.options.ConfigDouble;
 import fi.dy.masa.malilib.network.ClientPacketChannelHandler;
 import fi.dy.masa.malilib.network.IPluginChannelHandler;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
-import net.VrikkaDuck.duck.config.options.ConfigLevel;
+import net.VrikkaDuck.duck.config.options.DuckConfigDouble;
+import net.VrikkaDuck.duck.config.options.DuckConfigLevel;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -50,9 +52,18 @@ public class ClientPacketReciever implements IPluginChannelHandler {
     private void processAdminNbt(NbtCompound nbt){
         List<IConfigBase> _list = new ArrayList<>();
         for(IConfigBase base : Configs.Admin.DEFAULT_OPTIONS){
+            if(base instanceof DuckConfigDouble sbase){
+                ((DuckConfigDouble)base).setDoubleValueWithoutEvent(nbt.getDouble(base.getName()));
+                _list.add(base);
+
+                if(sbase.getName().equals("inspectDistance")) {
+                    Configs.Actions.INSPECT_DISTANCE = ((DuckConfigDouble) base).getDoubleValue();
+                }
+                continue;
+            }
             if(nbt.getKeys().contains(base.getName())){
-                ((ConfigLevel)base).setBooleanValue(nbt.getBoolean(base.getName()));
-                ((ConfigLevel)base).setPermissionLevel(nbt.getInt(base.getName()+",level"));
+                ((DuckConfigLevel)base).setBooleanValue(nbt.getBoolean(base.getName()));
+                ((DuckConfigLevel)base).setPermissionLevel(nbt.getInt(base.getName()+",level"));
                 _list.add(base);
             }
         }

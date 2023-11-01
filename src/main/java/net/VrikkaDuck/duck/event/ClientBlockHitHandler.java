@@ -27,7 +27,7 @@ public class ClientBlockHitHandler {
 
     public void reload(){
 
-        HitResult blockHit = mc.player.raycast(5, 0.0F, false);
+        HitResult blockHit = mc.cameraEntity.raycast(5, 0.0F, false);
         if(blockHit.getType() == HitResult.Type.BLOCK) {
             BlockPos blockPos = ((BlockHitResult) blockHit).getBlockPos();
             lookingNewBlock(blockPos);

@@ -11,11 +11,10 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.Configs;
-import net.VrikkaDuck.duck.config.options.ConfigLevel;
+import net.VrikkaDuck.duck.config.options.DuckConfigLevel;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.Collections;
 import java.util.List;
@@ -73,11 +72,11 @@ public class ConfigGui extends GuiConfigsBase {
                     isOn = false;
                     for(IConfigBase ob : Configs.Admin.OPTIONS){
                         if(ob.getName().equals(w.getEntry().getConfig().getName())){
-                            if(ob instanceof ConfigLevel) {
+                            if(ob instanceof DuckConfigLevel) {
                                 if(MinecraftClient.getInstance().world == null){
                                     isOn = true;
                                 }else{
-                                    isOn = GameWorld.hasPermissionLevel(((ConfigLevel) ob).getPermissionLevel(), mc) && ((ConfigLevel) ob).getBooleanValue();
+                                    isOn = GameWorld.hasPermissionLevel(((DuckConfigLevel) ob).getPermissionLevel(), mc) && ((DuckConfigLevel) ob).getBooleanValue();
                                 }
                             }
                             break;

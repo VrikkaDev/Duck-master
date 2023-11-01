@@ -33,70 +33,65 @@ public class ClientActionPacketReciever implements IPluginChannelHandler {
         PacketByteBuf buf = PacketByteBufs.slice(buffer);
         PacketTypes type = PacketType.identifierToType(buf.readIdentifier());
 
-        switch (type){
-            case CONTAINER:
+        switch (type) {
+            case CONTAINER -> {
                 NbtCompound tnbt = buf.readNbt();
                 NbtCompound nbt = new NbtCompound();
-                nbt.put ("BlockEntityTag", tnbt);
+                nbt.put("BlockEntityTag", tnbt);
                 ItemStack stc = new ItemStack(Items.WHITE_SHULKER_BOX);
                 stc.setNbt(nbt);
-                if(stc.getNbt() == null || !(stc.getNbt().getCompound("BlockEntityTag").contains("Items")) ||
-                        stc.getNbt().getCompound("BlockEntityTag").getList("Items", 10).isEmpty()){
+                if (stc.getNbt() == null || !(stc.getNbt().getCompound("BlockEntityTag").contains("Items")) ||
+                        stc.getNbt().getCompound("BlockEntityTag").getList("Items", 10).isEmpty()) {
                     NbtCompound n = stc.getNbt();
                     NbtList lst = new NbtList();
-                    NbtCompound a =  new NbtCompound();
+                    NbtCompound a = new NbtCompound();
                     a.put("Count", NbtByte.of((byte) 1));
-                    lst.add(0,a);
-                    NbtCompound b =  new NbtCompound();
+                    lst.add(0, a);
+                    NbtCompound b = new NbtCompound();
                     b.put("Slot", NbtByte.of((byte) 1));
-                    lst.add(1,b);
-                    NbtCompound c =  new NbtCompound();
+                    lst.add(1, b);
+                    NbtCompound c = new NbtCompound();
                     c.put("Count", NbtString.of("minecraft:air"));
-                    lst.add(2,c);
+                    lst.add(2, c);
                     n.getCompound("BlockEntityTag").put("Items", lst);
                     stc.setNbt(n);
                 }
-
                 stc.setNbt(nbt);
                 Configs.Actions.CONTAINER_ITEM_STACK = stc;
                 Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
                 Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = buf.readVarInt();
-
-                break;
-            case FURNACE:
+            }
+            case FURNACE -> {
                 NbtCompound fnbt = buf.readNbt();
                 Configs.Actions.RENDER_FURNACE_TOOLTIP = true;
                 Configs.Actions.FURNACE_NBT = fnbt;
-                break;
-            case BEEHIVE:
+            }
+            case BEEHIVE -> {
                 NbtCompound beenbt = buf.readNbt();
                 Configs.Actions.RENDER_BEEHIVE_PREVIEW = true;
                 Configs.Actions.BEEHIVE_NBT = beenbt;
-                break;
-            case PLAYERINVENTORY:
+            }
+            case PLAYERINVENTORY -> {
                 NbtCompound invnbt = buf.readNbt();
                 NbtList invList = invnbt.getList("Inventory", 10);
                 DefaultedList<ItemStack> itemsasstack = DefaultedList.ofSize(121, new ItemStack(Items.AIR));
-
-                for(NbtElement a : invList){
-                    ItemStack sst = ItemStack.fromNbt((NbtCompound)a);
-                    if(((NbtCompound) a).getByte("Slot") == -106){
+                for (NbtElement a : invList) {
+                    ItemStack sst = ItemStack.fromNbt((NbtCompound) a);
+                    if (((NbtCompound) a).getByte("Slot") == -106) {
                         itemsasstack.set(120, sst);
-                    }else{
+                    } else {
                         itemsasstack.set(((NbtCompound) a).getByte("Slot"), sst);
                     }
                 }
                 Configs.Actions.TARGET_PLAYER_INVENTORY = InventoryUtils.getAsInventory(itemsasstack);
                 Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW = true;
-                break;
-            case VILLAGERTRADES:
+            }
+            case VILLAGERTRADES -> {
                 TradeOfferList veList = TradeOfferList.fromPacket(buf);
                 Configs.Actions.RENDER_VILLAGER_TRADES = true;
                 Configs.Actions.VILLAGER_TRADES = veList;
-                break;
-            default:
-                Variables.LOGGER.error("Could not get viable PacketType");
-                break;
+            }
+            default -> Variables.LOGGER.error("Could not get viable PacketType");
         }
     }
     private void resetAll(){

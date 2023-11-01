@@ -22,7 +22,7 @@ public class ClientTickHandler implements IClientTickHandler {
     }
 
     private void testBlockHit(MinecraftClient mc){
-        this.blockHit = mc.player.raycast(5, 0.0F, false);
+        this.blockHit = mc.cameraEntity.raycast(5, 0.0F, false);
         if(this.blockHit.getType() == HitResult.Type.BLOCK) {
             BlockPos blockPos = ((BlockHitResult) this.blockHit).getBlockPos();
 

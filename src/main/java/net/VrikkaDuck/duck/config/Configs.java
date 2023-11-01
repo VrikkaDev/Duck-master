@@ -6,11 +6,13 @@ import com.google.gson.JsonObject;
 import fi.dy.masa.malilib.config.ConfigUtils;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
+import fi.dy.masa.malilib.config.options.ConfigDouble;
 import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.options.ConfigLevel;
+import net.VrikkaDuck.duck.config.options.DuckConfigDouble;
+import net.VrikkaDuck.duck.config.options.DuckConfigLevel;
 import net.VrikkaDuck.duck.util.PermissionLevel;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -35,14 +37,16 @@ public class Configs implements IConfigHandler {
     }
 
     public static class Admin {
-        public static final ConfigLevel INSPECT_CONTAINER = new ConfigLevel("inspectContainers", false, PermissionLevel.NORMAL ,"Inspect Containers when placed");
-        public static final ConfigLevel INSPECT_FURNACE = new ConfigLevel("inspectFurnace", false, PermissionLevel.NORMAL,"Inspect furnaces when placed");
-        public static final ConfigLevel INSPECT_BEEHIVE = new ConfigLevel("inspectBeehive", false , PermissionLevel.NORMAL,"Inspect beehives when on ground");
-        public static final ConfigLevel INSPECT_PLAYER_INVENTORY = new ConfigLevel("inspectPlayerInventory", false, PermissionLevel.NORMAL,"inspect entity inventory");
-        public static final ConfigLevel INSPECT_VILLAGER_TRADES = new ConfigLevel("inspectVillagerTrades", false, PermissionLevel.NORMAL, "Inspect villager trades");
-        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
+        public static final DuckConfigLevel INSPECT_CONTAINER = new DuckConfigLevel("inspectContainers", false, PermissionLevel.NORMAL ,"Inspect Containers when placed");
+        public static final DuckConfigLevel INSPECT_FURNACE = new DuckConfigLevel("inspectFurnace", false, PermissionLevel.NORMAL,"Inspect furnaces when placed");
+        public static final DuckConfigLevel INSPECT_BEEHIVE = new DuckConfigLevel("inspectBeehive", false , PermissionLevel.NORMAL,"Inspect beehives when on ground");
+        public static final DuckConfigLevel INSPECT_PLAYER_INVENTORY = new DuckConfigLevel("inspectPlayerInventory", false, PermissionLevel.NORMAL,"inspect entity inventory");
+        public static final DuckConfigLevel INSPECT_VILLAGER_TRADES = new DuckConfigLevel("inspectVillagerTrades", false, PermissionLevel.NORMAL, "Inspect villager trades");
+        public static final DuckConfigDouble INSPECT_DISTANCE = new DuckConfigDouble("inspectDistance", 5, "The distance how far away the \n player can be from container to inspect it.\n 0 = unlimited");
 
-        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);//, INSPECT_DISTANCE);
+
+        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);//, INSPECT_DISTANCE);
     }
 
     public static class Actions{
@@ -52,6 +56,7 @@ public class Configs implements IConfigHandler {
         public static boolean RENDER_PLAYER_INVENTORY_PREVIEW = false;
         public static boolean RENDER_VILLAGER_TRADES = false;
         public static int RENDER_DOUBLE_CHEST_TOOLTIP = 0;
+        public static double INSPECT_DISTANCE = 5;
         public static NbtCompound FURNACE_NBT;
         public static NbtCompound BEEHIVE_NBT;
         public static TradeOfferList VILLAGER_TRADES;

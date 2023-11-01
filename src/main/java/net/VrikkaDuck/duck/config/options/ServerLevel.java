@@ -2,10 +2,13 @@ package net.VrikkaDuck.duck.config.options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import fi.dy.masa.malilib.config.ConfigType;
 import net.VrikkaDuck.duck.Variables;
+import net.VrikkaDuck.duck.config.IServerLevel;
 import net.VrikkaDuck.duck.util.PermissionLevel;
+import org.jetbrains.annotations.Nullable;
 
-public class ServerLevel {
+public class ServerLevel implements IServerLevel {
     private final boolean defaultValue;
     private boolean value;
     private final int levelDefaultValue;
@@ -24,9 +27,12 @@ public class ServerLevel {
         this.levelValue = levelValue;
     }
 
+
+    @Override
     public String getName(){
         return this.name;
     }
+
 
     public boolean getBooleanValue() {
         return this.value;
@@ -37,29 +43,18 @@ public class ServerLevel {
     }
 
     public void setBooleanValue(boolean value) {
-        //boolean oldValue = this.value;
         this.value = value;
-
-        /*if (oldValue != this.value)
-        {
-            this.onValueChanged();
-        }*/
     }
 
     public void setPermissionLevel(int level) {
-       // int oldValue = this.levelValue;
         this.levelValue = level;
-
-        /*if (oldValue != this.levelValue)
-        {
-            this.onValueChanged();
-        }*/
     }
 
     public int getPermissionLevel() {
         return this.levelValue;
     }
 
+    @Override
     public int getDefaultPermissionLevel() {
         return this.levelDefaultValue;
     }

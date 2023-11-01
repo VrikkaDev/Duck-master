@@ -42,6 +42,21 @@ public class ClientNetworkHandler {
             e.printStackTrace();
         }
     }
+    public static void setAdminDouble(String optionName, double value){
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        NbtCompound nbt = new NbtCompound();
+        nbt.putDouble(optionName, value);
+        buf.writeNbt(nbt);
+        buf.writeString(optionName);
+
+
+        try {
+            MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CustomPayloadC2SPacket(Variables.ADMINSETID,
+                    buf));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     public static void sendAction(PacketByteBuf buf){
         try {
             MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CustomPayloadC2SPacket(Variables.ACTIONID,
