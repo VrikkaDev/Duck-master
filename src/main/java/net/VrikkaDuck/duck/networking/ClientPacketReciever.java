@@ -24,7 +24,7 @@ public class ClientPacketReciever implements IPluginChannelHandler {
     }
     @Override
     public List<Identifier> getChannels() {
-        return List.of(Variables.ADMINID, Variables.ADMINSETID, Variables.GENERICID);
+        return List.of(Variables.ADMINID, Variables.ADMINSETID, Variables.GENERICID, Variables.ERRORID);
     }
 
     @Override
@@ -36,6 +36,8 @@ public class ClientPacketReciever implements IPluginChannelHandler {
             this.processAdminNbt(buf.readNbt());
         }else if(id == 2){//ADMINSETID
             ClientNetworkHandler.refreshAdmin();
+        }else if(id == 3){//ERROR_MESSAGE
+            Variables.LOGGER.error(buf.readString());
         }
     }
     private void processNbt(NbtCompound nbt){

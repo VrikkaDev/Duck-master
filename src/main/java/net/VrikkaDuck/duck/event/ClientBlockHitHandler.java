@@ -63,17 +63,20 @@ public class ClientBlockHitHandler {
                 return;
             }
 
+            Configs.Actions.LOOKING_AT = blockPos;
+
             Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
             Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = ct.Value;
-            Configs.Actions.CONTAINER_ITEM_STACK = ItemStack.EMPTY;
+            //Configs.Actions.CONTAINER_ITEM_STACK = ItemStack.EMPTY;
 
-            PacketByteBuf buf = PacketByteBufs.create();
+            /*PacketByteBuf buf = PacketByteBufs.create();
 
             buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
 
             buf.writeBlockPos(blockPos);
 
-            ClientNetworkHandler.sendAction(buf);
+            ClientNetworkHandler.sendAction(buf);*/
+
         }else if(blockEntity.getType().equals(BlockEntityType.FURNACE) ||
                 blockEntity.getType().equals(BlockEntityType.BLAST_FURNACE) ||
                 blockEntity.getType().equals(BlockEntityType.SMOKER)) {

@@ -11,6 +11,7 @@ import net.minecraft.nbt.*;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.TradeOfferList;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class ClientActionPacketReciever implements IPluginChannelHandler {
 
         switch (type) {
             case CONTAINER -> {
+
                 NbtCompound tnbt = buf.readNbt();
                 NbtCompound nbt = new NbtCompound();
                 nbt.put("BlockEntityTag", tnbt);
@@ -57,19 +59,18 @@ public class ClientActionPacketReciever implements IPluginChannelHandler {
                     stc.setNbt(n);
                 }
                 stc.setNbt(nbt);
-                Configs.Actions.CONTAINER_ITEM_STACK = stc;
-                Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
                 Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = buf.readVarInt();
+                BlockPos bpos = buf.readBlockPos();
+                Configs.Actions.WORLD_CONTAINERS.put(bpos, stc);
+                Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
             }
             case FURNACE -> {
-                NbtCompound fnbt = buf.readNbt();
+                Configs.Actions.FURNACE_NBT = buf.readNbt();
                 Configs.Actions.RENDER_FURNACE_TOOLTIP = true;
-                Configs.Actions.FURNACE_NBT = fnbt;
             }
             case BEEHIVE -> {
-                NbtCompound beenbt = buf.readNbt();
+                Configs.Actions.BEEHIVE_NBT = buf.readNbt();
                 Configs.Actions.RENDER_BEEHIVE_PREVIEW = true;
-                Configs.Actions.BEEHIVE_NBT = beenbt;
             }
             case PLAYERINVENTORY -> {
                 NbtCompound invnbt = buf.readNbt();

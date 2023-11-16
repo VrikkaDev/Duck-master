@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.mixin;
+package net.VrikkaDuck.duck.mixin.client;
 
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import net.VrikkaDuck.duck.gui.ConfigGui;

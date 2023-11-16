@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.mixin;
+package net.VrikkaDuck.duck.mixin.client;
 
 import net.VrikkaDuck.duck.config.ServerConfigs;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;

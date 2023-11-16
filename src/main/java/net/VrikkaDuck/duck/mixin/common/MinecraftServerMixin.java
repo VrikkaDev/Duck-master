@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.mixin;
+package net.VrikkaDuck.duck.mixin.common;
 
 import net.VrikkaDuck.duck.config.ServerConfigs;
 import net.VrikkaDuck.duck.util.GameWorld;

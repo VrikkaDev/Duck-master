@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.mixin;
+package net.VrikkaDuck.duck.mixin.client;
 
 import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import fi.dy.masa.malilib.render.RenderUtils;
@@ -8,6 +8,7 @@ import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.util.GuiRenderUtils;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,17 +24,20 @@ public class InGameHudMixin {
                 || Configs.Actions.RENDER_BEEHIVE_PREVIEW || Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW
                 || Configs.Actions.RENDER_VILLAGER_TRADES) {
 
-            if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.DOUBLE_CHEST, context)) {
-                GuiRenderUtils.renderDoubleChestPreview(Configs.Actions.CONTAINER_ITEM_STACK,
-                        GuiUtils.getScaledWindowWidth() / 2 - 96, GuiUtils.getScaledWindowHeight() / 2 + 60, true, context);
-            } else if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.HOPPER, context)) {
-                GuiRenderUtils.renderHopperPreview(Configs.Actions.CONTAINER_ITEM_STACK,
-                        GuiUtils.getScaledWindowWidth() / 2 - (52 + 8), GuiUtils.getScaledWindowHeight() / 2 + (16 + 16), true, context);
-            } else if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.DISPENSER, context)) {
-                GuiRenderUtils.renderDispenserPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - 34, GuiUtils.getScaledWindowHeight() / 2 - 43, context);
-            } else if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.CHEST, context)) {
-                RenderUtils.renderShulkerBoxPreview(Configs.Actions.CONTAINER_ITEM_STACK, GuiUtils.getScaledWindowWidth() / 2 - 96,
-                        GuiUtils.getScaledWindowHeight() / 2 + 30, true, context);
+            ItemStack cis = Configs.Actions.WORLD_CONTAINERS.get(Configs.Actions.LOOKING_AT);
+            if(cis != null && !cis.isEmpty()) {
+                if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.DOUBLE_CHEST, context)) {
+                    GuiRenderUtils.renderDoubleChestPreview(cis,
+                            GuiUtils.getScaledWindowWidth() / 2 - 96, GuiUtils.getScaledWindowHeight() / 2 + 60, true, context);
+                } else if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.HOPPER, context)) {
+                    GuiRenderUtils.renderHopperPreview(cis,
+                            GuiUtils.getScaledWindowWidth() / 2 - (52 + 8), GuiUtils.getScaledWindowHeight() / 2 + (16 + 16), true, context);
+                } else if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.DISPENSER, context)) {
+                    GuiRenderUtils.renderDispenserPreview(cis, GuiUtils.getScaledWindowWidth() / 2 - 34, GuiUtils.getScaledWindowHeight() / 2 - 43, context);
+                } else if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.CHEST, context)) {
+                    RenderUtils.renderShulkerBoxPreview(cis, GuiUtils.getScaledWindowWidth() / 2 - 96,
+                            GuiUtils.getScaledWindowHeight() / 2 + 30, true, context);
+                }
             }
 
             if (handleRenderCondition(Configs.Actions.RENDER_FURNACE_TOOLTIP, Configs.Generic.INSPECT_FURNACE, null, context)) {

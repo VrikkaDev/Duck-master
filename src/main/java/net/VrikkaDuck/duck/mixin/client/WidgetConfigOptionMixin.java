@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.mixin;
+package net.VrikkaDuck.duck.mixin.client;
 
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigBase;

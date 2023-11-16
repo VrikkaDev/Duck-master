@@ -2,6 +2,7 @@ package net.VrikkaDuck.duck.event;
 
 import io.netty.buffer.Unpooled;
 import net.VrikkaDuck.duck.Variables;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -63,6 +64,17 @@ public class ClientNetworkHandler {
                     buf));
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void sendError(String errormessage) {
+        PacketByteBuf buf = PacketByteBufs.create();
+        NbtCompound nbt = new NbtCompound();
+        buf.writeString(errormessage);
+        try {
+            MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CustomPayloadC2SPacket(Variables.ERRORID,
+                    buf));
+        } catch (Exception ignored) {
         }
     }
 }

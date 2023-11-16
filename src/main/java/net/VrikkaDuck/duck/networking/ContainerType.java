@@ -7,6 +7,7 @@ import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 
 public enum ContainerType {
+    NONE(-1),
     CHEST(0),
     DOUBLE_CHEST(1),
     HOPPER(2),
@@ -19,6 +20,10 @@ public enum ContainerType {
     }
 
     public static ContainerType fromBlockEntity(BlockEntity blockEntity){
+
+        if(blockEntity == null){
+            return ContainerType.NONE;
+        }
 
         BlockEntityType<?> type = blockEntity.getType();
 
@@ -42,6 +47,6 @@ public enum ContainerType {
             return ContainerType.SHULKER;
         }
 
-        return null;
+        return ContainerType.NONE;
     }
 }

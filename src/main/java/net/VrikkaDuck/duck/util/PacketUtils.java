@@ -1,12 +1,8 @@
-package net.VrikkaDuck.duck.mixin;
+package net.VrikkaDuck.duck.util;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import fi.dy.masa.malilib.config.IConfigValue;
 import io.netty.buffer.Unpooled;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.IServerLevel;
 import net.VrikkaDuck.duck.config.ServerConfigs;
@@ -15,6 +11,7 @@ import net.VrikkaDuck.duck.config.options.ServerLevel;
 import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.networking.PacketType;
 import net.VrikkaDuck.duck.networking.PacketTypes;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.*;
@@ -24,142 +21,30 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import org.apache.commons.lang3.StringUtils;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
-@Mixin(ServerPlayNetworkHandler.class)
-public abstract class ServerConnectionHandler {
-    @Shadow private ServerPlayerEntity player;
-    @Shadow @Final private MinecraftServer server;
+import java.util.stream.Stream;
 
-    private Object2IntOpenHashMap<Identifier> recipesUsed = new Object2IntOpenHashMap<>();
-    private float currentFurnaceXp = 0.0f;
+public class PacketUtils {
 
-    @Inject(at = @At("RETURN"), method = "onCustomPayload")
-    private void onCustomPayload(CustomPayloadC2SPacket pak, CallbackInfo cb) {
-        CustomPayloadC2SPacket packet = new CustomPayloadC2SPacket(pak.getChannel(), new PacketByteBuf(pak.getData().copy()));
+    private static Object2IntOpenHashMap<Identifier> recipesUsed = new Object2IntOpenHashMap<>();
+    private static float currentFurnaceXp = 0.0f;
 
-        NetworkThreadUtils.forceMainThread(packet, ((ServerPlayNetworkHandler) (Object) this),
-                ((ServerPlayNetworkHandler) (Object) this).player.getServerWorld());
-
-        if (handleCustomPayload(packet)) {
-            sendServerConfigsToPlayer(player);
-        }
-    }
-
-    @Unique
-    private boolean handleCustomPayload(CustomPayloadC2SPacket packet) {
-        Identifier channel = packet.getChannel();
-
-        if (channel.equals(Variables.GENERICID) || channel.equals(Variables.ADMINID)) {
-            PacketByteBuf buf = new PacketByteBuf(new PacketByteBuf(Unpooled.buffer()));
-            buf.writeVarInt(channel.equals(Variables.GENERICID) ? 0 : 1);
-            NbtCompound nbt = new NbtCompound();
-
-            for (IServerLevel base : ServerConfigs.Generic.OPTIONS) {
-                if (base instanceof ServerLevel) {
-                    ServerLevel sbase = (ServerLevel) base;
-                    nbt.putBoolean(sbase.getName(), sbase.getBooleanValue());
-                    nbt.putInt(sbase.getName() + ",level", sbase.getPermissionLevel());
-                }else if(base instanceof ServerDouble){
-                    ServerDouble sbase = (ServerDouble) base;
-                    nbt.putDouble(sbase.getName(), sbase.getDoubleValue());
-                }
-            }
-
-            buf.writeNbt(nbt);
-            send(player.networkHandler, channel, buf);
-            return true;
-        } else if (channel.equals(Variables.ADMINSETID)) {
-            PacketByteBuf buf = new PacketByteBuf(new PacketByteBuf(Unpooled.buffer()));
-            buf.writeVarInt(2);
-            NbtCompound compound = packet.getData().readNbt();
-
-            if (!compound.isEmpty()) {
-                String name = packet.getData().readString();
-
-                if (player.hasPermissionLevel(Variables.PERMISSIONLEVEL)) {
-                    List<IServerLevel> _list = new ArrayList<>();
-                    for (IServerLevel base : ServerConfigs.Generic.OPTIONS) {
-                        /*System.out.println(
-                                base.getName() + " ServerLevel:" + String.valueOf(base instanceof ServerLevel)
-                                + " ServerDouble:" + String.valueOf(base instanceof ServerDouble));*/
-                        if (base instanceof ServerLevel sbase) {
-
-                            if(base.getName().equals(name)){
-                                boolean value = compound.getBoolean(name);
-                                int pvalue = compound.getInt("level");
-
-                                sbase.setBooleanValue(value);
-                                sbase.setPermissionLevel(pvalue);
-                                _list.add(sbase);
-                                continue;
-                            }
-
-                            _list.add(sbase);
-                        }else if(base instanceof ServerDouble sbase){
-
-                            if(base.getName().equals(name)){
-                                double value = compound.getDouble(name);
-                                sbase.setDoubleValue(value);
-                                _list.add(sbase);
-                                continue;
-                            }
-                            _list.add(sbase);
-                        }
-                    }
-                    ServerConfigs.Generic.OPTIONS = ImmutableList.copyOf(_list);
-                    ServerConfigs.saveToFile();
-                    sendServerConfigsToAllPlayers();
-                }
-            }
-            return true;
-        } else if (channel.equals(Variables.ACTIONID)) {
-            PacketTypes type = PacketType.identifierToType(packet.getData().readIdentifier());
-
-            if (type != null && packet.getData().isReadable()) {
-                switch (type) {
-                    case CONTAINER -> handleContainerInspection(packet);
-                    case FURNACE -> handleFurnaceInspection(packet);
-                    case BEEHIVE -> handleBeehiveInspection(packet);
-                    case PLAYERINVENTORY -> handlePlayerInventoryInspection(packet);
-                    case VILLAGERTRADES -> handleVillagerTradesInspection(packet);
-                    default -> Variables.LOGGER.error("Could not get a valid PacketType");
-                }
-            } else {
-                Variables.LOGGER.error("Packet data is not readable");
-            }
-            return true;
-        }
-        return false;
-    }
-
-    @Unique
-    private void sendServerConfigsToPlayer(ServerPlayerEntity player) {
+    public static void sendServerConfigsToPlayer(ServerPlayerEntity player) {
         // Send server configs to a single player
         PacketByteBuf buf = new PacketByteBuf(new PacketByteBuf(Unpooled.buffer()));
         buf.writeVarInt(0); // GENERICID
@@ -177,17 +62,13 @@ public abstract class ServerConnectionHandler {
         send(player.networkHandler, Variables.GENERICID, buf);
     }
 
-    @Unique
-    private void sendServerConfigsToAllPlayers() {
+    public static void sendServerConfigsToAllPlayers() {
         // Send server configs to all online players
-        PacketByteBuf buf = new PacketByteBuf(new PacketByteBuf(Unpooled.buffer()));
+        PacketByteBuf buf = PacketByteBufs.create();
         buf.writeVarInt(1); // ADMINID
 
         NbtCompound nbt = new NbtCompound();
         for (IServerLevel base : ServerConfigs.Generic.OPTIONS) {
-            /*System.out.println(
-                    base.getName() + " ServerLevel:" + String.valueOf(base instanceof ServerLevel)
-                            + " ServerDouble:" + String.valueOf(base instanceof ServerDouble));*/
             if (base instanceof ServerLevel sbase) {
                 nbt.putBoolean(sbase.getName(), sbase.getBooleanValue());
                 nbt.putInt(sbase.getName() + ",level", sbase.getPermissionLevel());
@@ -197,20 +78,18 @@ public abstract class ServerConnectionHandler {
         }
         buf.writeNbt(nbt);
 
-        List<ServerPlayerEntity> players = server.getPlayerManager().getPlayerList();
+        List<ServerPlayerEntity> players = GameWorld.getServer().getPlayerManager().getPlayerList();
         for (ServerPlayerEntity player : players) {
             send(player.networkHandler, Variables.ADMINID, buf);
         }
     }
 
-    @Unique
-    private void send(PacketByteBuf packet, Identifier channel, PacketByteBuf buf) {
+    public static void send(PacketByteBuf packet, Identifier channel, PacketByteBuf buf, ServerPlayerEntity player) {
         buf.writeBytes(packet, packet.writerIndex());
         sendSplitPackets(channel, buf, 1048576 - 5, buf1 -> player.networkHandler.sendPacket(new CustomPayloadS2CPacket(channel, buf1)));
     }
 
-    @Unique
-    private void sendSplitPackets(Identifier channel, PacketByteBuf packet, int payloadLimit, Consumer<PacketByteBuf> sender) {
+    public static void sendSplitPackets(Identifier channel, PacketByteBuf packet, int payloadLimit, Consumer<PacketByteBuf> sender) {
         int len = packet.writerIndex();
         try {
             packet.resetReaderIndex();
@@ -228,9 +107,28 @@ public abstract class ServerConnectionHandler {
         }
         packet.release();
     }
+    public static void handleContainersInspection(CustomPayloadC2SPacket packet, ServerPlayerEntity player) {
+        BlockPos ppos = player.getBlockPos();
 
-    @Unique
-    private void handleContainerInspection(CustomPayloadC2SPacket packet) {
+        Box box = new Box(ppos).expand(6);
+        Stream<BlockEntity> blockEntities = BlockPos.stream(box).map(player.getWorld()::getBlockEntity);
+        // todo make parallel?
+        blockEntities.forEach(blockEntity -> {
+
+            if(blockEntity == null){
+                return;
+            }
+
+            if(ContainerType.fromBlockEntity(blockEntity).Value != -1){
+
+                PacketByteBuf buf = PacketByteBufs.create();
+                buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
+                buf.writeBlockPos(blockEntity.getPos());
+                handleContainerInspection(new CustomPayloadC2SPacket(buf), player);
+            }
+        });
+    }
+    public static void handleContainerInspection(CustomPayloadC2SPacket packet, ServerPlayerEntity player) {
         if (!ServerConfigs.Generic.INSPECT_CONTAINER.getBooleanValue() || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_CONTAINER.getPermissionLevel())) {
             return;
         }
@@ -283,11 +181,11 @@ public abstract class ServerConnectionHandler {
             buf.writeVarInt(ContainerType.SHULKER.Value);
         }
 
+        buf.writeBlockPos(blockEntity.getPos());
+
         send(player.networkHandler, Variables.ACTIONID, buf);
     }
-
-    @Unique
-    private void handleFurnaceInspection(CustomPayloadC2SPacket packet) {
+    public static void handleFurnaceInspection(CustomPayloadC2SPacket packet, ServerPlayerEntity player) {
         if (!ServerConfigs.Generic.INSPECT_FURNACE.getBooleanValue() || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_FURNACE.getPermissionLevel())) {
             return;
         }
@@ -334,8 +232,7 @@ public abstract class ServerConnectionHandler {
         send(player.networkHandler, Variables.ACTIONID, fbuf);
     }
 
-    @Unique
-    private void handleBeehiveInspection(CustomPayloadC2SPacket packet) {
+    public static void handleBeehiveInspection(CustomPayloadC2SPacket packet, ServerPlayerEntity player) {
         if (!ServerConfigs.Generic.INSPECT_BEEHIVE.getBooleanValue() || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_BEEHIVE.getPermissionLevel())) {
             return;
         }
@@ -361,13 +258,12 @@ public abstract class ServerConnectionHandler {
 
         send(player.networkHandler, Variables.ACTIONID, beebuf);
     }
-    @Unique
-    private void handlePlayerInventoryInspection(CustomPayloadC2SPacket packet) {
+    public static void handlePlayerInventoryInspection(CustomPayloadC2SPacket packet, ServerPlayerEntity player) {
         if (!ServerConfigs.Generic.INSPECT_PLAYER_INVENTORY.getBooleanValue() || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_PLAYER_INVENTORY.getPermissionLevel())) {
             return;
         }
 
-        PlayerEntity splayer = getPlayer().getWorld().getPlayerByUuid(packet.getData().readUuid());
+        PlayerEntity splayer = player.getWorld().getPlayerByUuid(packet.getData().readUuid());
 
         if (splayer == null) {
             Variables.LOGGER.warn("Couldn't find the targeted player");
@@ -391,8 +287,7 @@ public abstract class ServerConnectionHandler {
         send(player.networkHandler, Variables.ACTIONID, invBuf);
     }
 
-    @Unique
-    private void handleVillagerTradesInspection(CustomPayloadC2SPacket packet) {
+    public static void handleVillagerTradesInspection(CustomPayloadC2SPacket packet, ServerPlayerEntity player) {
         if (!ServerConfigs.Generic.INSPECT_VILLAGER_TRADES.getBooleanValue() || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_VILLAGER_TRADES.getPermissionLevel())) {
             return;
         }
@@ -413,8 +308,7 @@ public abstract class ServerConnectionHandler {
         send(player.networkHandler, Variables.ACTIONID, veBuf);
     }
 
-    @Unique
-    private NbtCompound getDoubleChestNbt(NbtCompound first, NbtCompound second) {
+    public static NbtCompound getDoubleChestNbt(NbtCompound first, NbtCompound second) {
         NbtCompound a = new NbtCompound();
         NbtList list = first.getList("Items", 10);
         NbtList sList = second.getList("Items", 10);
@@ -427,12 +321,11 @@ public abstract class ServerConnectionHandler {
         return a;
     }
 
-    @Unique
-    public void send(ServerPlayNetworkHandler networkHandler, Identifier channel, PacketByteBuf packet) {
+    public static void send(ServerPlayNetworkHandler networkHandler, Identifier channel, PacketByteBuf packet) {
+        packet.writeString(Variables.MODVERSION);
         send(packet, 1048576 - 5, buf -> networkHandler.sendPacket(new CustomPayloadS2CPacket(channel, buf)));
     }
-    @Unique
-    private void send(PacketByteBuf packet, int payloadLimit, Consumer<PacketByteBuf> sender)
+    public static void send(PacketByteBuf packet, int payloadLimit, Consumer<PacketByteBuf> sender)
     {
         int len = packet.writerIndex();
 
@@ -459,9 +352,5 @@ public abstract class ServerConnectionHandler {
         }
 
         packet.release();
-    }
-
-    public ServerPlayerEntity getPlayer() {
-        return player;
     }
 }

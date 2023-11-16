@@ -4,14 +4,15 @@
   "package": "net.VrikkaDuck.duck.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "MinecraftServerMixin",
-    "ServerConnectionHandler"
+    "common.LootableContainerBlockEntityMixin",
+    "common.MinecraftServerMixin",
+    "common.ServerConnectionHandler"
   ],
   "client": [
-    "ClientConnectionHandler",
-    "InGameHudMixin",
-    "WidgetListBaseMixin",
-    "WidgetConfigOptionMixin"
+    "client.ClientConnectionHandler",
+    "client.InGameHudMixin",
+    "client.WidgetConfigOptionMixin",
+    "client.WidgetListBaseMixin"
   ],
   "injectors": {
     "defaultRequire": 1

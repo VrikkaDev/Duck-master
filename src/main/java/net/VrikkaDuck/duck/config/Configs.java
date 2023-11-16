@@ -17,9 +17,14 @@ import net.VrikkaDuck.duck.util.PermissionLevel;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.TradeOfferList;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Configs implements IConfigHandler {
     private static final String CONFIG_FILE_NAME = Variables.MODID + ".json";
@@ -61,7 +66,9 @@ public class Configs implements IConfigHandler {
         public static NbtCompound BEEHIVE_NBT;
         public static TradeOfferList VILLAGER_TRADES;
         public static Inventory TARGET_PLAYER_INVENTORY;
-        public static ItemStack CONTAINER_ITEM_STACK;
+        //public static ItemStack CONTAINER_ITEM_STACK;
+        public static BlockPos LOOKING_AT;
+        public static Map<BlockPos, ItemStack> WORLD_CONTAINERS = new HashMap<>();
     }
 
     public static void loadFromFile()
