@@ -147,11 +147,12 @@ public class PacketUtils {
             return;
         }
 
+        boolean isright = false;
+
         PacketByteBuf buf = new PacketByteBuf(new PacketByteBuf(Unpooled.buffer()));
         buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
 
-        if (blockEntity instanceof ChestBlockEntity) {
-            ChestBlockEntity sbEntity = (ChestBlockEntity) blockEntity;
+        if (blockEntity instanceof ChestBlockEntity sbEntity) {
             BlockState state = sbEntity.getCachedState();
 
             if (!state.get(ChestBlock.CHEST_TYPE).equals(ChestType.SINGLE)) {
@@ -159,6 +160,7 @@ public class PacketUtils {
                 ChestBlockEntity doubleChest = (ChestBlockEntity) player.getWorld().getBlockEntity(sbEntity.getPos().offset(direction, 1));
 
                 if (state.get(ChestBlock.CHEST_TYPE).equals(ChestType.RIGHT)) {
+                    isright = true;
                     compound = getDoubleChestNbt(sbEntity.createNbtWithId(), doubleChest.createNbtWithId());
                 } else {
                     compound = getDoubleChestNbt(doubleChest.createNbtWithId(), sbEntity.createNbtWithId());
@@ -181,11 +183,16 @@ public class PacketUtils {
             buf.writeVarInt(ContainerType.SHULKER.Value);
         }
 
-        buf.writeBlockPos(blockEntity.getPos());
+        if(isright){
+            buf.writeBlockPos(ChestUtils.getOtherChestBlockPos(player.getServerWorld(), blockEntity.getPos()));
+        }else{
+            buf.writeBlockPos(blockEntity.getPos());
+        }
 
         send(player.networkHandler, Variables.ACTIONID, buf);
     }
     public static void handleFurnaceInspection(CustomPayloadC2SPacket packet, ServerPlayerEntity player) {
+
         if (!ServerConfigs.Generic.INSPECT_FURNACE.getBooleanValue() || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_FURNACE.getPermissionLevel())) {
             return;
         }

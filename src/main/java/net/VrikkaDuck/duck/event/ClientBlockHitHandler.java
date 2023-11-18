@@ -4,9 +4,14 @@ import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.networking.PacketType;
 import net.VrikkaDuck.duck.networking.PacketTypes;
+import net.VrikkaDuck.duck.util.ChestUtils;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -36,11 +41,13 @@ public class ClientBlockHitHandler {
 
     public void lookingNewBlock(BlockPos blockPos){
 
+        Configs.Actions.LOOKING_AT = blockPos;
 
         if(blockPos == null){
             resetAll();
             return;
         }
+
 
         if(mc.targetedEntity != null){
             lookingNewEntity(mc.targetedEntity);
@@ -54,28 +61,34 @@ public class ClientBlockHitHandler {
             return;
         }
 
+
         ContainerType ct = ContainerType.fromBlockEntity(blockEntity);
 
         // Checks if targeted block is one of the supported container blocks
-        if(ct != null){
+        if(ct != ContainerType.NONE){
+            
+            if(ct == ContainerType.DOUBLE_CHEST){
+                ChestBlockEntity chestbe = (ChestBlockEntity)blockEntity;
+                BlockState bs = chestbe.getCachedState();
+                if((bs.get(ChestBlock.CHEST_TYPE).equals(ChestType.RIGHT))){
+                    Configs.Actions.LOOKING_AT = ChestUtils.getOtherChestBlockPos(mc.world, blockPos);
+                }
+            }
 
             if(!Configs.Generic.INSPECT_CONTAINER.getKeybind().isKeybindHeld()){
                 return;
             }
 
-            Configs.Actions.LOOKING_AT = blockPos;
-
             Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
             Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = ct.Value;
-            //Configs.Actions.CONTAINER_ITEM_STACK = ItemStack.EMPTY;
 
-            /*PacketByteBuf buf = PacketByteBufs.create();
+            if(!Configs.Actions.WORLD_CONTAINERS.containsKey(blockPos)){
+                PacketByteBuf buf = PacketByteBufs.create();
+                buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
+                buf.writeBlockPos(blockPos);
 
-            buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
-
-            buf.writeBlockPos(blockPos);
-
-            ClientNetworkHandler.sendAction(buf);*/
+                ClientNetworkHandler.sendAction(buf);
+            }
 
         }else if(blockEntity.getType().equals(BlockEntityType.FURNACE) ||
                 blockEntity.getType().equals(BlockEntityType.BLAST_FURNACE) ||
@@ -132,7 +145,9 @@ public class ClientBlockHitHandler {
             ClientNetworkHandler.sendAction(buf);
         } else{
             resetAll();
+            return;
         }
+        Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
     }
     private void resetAll(){
         Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;

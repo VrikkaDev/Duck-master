@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -28,6 +29,31 @@ import java.util.stream.Stream;
 public class LootableContainerBlockEntityMixin {
     @Inject(method = "setStack", at = @At("RETURN"))
     private void duck$setStack(int slot, ItemStack stack, CallbackInfo ci){
+
+        LootableContainerBlockEntity self = ((LootableContainerBlockEntity)(Object)this);
+        BlockPos pos = self.getPos();
+
+        if(!self.hasWorld()){
+            return;
+        }
+
+        Stream<? extends PlayerEntity> players = self.getWorld().getPlayers().stream().filter(p -> pos.isWithinDistance(p.getPos(), 10));
+
+        for(var player : players.toList()){
+
+            if(player instanceof ServerPlayerEntity splayer){
+
+                PacketByteBuf buf = PacketByteBufs.create();
+                buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
+                buf.writeBlockPos(self.getPos());
+
+                PacketUtils.handleContainerInspection(new CustomPayloadC2SPacket(buf), splayer);
+            }
+        }
+    }
+
+    @Inject(method = "removeStack(II)Lnet/minecraft/item/ItemStack;", at = @At("RETURN"))
+    private void removeStack(int slot, int amount, CallbackInfoReturnable<ItemStack> cir){
 
         LootableContainerBlockEntity self = ((LootableContainerBlockEntity)(Object)this);
         BlockPos pos = self.getPos();

@@ -18,13 +18,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
 
+    // thiS is STUPidD ;)
     @Inject(at = @At("RETURN"), method = "render")
     private void render(DrawContext context, float tickDelta, CallbackInfo cb) {
         if (Configs.Actions.RENDER_CONTAINER_TOOLTIP || Configs.Actions.RENDER_FURNACE_TOOLTIP
                 || Configs.Actions.RENDER_BEEHIVE_PREVIEW || Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW
                 || Configs.Actions.RENDER_VILLAGER_TRADES) {
 
-            ItemStack cis = Configs.Actions.WORLD_CONTAINERS.get(Configs.Actions.LOOKING_AT);
+            ItemStack cis = Configs.Actions.WORLD_CONTAINERS.getOrDefault(Configs.Actions.LOOKING_AT, ItemStack.EMPTY);
             if(cis != null && !cis.isEmpty()) {
                 if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.DOUBLE_CHEST, context)) {
                     GuiRenderUtils.renderDoubleChestPreview(cis,

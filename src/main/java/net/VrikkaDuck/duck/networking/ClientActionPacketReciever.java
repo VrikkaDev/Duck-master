@@ -29,7 +29,7 @@ public class ClientActionPacketReciever implements IPluginChannelHandler {
     }
     private void processActionPacket(PacketByteBuf buffer){
 
-        resetAll();
+        //resetAll();
 
         PacketByteBuf buf = PacketByteBufs.slice(buffer);
         PacketTypes type = PacketType.identifierToType(buf.readIdentifier());
@@ -59,7 +59,8 @@ public class ClientActionPacketReciever implements IPluginChannelHandler {
                     stc.setNbt(n);
                 }
                 stc.setNbt(nbt);
-                Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = buf.readVarInt();
+                //Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = ;
+                buf.readVarInt();
                 BlockPos bpos = buf.readBlockPos();
                 Configs.Actions.WORLD_CONTAINERS.put(bpos, stc);
                 Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;

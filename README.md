@@ -5,6 +5,8 @@ Duck Mod is a server-client mod. In other words, must installed on the server an
 ## Default Open Config GUI:
 Y+C
 
+# This project is in serious need of rewriting :)
+
 ## Features:
 **Block entity peaking**: see block entity contents without opening their inventory.  
 Works for all block entities that have an inventory, including Furnaces.

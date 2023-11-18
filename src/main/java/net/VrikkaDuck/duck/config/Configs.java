@@ -42,9 +42,9 @@ public class Configs implements IConfigHandler {
     }
 
     public static class Admin {
-        public static final DuckConfigLevel INSPECT_CONTAINER = new DuckConfigLevel("inspectContainers", false, PermissionLevel.NORMAL ,"Inspect Containers when placed");
-        public static final DuckConfigLevel INSPECT_FURNACE = new DuckConfigLevel("inspectFurnace", false, PermissionLevel.NORMAL,"Inspect furnaces when placed");
-        public static final DuckConfigLevel INSPECT_BEEHIVE = new DuckConfigLevel("inspectBeehive", false , PermissionLevel.NORMAL,"Inspect beehives when on ground");
+        public static final DuckConfigLevel INSPECT_CONTAINER = new DuckConfigLevel("inspectContainers", true, PermissionLevel.NORMAL ,"Inspect Containers when placed");
+        public static final DuckConfigLevel INSPECT_FURNACE = new DuckConfigLevel("inspectFurnace", true, PermissionLevel.NORMAL,"Inspect furnaces when placed");
+        public static final DuckConfigLevel INSPECT_BEEHIVE = new DuckConfigLevel("inspectBeehive", true , PermissionLevel.NORMAL,"Inspect beehives when on ground");
         public static final DuckConfigLevel INSPECT_PLAYER_INVENTORY = new DuckConfigLevel("inspectPlayerInventory", false, PermissionLevel.NORMAL,"inspect entity inventory");
         public static final DuckConfigLevel INSPECT_VILLAGER_TRADES = new DuckConfigLevel("inspectVillagerTrades", false, PermissionLevel.NORMAL, "Inspect villager trades");
         public static final DuckConfigDouble INSPECT_DISTANCE = new DuckConfigDouble("inspectDistance", 5, "The distance how far away the \n player can be from container to inspect it.\n 0 = unlimited");
@@ -55,6 +55,7 @@ public class Configs implements IConfigHandler {
     }
 
     public static class Actions{
+        public static String SERVER_DUCK_VERSION;
         public static boolean RENDER_CONTAINER_TOOLTIP = false;
         public static boolean RENDER_FURNACE_TOOLTIP = false;
         public static boolean RENDER_BEEHIVE_PREVIEW = false;

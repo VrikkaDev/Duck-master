@@ -10,8 +10,11 @@ import net.VrikkaDuck.duck.config.Configs;
 import net.VrikkaDuck.duck.config.options.DuckConfigDouble;
 import net.VrikkaDuck.duck.config.options.DuckConfigLevel;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -30,23 +33,37 @@ public class ClientPacketReciever implements IPluginChannelHandler {
     @Override
     public void onPacketReceived(PacketByteBuf buf) {
         int id = buf.readVarInt();
-        if(id == 0){//GRNERICID
-            this.processNbt(buf.readNbt());
-        }else if(id == 1){//ADMINID
-            this.processAdminNbt(buf.readNbt());
-        }else if(id == 2){//ADMINSETID
-            ClientNetworkHandler.refreshAdmin();
-        }else if(id == 3){//ERROR_MESSAGE
-            Variables.LOGGER.error(buf.readString());
+        switch (id){
+            case 0 -> this.processNbt(buf.readNbt());//GERNERICID
+            case 1 -> this.processAdminNbt(buf.readNbt());//ADMINID
+            case 2 -> ClientNetworkHandler.refreshAdmin();//ADMINSETID
+            case 3 -> {//ERROR_MESSAGE
+                int mode = buf.readInt();
+                switch (mode){
+                    case 0 -> Variables.LOGGER.error(buf.readString());
+                    case 1 -> {
+                        PlayerEntity player = MinecraftClient.getInstance().player;
+                        assert player != null;
+                        player.sendMessage(Text.of(buf.readString()), true);
+                    }
+                    default -> Variables.LOGGER.error("Got error message without message mode. Please update your duck mod!");
+                }
+            }
+            default -> Variables.LOGGER.error("Packet received with unidentified packet type.");
+        }
+
+        if(buf.isReadable()){
+            Configs.Actions.SERVER_DUCK_VERSION = buf.readString();
         }
     }
     private void processNbt(NbtCompound nbt){
         List<IConfigBase> _list = new ArrayList<>();
         for(IConfigBase base : Configs.Generic.DEFAULT_OPTIONS){
-            if(nbt.getKeys().contains(base.getName())){
-                if(nbt.getBoolean(base.getName())){
-                    _list.add(base);
-                }
+            if(!nbt.getKeys().contains(base.getName())){
+                continue;
+            }
+            if(nbt.getBoolean(base.getName())){
+                _list.add(base);
             }
         }
         Configs.Generic.OPTIONS = ImmutableList.copyOf(_list);
