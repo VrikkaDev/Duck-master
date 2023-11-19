@@ -2,13 +2,13 @@ package net.VrikkaDuck.duck.gui;
 
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import net.VrikkaDuck.duck.config.IConfigLevel;
+import net.VrikkaDuck.duck.config.client.IAdminConfigLevel;
 
-public class DuckConfigButtonBoolean extends ButtonGeneric {
+public class DuckAdminConfigButtonBoolean extends ButtonGeneric {
 
-    private final IConfigLevel config;
+    private final IAdminConfigLevel config;
 
-    public DuckConfigButtonBoolean(int x, int y, int width, int height, IConfigLevel config)
+    public DuckAdminConfigButtonBoolean(int x, int y, int width, int height, IAdminConfigLevel config)
     {
         super(x, y, width, height, "");
         this.config = config;

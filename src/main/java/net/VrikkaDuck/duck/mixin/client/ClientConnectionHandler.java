@@ -1,6 +1,6 @@
 package net.VrikkaDuck.duck.mixin.client;
 
-import net.VrikkaDuck.duck.config.ServerConfigs;
+import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import org.spongepowered.asm.mixin.Mixin;

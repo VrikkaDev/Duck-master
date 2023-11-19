@@ -5,7 +5,7 @@ import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.InventoryUtils;
-import net.VrikkaDuck.duck.config.Configs;
+import net.VrikkaDuck.duck.config.client.Configs;
 import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;

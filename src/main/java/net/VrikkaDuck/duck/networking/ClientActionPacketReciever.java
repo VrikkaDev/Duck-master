@@ -3,7 +3,7 @@ package net.VrikkaDuck.duck.networking;
 import fi.dy.masa.malilib.network.IPluginChannelHandler;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.Configs;
+import net.VrikkaDuck.duck.config.client.Configs;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;

@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.config;
+package net.VrikkaDuck.duck.config.client;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
@@ -6,13 +6,13 @@ import com.google.gson.JsonObject;
 import fi.dy.masa.malilib.config.ConfigUtils;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
-import fi.dy.masa.malilib.config.options.ConfigDouble;
 import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.options.DuckConfigDouble;
-import net.VrikkaDuck.duck.config.options.DuckConfigLevel;
+import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigDouble;
+import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
+import net.VrikkaDuck.duck.config.client.options.generic.DuckConfigHotkeyToggleable;
 import net.VrikkaDuck.duck.util.PermissionLevel;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -21,24 +21,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.TradeOfferList;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Configs implements IConfigHandler {
     private static final String CONFIG_FILE_NAME = Variables.MODID + ".json";
 
     public static class Generic {
-        public static final ConfigHotkey INSPECT_CONTAINER = new ConfigHotkey("inspectContainers", "LEFT_SHIFT", "Allows you to inspect containers while they are placed.");
-        public static final ConfigHotkey INSPECT_FURNACE = new ConfigHotkey("inspectFurnace", "LEFT_SHIFT", "Allows you to inspect furnaces while they are placed");
-        public static final ConfigHotkey INSPECT_BEEHIVE = new ConfigHotkey("inspectBeehive", "LEFT_SHIFT" , "Allows you to inspect beehives while they are placed");
-        public static final ConfigHotkey INSPECT_PLAYER_INVENTORY = new ConfigHotkey("inspectPlayerInventory", "LEFT_SHIFT", "Inspect player entity inventory");
-        public static final ConfigHotkey INSPECT_VILLAGER_TRADES = new ConfigHotkey("inspectVillagerTrades", "LEFT_SHIFT", "Inspect villager trades");
+        public static final DuckConfigHotkeyToggleable INSPECT_CONTAINER = new DuckConfigHotkeyToggleable("inspectContainers", true, "LEFT_SHIFT", "Allows you to inspect containers while they are placed.");
+        public static final DuckConfigHotkeyToggleable INSPECT_FURNACE = new DuckConfigHotkeyToggleable("inspectFurnace", true, "LEFT_SHIFT", "Allows you to inspect furnaces while they are placed");
+        public static final DuckConfigHotkeyToggleable INSPECT_BEEHIVE = new DuckConfigHotkeyToggleable("inspectBeehive", true, "LEFT_SHIFT" , "Allows you to inspect beehives while they are placed");
+        public static final DuckConfigHotkeyToggleable INSPECT_PLAYER_INVENTORY = new DuckConfigHotkeyToggleable("inspectPlayerInventory", true, "LEFT_SHIFT", "Inspect player entity inventory");
+        public static final DuckConfigHotkeyToggleable INSPECT_VILLAGER_TRADES = new DuckConfigHotkeyToggleable("inspectVillagerTrades", true, "LEFT_SHIFT", "Inspect villager trades");
         public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
 
         public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
-        public static final ImmutableList<ConfigHotkey> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
+        public static final ImmutableList<DuckConfigHotkeyToggleable> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_FURNACE, INSPECT_BEEHIVE, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
     }
 
     public static class Admin {

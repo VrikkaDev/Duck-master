@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.config.gui;
+package net.VrikkaDuck.duck.config.client.gui;
 
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 

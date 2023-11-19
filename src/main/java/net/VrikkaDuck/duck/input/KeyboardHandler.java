@@ -5,9 +5,9 @@ import fi.dy.masa.malilib.hotkeys.IKeybindManager;
 import fi.dy.masa.malilib.hotkeys.IKeybindProvider;
 import fi.dy.masa.malilib.hotkeys.IKeyboardInputHandler;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.Callbacks;
-import net.VrikkaDuck.duck.config.Configs;
-import net.VrikkaDuck.duck.config.Hotkeys;
+import net.VrikkaDuck.duck.config.client.Callbacks;
+import net.VrikkaDuck.duck.config.client.Configs;
+import net.VrikkaDuck.duck.config.client.Hotkeys;
 
 public class KeyboardHandler implements IKeybindProvider ,IKeyboardInputHandler{
 

@@ -1,7 +1,7 @@
 package net.VrikkaDuck.duck.event;
 
 import fi.dy.masa.malilib.interfaces.IClientTickHandler;
-import net.VrikkaDuck.duck.config.Configs;
+import net.VrikkaDuck.duck.config.client.Configs;
 import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.networking.PacketType;
 import net.VrikkaDuck.duck.networking.PacketTypes;
@@ -9,15 +9,12 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
-import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
@@ -71,7 +68,7 @@ public class ClientTickHandler implements IClientTickHandler {
         if(mc.player == null){
             return;
         }
-        BlockPos ppos = mc.player.getBlockPos();
+        BlockPos ppos = mc.getCameraEntity().getBlockPos();
 
         // Remove containers that are further away from player than 10
         Configs.Actions.WORLD_CONTAINERS.entrySet().removeIf(entry -> !ppos.isWithinDistance(entry.getKey(), 10));

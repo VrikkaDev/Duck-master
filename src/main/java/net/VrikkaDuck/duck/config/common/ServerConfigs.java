@@ -1,10 +1,11 @@
-package net.VrikkaDuck.duck.config;
+package net.VrikkaDuck.duck.config.common;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.options.ServerDouble;
-import net.VrikkaDuck.duck.config.options.ServerLevel;
+import net.VrikkaDuck.duck.config.common.IServerLevel;
+import net.VrikkaDuck.duck.config.common.options.ServerDouble;
+import net.VrikkaDuck.duck.config.common.options.ServerLevel;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.VrikkaDuck.duck.util.PermissionLevel;
 import net.minecraft.client.MinecraftClient;

@@ -1,10 +1,9 @@
-package net.VrikkaDuck.duck.config.options;
+package net.VrikkaDuck.duck.config.common.options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.IServerLevel;
-import net.VrikkaDuck.duck.util.PermissionLevel;
+import net.VrikkaDuck.duck.config.common.IServerLevel;
 
 public class ServerDouble implements IServerLevel {
     private final double defaultValue;

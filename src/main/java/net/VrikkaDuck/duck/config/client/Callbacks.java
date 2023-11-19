@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.config;
+package net.VrikkaDuck.duck.config.client;
 
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -6,8 +6,9 @@ import fi.dy.masa.malilib.hotkeys.IHotkeyCallback;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
-import net.VrikkaDuck.duck.config.options.DuckConfigDouble;
-import net.VrikkaDuck.duck.config.options.DuckConfigLevel;
+import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigDouble;
+import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
+import net.VrikkaDuck.duck.config.client.options.generic.DuckConfigHotkeyToggleable;
 import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.VrikkaDuck.duck.gui.ConfigGui;

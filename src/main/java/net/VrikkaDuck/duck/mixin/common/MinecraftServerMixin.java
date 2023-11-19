@@ -1,6 +1,6 @@
 package net.VrikkaDuck.duck.mixin.common;
 
-import net.VrikkaDuck.duck.config.ServerConfigs;
+import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;

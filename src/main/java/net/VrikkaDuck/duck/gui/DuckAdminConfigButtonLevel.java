@@ -5,23 +5,22 @@ import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.render.RenderUtils;
-import net.VrikkaDuck.duck.config.IConfigLevel;
+import net.VrikkaDuck.duck.config.client.IAdminConfigLevel;
 import net.VrikkaDuck.duck.util.PermissionLevel;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-public class DuckConfigButtonLevel extends ButtonGeneric {
+public class DuckAdminConfigButtonLevel extends ButtonGeneric {
 
     private static List<String> hoverText(){
         return List.of("Minimum permission level,", "required to use this feature","" , "NORMAL,", "OP");
     }
 
-    private final IConfigLevel config;
+    private final IAdminConfigLevel config;
 
-    public DuckConfigButtonLevel(int x, int y, int width, int height, IConfigLevel config)
+    public DuckAdminConfigButtonLevel(int x, int y, int width, int height, IAdminConfigLevel config)
     {
         super(x+(width/2), y, width/2, height, "");
         this.config = config;

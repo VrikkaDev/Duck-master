@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.config;
+package net.VrikkaDuck.duck.config.common;
 
 import com.google.gson.JsonElement;
 import net.VrikkaDuck.duck.util.PermissionLevel;

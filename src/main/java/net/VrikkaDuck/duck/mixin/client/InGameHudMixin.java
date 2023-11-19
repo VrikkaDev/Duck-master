@@ -3,7 +3,8 @@ package net.VrikkaDuck.duck.mixin.client;
 import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
-import net.VrikkaDuck.duck.config.Configs;
+import net.VrikkaDuck.duck.config.client.Configs;
+import net.VrikkaDuck.duck.config.client.options.generic.DuckConfigHotkeyToggleable;
 import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.util.GuiRenderUtils;
 import net.minecraft.client.gui.DrawContext;
@@ -64,8 +65,8 @@ public class InGameHudMixin {
     }
 
     @Unique
-    private boolean handleRenderCondition(boolean renderFlag, ConfigHotkey inspectFlag, ContainerType containerType, DrawContext context) {
-        return renderFlag && inspectFlag.getKeybind().isKeybindHeld()
+    private boolean handleRenderCondition(boolean renderFlag, DuckConfigHotkeyToggleable inspectFlag, ContainerType containerType, DrawContext context) {
+        return renderFlag && inspectFlag.getKeybind().isKeybindHeld() && inspectFlag.getBooleanValue()
                 && (containerType == null || Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP == containerType.Value);
     }
 }

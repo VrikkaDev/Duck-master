@@ -1,45 +1,22 @@
 package net.VrikkaDuck.duck.mixin.common;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import fi.dy.masa.malilib.config.IConfigValue;
 import io.netty.buffer.Unpooled;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.IServerLevel;
-import net.VrikkaDuck.duck.config.ServerConfigs;
-import net.VrikkaDuck.duck.config.options.ServerDouble;
-import net.VrikkaDuck.duck.config.options.ServerLevel;
-import net.VrikkaDuck.duck.networking.ContainerType;
+import net.VrikkaDuck.duck.config.common.IServerLevel;
+import net.VrikkaDuck.duck.config.common.ServerConfigs;
+import net.VrikkaDuck.duck.config.common.options.ServerDouble;
+import net.VrikkaDuck.duck.config.common.options.ServerLevel;
 import net.VrikkaDuck.duck.networking.PacketType;
 import net.VrikkaDuck.duck.networking.PacketTypes;
 import net.VrikkaDuck.duck.util.PacketUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.block.entity.*;
-import net.minecraft.block.enums.ChestType;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
-import net.minecraft.recipe.AbstractCookingRecipe;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import org.apache.commons.lang3.StringUtils;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -48,10 +25,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.function.Consumer;
+
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerConnectionHandler {
     @Shadow public ServerPlayerEntity player;

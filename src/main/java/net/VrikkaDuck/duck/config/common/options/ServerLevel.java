@@ -1,12 +1,10 @@
-package net.VrikkaDuck.duck.config.options;
+package net.VrikkaDuck.duck.config.common.options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import fi.dy.masa.malilib.config.ConfigType;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.IServerLevel;
+import net.VrikkaDuck.duck.config.common.IServerLevel;
 import net.VrikkaDuck.duck.util.PermissionLevel;
-import org.jetbrains.annotations.Nullable;
 
 public class ServerLevel implements IServerLevel {
     private final boolean defaultValue;

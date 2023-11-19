@@ -2,13 +2,12 @@ package net.VrikkaDuck.duck.networking;
 
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.IConfigBase;
-import fi.dy.masa.malilib.config.options.ConfigDouble;
 import fi.dy.masa.malilib.network.ClientPacketChannelHandler;
 import fi.dy.masa.malilib.network.IPluginChannelHandler;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.Configs;
-import net.VrikkaDuck.duck.config.options.DuckConfigDouble;
-import net.VrikkaDuck.duck.config.options.DuckConfigLevel;
+import net.VrikkaDuck.duck.config.client.Configs;
+import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigDouble;
+import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
 import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;

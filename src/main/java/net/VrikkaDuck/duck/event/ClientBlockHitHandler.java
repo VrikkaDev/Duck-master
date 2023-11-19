@@ -1,6 +1,6 @@
 package net.VrikkaDuck.duck.event;
 
-import net.VrikkaDuck.duck.config.Configs;
+import net.VrikkaDuck.duck.config.client.Configs;
 import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.networking.PacketType;
 import net.VrikkaDuck.duck.networking.PacketTypes;
@@ -15,7 +15,6 @@ import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -82,13 +81,11 @@ public class ClientBlockHitHandler {
             Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
             Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = ct.Value;
 
-            if(!Configs.Actions.WORLD_CONTAINERS.containsKey(blockPos)){
-                PacketByteBuf buf = PacketByteBufs.create();
-                buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
-                buf.writeBlockPos(blockPos);
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
+            buf.writeBlockPos(blockPos);
 
-                ClientNetworkHandler.sendAction(buf);
-            }
+            ClientNetworkHandler.sendAction(buf);
 
         }else if(blockEntity.getType().equals(BlockEntityType.FURNACE) ||
                 blockEntity.getType().equals(BlockEntityType.BLAST_FURNACE) ||

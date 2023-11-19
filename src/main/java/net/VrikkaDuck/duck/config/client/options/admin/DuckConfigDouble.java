@@ -1,14 +1,11 @@
-package net.VrikkaDuck.duck.config.options;
+package net.VrikkaDuck.duck.config.client.options.admin;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import fi.dy.masa.malilib.config.ConfigType;
-import fi.dy.masa.malilib.config.IConfigDouble;
 import fi.dy.masa.malilib.config.IConfigValue;
 import fi.dy.masa.malilib.config.options.ConfigBase;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.IConfigLevel;
-import net.VrikkaDuck.duck.util.PermissionLevel;
 import net.minecraft.util.math.MathHelper;
 
 public class DuckConfigDouble extends ConfigBase<DuckConfigDouble> implements IConfigValue {

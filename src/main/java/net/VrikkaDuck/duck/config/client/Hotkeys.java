@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.config;
+package net.VrikkaDuck.duck.config.client;
 
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.options.ConfigHotkey;
