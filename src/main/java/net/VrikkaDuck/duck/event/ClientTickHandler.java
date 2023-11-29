@@ -3,8 +3,8 @@ package net.VrikkaDuck.duck.event;
 import fi.dy.masa.malilib.interfaces.IClientTickHandler;
 import net.VrikkaDuck.duck.config.client.Configs;
 import net.VrikkaDuck.duck.networking.ContainerType;
-import net.VrikkaDuck.duck.networking.PacketType;
-import net.VrikkaDuck.duck.networking.PacketTypes;
+import net.VrikkaDuck.duck.networking.packet.ContainerPacket;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -85,13 +85,9 @@ public class ClientTickHandler implements IClientTickHandler {
         }
 
         if(found.get()){
-            PacketByteBuf buf = PacketByteBufs.create();
-            buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINERS));
 
-            // To make sure buffer is still readable after reading identifier
-            buf.writeByte(0);
-
-            ClientNetworkHandler.sendAction(buf);
+            ContainerPacket.ContainerC2SPacket packet = new ContainerPacket.ContainerC2SPacket(mc.player.getUuid(), mc.getCameraEntity().getBlockPos());
+            ClientPlayNetworking.send(packet);
 
             found.set(false);
         }
@@ -118,7 +114,7 @@ public class ClientTickHandler implements IClientTickHandler {
                                     return;
                                 }
 
-                                if(ContainerType.fromBlockEntity(blockEntity).Value != -1){
+                                if(ContainerType.fromBlockEntity(blockEntity).value != -1){
 
                                     if(Configs.Actions.WORLD_CONTAINERS.containsKey(blockEntity.getPos())){
                                         return;

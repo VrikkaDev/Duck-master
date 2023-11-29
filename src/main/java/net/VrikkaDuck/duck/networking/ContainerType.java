@@ -1,6 +1,7 @@
 package net.VrikkaDuck.duck.networking;
 
 import net.minecraft.block.ChestBlock;
+import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -12,11 +13,22 @@ public enum ContainerType {
     DOUBLE_CHEST(1),
     HOPPER(2),
     DISPENSER(3),
+    FURNACE(10),
+    BEEHIVE(15),
     SHULKER(0);
 
-    public final int Value;
+    public final int value;
     private ContainerType(int value){
-        this.Value = value;
+        this.value = value;
+    }
+
+    public static ContainerType fromValue(int val){
+        for(ContainerType t : ContainerType.values()){
+            if (t.value == val){
+                return t;
+            }
+        }
+        return NONE;
     }
 
     public static ContainerType fromBlockEntity(BlockEntity blockEntity){
@@ -45,6 +57,10 @@ public enum ContainerType {
             return ContainerType.DISPENSER;
         }else if(type.equals(BlockEntityType.SHULKER_BOX)){
             return ContainerType.SHULKER;
+        }else if(blockEntity instanceof AbstractFurnaceBlockEntity){
+            return ContainerType.FURNACE;
+        }else if(type.equals(BlockEntityType.BEEHIVE)){
+            return ContainerType.BEEHIVE;
         }
 
         return ContainerType.NONE;

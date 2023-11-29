@@ -8,23 +8,29 @@ import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigDouble;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
-import net.VrikkaDuck.duck.config.client.options.generic.DuckConfigHotkeyToggleable;
+import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
-import net.VrikkaDuck.duck.event.ClientNetworkHandler;
 import net.VrikkaDuck.duck.gui.ConfigGui;
+import net.VrikkaDuck.duck.networking.packet.AdminPacket;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.nbt.NbtCompound;
 
 public class Callbacks {
 
-    private static ClientBlockHitHandler blockHitHandler = ClientBlockHitHandler.INSTANCE();
-    private static MinecraftClient mc = MinecraftClient.getInstance();
+    private static final ClientBlockHitHandler blockHitHandler = ClientBlockHitHandler.INSTANCE();
+    private static final MinecraftClient mc = MinecraftClient.getInstance();
 
     public static class AdminLevelCallback implements IValueChangeCallback<DuckConfigLevel>
     {
         @Override
         public void onValueChanged(DuckConfigLevel config)
         {
-            ClientNetworkHandler.setAdminBoolean(config.getName(), config.getBooleanValue(), config.getPermissionLevel());
+            NbtCompound compound = new NbtCompound();
+            compound.putBoolean("request", false);
+            compound.put("options", Configs.Admin.getAsNbtList());
+            AdminPacket.AdminC2SPacket packet = new AdminPacket.AdminC2SPacket(MinecraftClient.getInstance().player.getUuid(), compound);
+            ClientPlayNetworking.send(packet);
         }
     }
     public static class AdminDoubleCallback implements IValueChangeCallback<DuckConfigDouble>
@@ -32,7 +38,11 @@ public class Callbacks {
         @Override
         public void onValueChanged(DuckConfigDouble config)
         {
-            ClientNetworkHandler.setAdminDouble(config.getName(), config.getDoubleValue());
+            NbtCompound compound = new NbtCompound();
+            compound.putBoolean("request", false);
+            compound.put("options", Configs.Admin.getAsNbtList());
+            AdminPacket.AdminC2SPacket packet = new AdminPacket.AdminC2SPacket(MinecraftClient.getInstance().player.getUuid(), compound);
+            ClientPlayNetworking.send(packet);
         }
     }
 
@@ -51,8 +61,6 @@ public class Callbacks {
         }
         Hotkeys.OPEN_CONFIG_GUI.getKeybind().setCallback(callbackGeneric);
         Configs.Generic.INSPECT_CONTAINER.getKeybind().setCallback(callbackGeneric);
-        Configs.Generic.INSPECT_FURNACE.getKeybind().setCallback(callbackGeneric);
-        Configs.Generic.INSPECT_BEEHIVE.getKeybind().setCallback(callbackGeneric);
         Configs.Generic.INSPECT_PLAYER_INVENTORY.getKeybind().setCallback(callbackGeneric);
     }
     private static class KeyCallbackHotkeysGeneric implements IHotkeyCallback
@@ -62,14 +70,10 @@ public class Callbacks {
         {
             if (key == Hotkeys.OPEN_CONFIG_GUI.getKeybind())
             {
-                ClientNetworkHandler.refreshAdmin();
+                ServerConfigs.refreshFromServer();
                 GuiBase.openGui(new ConfigGui());
                 return true;
             }else if(key == Configs.Generic.INSPECT_CONTAINER.getKeybind()){
-                blockHitHandler.reload();
-            }else if(key == Configs.Generic.INSPECT_FURNACE.getKeybind()){
-                blockHitHandler.reload();
-            }else if (key == Configs.Generic.INSPECT_BEEHIVE.getKeybind()){
                 blockHitHandler.reload();
             }else if (key == Configs.Generic.INSPECT_PLAYER_INVENTORY.getKeybind()){
                 blockHitHandler.lookingNewEntity(mc.targetedEntity);

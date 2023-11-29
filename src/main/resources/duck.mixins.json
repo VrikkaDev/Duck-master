@@ -6,7 +6,7 @@
   "mixins": [
     "common.LootableContainerBlockEntityMixin",
     "common.MinecraftServerMixin",
-    "common.ServerConnectionHandler"
+    "common.ServerPlayerNetworkHandlerMixin"
   ],
   "client": [
     "client.ClientConnectionHandler",

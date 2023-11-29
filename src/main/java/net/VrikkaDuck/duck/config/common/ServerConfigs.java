@@ -6,9 +6,13 @@ import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.common.IServerLevel;
 import net.VrikkaDuck.duck.config.common.options.ServerDouble;
 import net.VrikkaDuck.duck.config.common.options.ServerLevel;
+import net.VrikkaDuck.duck.networking.packet.AdminPacket;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.VrikkaDuck.duck.util.PermissionLevel;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -23,21 +27,37 @@ public class ServerConfigs {
 
     public static class Generic {
         public static final IServerLevel INSPECT_CONTAINER = new ServerLevel("inspectContainers", false, PermissionLevel.NORMAL);
-        public static final IServerLevel INSPECT_FURNACE = new ServerLevel("inspectFurnace", false, PermissionLevel.NORMAL);
-        public static final IServerLevel INSPECT_BEEHIVE = new ServerLevel("inspectBeehive", false, PermissionLevel.NORMAL);
         public static final IServerLevel INSPECT_PLAYER_INVENTORY = new ServerLevel("inspectPlayerInventory", false, PermissionLevel.NORMAL);
         public static final IServerLevel INSPECT_VILLAGER_TRADES = new ServerLevel("inspectVillagerTrades", false, PermissionLevel.NORMAL);
 
-        public static final IServerLevel INSPECT_DISTANCE = new ServerDouble("inspectDistance", 5);
-
         public static ImmutableList<IServerLevel> OPTIONS = ImmutableList.of(
                 INSPECT_CONTAINER,
-                INSPECT_FURNACE,
-                INSPECT_BEEHIVE,
                 INSPECT_PLAYER_INVENTORY,
                 INSPECT_VILLAGER_TRADES
-                //INSPECT_DISTANCE
         );
+
+        public static NbtList getAsNbtList(){
+
+            NbtList _l = new NbtList();
+
+            for(IServerLevel l : Generic.OPTIONS){
+                NbtCompound compound = new NbtCompound();
+                compound.putString("optionName", l.getName());
+                compound.putBoolean("optionValue", l.getBooleanValue());
+                compound.putInt("optionPermissionLevel", l.getPermissionLevel());
+
+                _l.add(compound);
+            }
+
+            return _l;
+        }
+    }
+
+    public static void refreshFromServer(){
+        NbtCompound compound = new NbtCompound();
+        compound.putBoolean("request", true);
+        AdminPacket.AdminC2SPacket packet = new AdminPacket.AdminC2SPacket(MinecraftClient.getInstance().player.getUuid(), compound);
+        ClientPlayNetworking.send(packet);
     }
 
     public static void loadFromFile() {
@@ -117,8 +137,8 @@ public class ServerConfigs {
 
     @Nullable
     public static JsonObject getNestedObject(JsonObject parent, String key, boolean create) {
-        if (parent.has(key) == false || parent.get(key).isJsonObject() == false) {
-            if (create == false) {
+        if (!parent.has(key) || !parent.get(key).isJsonObject()) {
+            if (!create) {
                 return null;
             }
 
@@ -141,7 +161,7 @@ public class ServerConfigs {
             writer.write(GSON.toJson(root));
             writer.close();
 
-            if (file.exists() && file.isFile() && file.delete() == false) {
+            if (file.exists() && file.isFile() && !file.delete()) {
                 Variables.LOGGER.warn("Failed to delete file '{}'", file.getAbsolutePath());
             }
 

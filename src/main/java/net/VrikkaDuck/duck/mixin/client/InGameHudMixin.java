@@ -10,11 +10,15 @@ import net.VrikkaDuck.duck.util.GuiRenderUtils;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Map;
 
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
@@ -22,12 +26,18 @@ public class InGameHudMixin {
     // thiS is STUPidD ;)
     @Inject(at = @At("RETURN"), method = "render")
     private void render(DrawContext context, float tickDelta, CallbackInfo cb) {
-        if (Configs.Actions.RENDER_CONTAINER_TOOLTIP || Configs.Actions.RENDER_FURNACE_TOOLTIP
-                || Configs.Actions.RENDER_BEEHIVE_PREVIEW || Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW
+        if (Configs.Actions.RENDER_CONTAINER_TOOLTIP
+                || Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW
                 || Configs.Actions.RENDER_VILLAGER_TRADES) {
 
-            ItemStack cis = Configs.Actions.WORLD_CONTAINERS.getOrDefault(Configs.Actions.LOOKING_AT, ItemStack.EMPTY);
-            if(cis != null && !cis.isEmpty()) {
+            boolean isContainer = Configs.Actions.WORLD_CONTAINERS.containsKey(Configs.Actions.LOOKING_AT);
+            Map.Entry<NbtCompound, ContainerType> entry = Configs.Actions.WORLD_CONTAINERS.getOrDefault(Configs.Actions.LOOKING_AT, Map.entry(new NbtCompound(), ContainerType.NONE));
+            boolean isItemstack = entry.getKey().contains("BlockEntityTag");
+
+            if(isItemstack) {
+                ItemStack cis = new ItemStack(Items.WHITE_SHULKER_BOX);
+                cis.setNbt(entry.getKey());
+
                 if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.DOUBLE_CHEST, context)) {
                     GuiRenderUtils.renderDoubleChestPreview(cis,
                             GuiUtils.getScaledWindowWidth() / 2 - 96, GuiUtils.getScaledWindowHeight() / 2 + 60, true, context);
@@ -42,15 +52,19 @@ public class InGameHudMixin {
                 }
             }
 
-            if (handleRenderCondition(Configs.Actions.RENDER_FURNACE_TOOLTIP, Configs.Generic.INSPECT_FURNACE, null, context)) {
-                GuiRenderUtils.renderFurnacePreview(Configs.Actions.FURNACE_NBT, GuiUtils.getScaledWindowWidth() / 2 - 59,
-                        GuiUtils.getScaledWindowHeight() / 2 + 30, context);
+            if(isContainer){
+                if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP && entry.getValue() == ContainerType.FURNACE, Configs.Generic.INSPECT_CONTAINER, null, context)) {
+                    GuiRenderUtils.renderFurnacePreview(entry.getKey(), GuiUtils.getScaledWindowWidth() / 2 - 59,
+                            GuiUtils.getScaledWindowHeight() / 2 + 30, context);
+                }
+
+                if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP && entry.getValue() == ContainerType.BEEHIVE, Configs.Generic.INSPECT_CONTAINER, null, context)) {
+                    GuiRenderUtils.renderBeehivePreview(entry.getKey(), GuiUtils.getScaledWindowWidth() / 2,
+                            GuiUtils.getScaledWindowHeight() / 2, context);
+                }
             }
 
-            if (handleRenderCondition(Configs.Actions.RENDER_BEEHIVE_PREVIEW, Configs.Generic.INSPECT_BEEHIVE, null, context)) {
-                GuiRenderUtils.renderBeehivePreview(Configs.Actions.BEEHIVE_NBT, GuiUtils.getScaledWindowWidth() / 2,
-                        GuiUtils.getScaledWindowHeight() / 2, context);
-            }
+
 
             if (handleRenderCondition(Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW, Configs.Generic.INSPECT_PLAYER_INVENTORY, null, context)) {
                 GuiRenderUtils.renderPlayerInventory(Configs.Actions.TARGET_PLAYER_INVENTORY, GuiUtils.getScaledWindowWidth() / 2,
@@ -67,6 +81,6 @@ public class InGameHudMixin {
     @Unique
     private boolean handleRenderCondition(boolean renderFlag, DuckConfigHotkeyToggleable inspectFlag, ContainerType containerType, DrawContext context) {
         return renderFlag && inspectFlag.getKeybind().isKeybindHeld() && inspectFlag.getBooleanValue()
-                && (containerType == null || Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP == containerType.Value);
+                && (containerType == null || Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP == containerType.value);
     }
 }

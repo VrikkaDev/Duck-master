@@ -1,28 +1,23 @@
 package net.VrikkaDuck.duck.mixin.common;
 
-import net.VrikkaDuck.duck.networking.ContainerType;
-import net.VrikkaDuck.duck.networking.PacketType;
-import net.VrikkaDuck.duck.networking.PacketTypes;
+import net.VrikkaDuck.duck.networking.PacketsC2S;
+import net.VrikkaDuck.duck.networking.packet.ContainerPacket;
 import net.VrikkaDuck.duck.util.PacketUtils;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
+import net.minecraft.util.math.GlobalPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 @Mixin(LootableContainerBlockEntity.class)
@@ -43,11 +38,10 @@ public class LootableContainerBlockEntityMixin {
 
             if(player instanceof ServerPlayerEntity splayer){
 
-                PacketByteBuf buf = PacketByteBufs.create();
-                buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
-                buf.writeBlockPos(self.getPos());
+                ContainerPacket.ContainerC2SPacket p = new ContainerPacket.ContainerC2SPacket(
+                        splayer.getUuid(), self.getPos());
 
-                PacketUtils.handleContainerInspection(new CustomPayloadC2SPacket(buf), splayer);
+                PacketsC2S.onContainerPacket(p, splayer, null);
             }
         }
     }
@@ -68,11 +62,10 @@ public class LootableContainerBlockEntityMixin {
 
             if(player instanceof ServerPlayerEntity splayer){
 
-                PacketByteBuf buf = PacketByteBufs.create();
-                buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
-                buf.writeBlockPos(self.getPos());
+                ContainerPacket.ContainerC2SPacket p = new ContainerPacket.ContainerC2SPacket(
+                        splayer.getUuid(), self.getPos());
 
-                PacketUtils.handleContainerInspection(new CustomPayloadC2SPacket(buf), splayer);
+                PacketsC2S.onContainerPacket(p, splayer, null);
             }
         }
     }

@@ -2,9 +2,10 @@ package net.VrikkaDuck.duck.event;
 
 import net.VrikkaDuck.duck.config.client.Configs;
 import net.VrikkaDuck.duck.networking.ContainerType;
-import net.VrikkaDuck.duck.networking.PacketType;
-import net.VrikkaDuck.duck.networking.PacketTypes;
+import net.VrikkaDuck.duck.networking.EntityDataType;
+import net.VrikkaDuck.duck.networking.packet.EntityPacket;
 import net.VrikkaDuck.duck.util.ChestUtils;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
@@ -79,41 +80,16 @@ public class ClientBlockHitHandler {
             }
 
             Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
-            Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = ct.Value;
-
-            PacketByteBuf buf = PacketByteBufs.create();
-            buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.CONTAINER));
-            buf.writeBlockPos(blockPos);
-
-            ClientNetworkHandler.sendAction(buf);
+            Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP = ct.value;
 
         }else if(blockEntity.getType().equals(BlockEntityType.FURNACE) ||
                 blockEntity.getType().equals(BlockEntityType.BLAST_FURNACE) ||
                 blockEntity.getType().equals(BlockEntityType.SMOKER)) {
 
-            if(!Configs.Generic.INSPECT_FURNACE.getKeybind().isKeybindHeld()){
-                return;
-            }
+            Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
 
-            PacketByteBuf buf = PacketByteBufs.create();
-
-            buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.FURNACE));
-
-            buf.writeBlockPos(blockPos);
-
-            ClientNetworkHandler.sendAction(buf);
         }else if(blockEntity.getType().equals(BlockEntityType.BEEHIVE)){
-            if(!Configs.Generic.INSPECT_BEEHIVE.getKeybind().isKeybindHeld()){
-                return;
-            }
-
-            PacketByteBuf buf = PacketByteBufs.create();
-
-            buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.BEEHIVE));
-
-            buf.writeBlockPos(blockPos);
-
-            ClientNetworkHandler.sendAction(buf);
+            Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
         }else{
             resetAll();
         }
@@ -127,19 +103,13 @@ public class ClientBlockHitHandler {
         }
 
         if(entity.getType().equals(EntityType.PLAYER)){
-            PacketByteBuf buf = PacketByteBufs.create();
+            EntityPacket.EntityC2SPacket packet = new EntityPacket.EntityC2SPacket(mc.player.getUuid(), EntityDataType.PLAYER_INVENTORY, entity.getUuid());
 
-            buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.PLAYERINVENTORY));
-            buf.writeUuid(entity.getUuid());
-
-            ClientNetworkHandler.sendAction(buf);
+            ClientPlayNetworking.send(packet);
         }else if(entity.getType().equals(EntityType.VILLAGER)){
-            PacketByteBuf buf = PacketByteBufs.create();
+            EntityPacket.EntityC2SPacket packet = new EntityPacket.EntityC2SPacket(mc.player.getUuid(), EntityDataType.VILLAGER_TRADES, entity.getUuid());
 
-            buf.writeIdentifier(PacketType.typeToIdentifier(PacketTypes.VILLAGERTRADES));
-            buf.writeInt(entity.getId());
-
-            ClientNetworkHandler.sendAction(buf);
+            ClientPlayNetworking.send(packet);
         } else{
             resetAll();
             return;
@@ -148,8 +118,6 @@ public class ClientBlockHitHandler {
     }
     private void resetAll(){
         Configs.Actions.RENDER_CONTAINER_TOOLTIP = false;
-        Configs.Actions.RENDER_FURNACE_TOOLTIP = false;
-        Configs.Actions.RENDER_BEEHIVE_PREVIEW = false;
         if(mc.targetedEntity == null){
             resetEntity();
         }

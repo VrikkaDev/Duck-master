@@ -73,7 +73,7 @@ public class DuckConfigLevel extends ConfigBase<DuckConfigLevel> implements IAdm
     public void setValueFromJsonElement(JsonElement element) {
         try
         {
-            if (element.isJsonPrimitive())
+            if (element.isJsonObject())
             {
                 String[] values = element.getAsString().split(",");
                 this.value = !values[0].isEmpty() && Boolean.parseBoolean(values[0]);
@@ -86,7 +86,7 @@ public class DuckConfigLevel extends ConfigBase<DuckConfigLevel> implements IAdm
         }
         catch (Exception e)
         {
-            Variables.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
+            Variables.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}' {}", this.getName(), element, e);
         }
     }
 
