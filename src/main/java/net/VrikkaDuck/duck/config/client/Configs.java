@@ -1,16 +1,22 @@
 package net.VrikkaDuck.duck.config.client;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.ConfigUtils;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
+import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import fi.dy.masa.malilib.config.options.ConfigHotkey;
+import fi.dy.masa.malilib.config.options.ConfigOptionList;
+import fi.dy.masa.malilib.gui.button.ConfigButtonBoolean;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 import net.VrikkaDuck.duck.Variables;
+import net.VrikkaDuck.duck.config.client.gui.DuckPrintOutputType;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigDouble;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
 import net.VrikkaDuck.duck.config.client.options.generic.DuckConfigHotkeyToggleable;
@@ -26,6 +32,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.TradeOfferList;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,6 +77,14 @@ public class Configs implements IConfigHandler {
         }
     }
 
+    public static class Debug {
+        public static final ConfigBoolean PRINT_PACKETS_S2C = new ConfigBoolean("print_packets_s2c", false, "Prints duck packets");
+        public static final ConfigBoolean PRINT_PACKETS_C2S = new ConfigBoolean("print_packets_c2s", false, "Prints duck packets");
+        public static final ConfigOptionList PRINT_TYPE = new ConfigOptionList("print_type", DuckPrintOutputType.NONE, "");
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(PRINT_PACKETS_S2C, PRINT_PACKETS_C2S, PRINT_TYPE);
+        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(PRINT_PACKETS_S2C, PRINT_PACKETS_C2S, PRINT_TYPE);
+    }
+
     public static class Actions{
         public static boolean RENDER_CONTAINER_TOOLTIP = false;
         public static boolean RENDER_PLAYER_INVENTORY_PREVIEW = false;
@@ -94,6 +109,9 @@ public class Configs implements IConfigHandler {
                 JsonObject root = element.getAsJsonObject();
 
                 ConfigUtils.readConfigBase(root, "Generic", Configs.Generic.OPTIONS);
+                if(Variables.DEBUG){
+                    ConfigUtils.readConfigBase(root, "Debug", Debug.OPTIONS);
+                }
             }
         }
     }
@@ -107,6 +125,9 @@ public class Configs implements IConfigHandler {
             JsonObject root = new JsonObject();
 
             ConfigUtils.writeConfigBase(root, "Generic", Generic.CONFIG_HOTKEYS);
+            if(Variables.DEBUG){
+                ConfigUtils.writeConfigBase(root, "Debug", Debug.OPTIONS);
+            }
 
             JsonUtils.writeJsonToFile(root, new File(dir, CONFIG_FILE_NAME));
         }

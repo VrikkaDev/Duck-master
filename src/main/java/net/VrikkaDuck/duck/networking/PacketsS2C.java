@@ -9,6 +9,7 @@ import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigDouble;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
 import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.networking.packet.*;
+import net.VrikkaDuck.duck.util.DebugUtils;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.TradeOfferList;
 
 import java.util.*;
@@ -36,43 +38,55 @@ public class PacketsS2C {
         ClientPlayNetworking.registerReceiver(AdminPacket.AdminS2CPacket.TYPE, PacketsS2C::onAdminPacket);
         ClientPlayNetworking.registerReceiver(EntityPacket.EntityS2CPacket.TYPE, PacketsS2C::onEntityPacket);
     }
+    
 
     private static void onContainerPacket(ContainerPacket.ContainerS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender){
 
+        DebugUtils.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
+        
 
-        NbtCompound nbt = new NbtCompound();
-        NbtCompound tnbt = packet.nbtCompound();
+        for(Map.Entry<BlockPos, NbtCompound> entry : packet.nbtMap().entrySet()){
 
-        switch (packet.type()){
+            NbtCompound tnbt = entry.getValue();
 
-            case FURNACE, BEEHIVE -> {
-                nbt = tnbt;
-            }
+            ContainerType type = ContainerType.fromValue(tnbt.getInt("containerType"));
 
-            default -> {
-                nbt.put("BlockEntityTag", tnbt);
+            NbtCompound nbt = new NbtCompound();
+            switch (type){
 
-                if (!nbt.getCompound("BlockEntityTag").contains("Items") || nbt.getCompound("BlockEntityTag").getList("Items", 10).isEmpty()) {
-                    NbtList lst = new NbtList();
-                    NbtCompound a = new NbtCompound();
-                    a.put("Count", NbtByte.of((byte) 1));
-                    lst.add(0, a);
-                    NbtCompound b = new NbtCompound();
-                    b.put("Slot", NbtByte.of((byte) 1));
-                    lst.add(1, b);
-                    NbtCompound c = new NbtCompound();
-                    c.put("Count", NbtString.of("minecraft:air"));
-                    lst.add(2, c);
-                    nbt.getCompound("BlockEntityTag").put("Items", lst);
+                case FURNACE, BEEHIVE -> {
+                    nbt = tnbt;
+                }
+
+                default -> {
+                    nbt.put("BlockEntityTag", tnbt);
+
+                    if (!nbt.getCompound("BlockEntityTag").contains("Items") || nbt.getCompound("BlockEntityTag").getList("Items", 10).isEmpty()) {
+                        NbtList lst = new NbtList();
+                        NbtCompound a = new NbtCompound();
+                        a.put("Count", NbtByte.of((byte) 1));
+                        lst.add(0, a);
+                        NbtCompound b = new NbtCompound();
+                        b.put("Slot", NbtByte.of((byte) 1));
+                        lst.add(1, b);
+                        NbtCompound c = new NbtCompound();
+                        c.put("Count", NbtString.of("minecraft:air"));
+                        lst.add(2, c);
+                        nbt.getCompound("BlockEntityTag").put("Items", lst);
+                    }
                 }
             }
+
+            Configs.Actions.WORLD_CONTAINERS.put(entry.getKey(), Map.entry(nbt, type));
         }
 
-        Configs.Actions.WORLD_CONTAINERS.put(packet.pos(), Map.entry(nbt, packet.type()));
+
         Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
     }
 
     private static void onErrorPacket(ErrorPacket.ErrorS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender){
+        DebugUtils.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
+
         ErrorLevel errorLevel = packet.level();
         switch (errorLevel){
             case INFO -> Variables.LOGGER.info(packet.error().getString());
@@ -89,10 +103,13 @@ public class PacketsS2C {
     }
 
     private static void onHandshakePacket(HandshakePacket.HandshakeS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender){
+        DebugUtils.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
         serverProperties.put("duckVersion", packet.duckVersion());
     }
 
     private static void onAdminPacket(AdminPacket.AdminS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender){
+        DebugUtils.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
+
         Map<String, NbtCompound> _map = new HashMap<>();
         for(NbtElement element : packet.nbtCompound().getList("options", NbtList.COMPOUND_TYPE)){
             if(element instanceof NbtCompound compound){
@@ -100,7 +117,6 @@ public class PacketsS2C {
             }
         }
 
-        List<IConfigBase> _list = new ArrayList<>();
         for(IConfigBase base : Configs.Admin.DEFAULT_OPTIONS){
             if(base instanceof DuckConfigDouble sbase){
                 // inspectdistance. not used
@@ -108,13 +124,11 @@ public class PacketsS2C {
             }
             if(_map.containsKey(base.getName())){
                 NbtCompound nbt = _map.get(base.getName());
-                ((DuckConfigLevel)base).setBooleanValue(nbt.getBoolean("optionValue"));
-                ((DuckConfigLevel)base).setPermissionLevel(nbt.getInt("optionPermissionLevel"));
-                _list.add(base);
+                ((DuckConfigLevel)base).setValuesWithoutCallback(nbt.getBoolean("optionValue"), nbt.getInt("optionPermissionLevel"));
             }
         }
-        Configs.Admin.OPTIONS = ImmutableList.copyOf(_list);
 
+        List<IConfigBase> _list = new ArrayList<>();
         for(IConfigBase base : Configs.Generic.DEFAULT_OPTIONS){
             if(!_map.containsKey(base.getName())){
                 continue;
@@ -125,11 +139,11 @@ public class PacketsS2C {
             }
         }
         Configs.Generic.OPTIONS = ImmutableList.copyOf(_list);
-
-        ServerConfigs.saveToFile();
     }
 
     private static void onEntityPacket(EntityPacket.EntityS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender){
+        DebugUtils.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
+
         switch (packet.type()){
             case PLAYER_INVENTORY -> {
                 NbtCompound invnbt = packet.nbt();

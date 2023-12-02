@@ -4,6 +4,7 @@ import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import net.VrikkaDuck.duck.config.client.Configs;
+import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
 import net.VrikkaDuck.duck.config.client.options.generic.DuckConfigHotkeyToggleable;
 import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.util.GuiRenderUtils;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class InGameHudMixin {
 
     // thiS is STUPidD ;)
+    //todo next file to be rewritten
     @Inject(at = @At("RETURN"), method = "render")
     private void render(DrawContext context, float tickDelta, CallbackInfo cb) {
         if (Configs.Actions.RENDER_CONTAINER_TOOLTIP
@@ -38,27 +40,30 @@ public class InGameHudMixin {
                 ItemStack cis = new ItemStack(Items.WHITE_SHULKER_BOX);
                 cis.setNbt(entry.getKey());
 
-                if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.DOUBLE_CHEST, context)) {
+                if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.DOUBLE_CHEST, Configs.Admin.INSPECT_CONTAINER)) {
                     GuiRenderUtils.renderDoubleChestPreview(cis,
                             GuiUtils.getScaledWindowWidth() / 2 - 96, GuiUtils.getScaledWindowHeight() / 2 + 60, true, context);
-                } else if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.HOPPER, context)) {
+                } else if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.HOPPER, Configs.Admin.INSPECT_CONTAINER)) {
                     GuiRenderUtils.renderHopperPreview(cis,
                             GuiUtils.getScaledWindowWidth() / 2 - (52 + 8), GuiUtils.getScaledWindowHeight() / 2 + (16 + 16), true, context);
-                } else if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.DISPENSER, context)) {
+                } else if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.DISPENSER, Configs.Admin.INSPECT_CONTAINER)) {
                     GuiRenderUtils.renderDispenserPreview(cis, GuiUtils.getScaledWindowWidth() / 2 - 34, GuiUtils.getScaledWindowHeight() / 2 - 43, context);
-                } else if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.CHEST, context)) {
+                } else if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.CHEST, Configs.Admin.INSPECT_CONTAINER)) {
+                    RenderUtils.renderShulkerBoxPreview(cis, GuiUtils.getScaledWindowWidth() / 2 - 96,
+                            GuiUtils.getScaledWindowHeight() / 2 + 30, true, context);
+                } else if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP, Configs.Generic.INSPECT_CONTAINER, ContainerType.ENDER_CHEST, Configs.Admin.INSPECT_CONTAINER)) {
                     RenderUtils.renderShulkerBoxPreview(cis, GuiUtils.getScaledWindowWidth() / 2 - 96,
                             GuiUtils.getScaledWindowHeight() / 2 + 30, true, context);
                 }
             }
 
             if(isContainer){
-                if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP && entry.getValue() == ContainerType.FURNACE, Configs.Generic.INSPECT_CONTAINER, null, context)) {
+                if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP && entry.getValue() == ContainerType.FURNACE, Configs.Generic.INSPECT_CONTAINER, null, Configs.Admin.INSPECT_CONTAINER)) {
                     GuiRenderUtils.renderFurnacePreview(entry.getKey(), GuiUtils.getScaledWindowWidth() / 2 - 59,
                             GuiUtils.getScaledWindowHeight() / 2 + 30, context);
                 }
 
-                if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP && entry.getValue() == ContainerType.BEEHIVE, Configs.Generic.INSPECT_CONTAINER, null, context)) {
+                if (handleRenderCondition(Configs.Actions.RENDER_CONTAINER_TOOLTIP && entry.getValue() == ContainerType.BEEHIVE, Configs.Generic.INSPECT_CONTAINER, null, Configs.Admin.INSPECT_CONTAINER)) {
                     GuiRenderUtils.renderBeehivePreview(entry.getKey(), GuiUtils.getScaledWindowWidth() / 2,
                             GuiUtils.getScaledWindowHeight() / 2, context);
                 }
@@ -66,12 +71,12 @@ public class InGameHudMixin {
 
 
 
-            if (handleRenderCondition(Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW, Configs.Generic.INSPECT_PLAYER_INVENTORY, null, context)) {
+            if (handleRenderCondition(Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW, Configs.Generic.INSPECT_PLAYER_INVENTORY, null, Configs.Admin.INSPECT_PLAYER_INVENTORY)) {
                 GuiRenderUtils.renderPlayerInventory(Configs.Actions.TARGET_PLAYER_INVENTORY, GuiUtils.getScaledWindowWidth() / 2,
                         GuiUtils.getScaledWindowHeight() / 2, context);
             }
 
-            if (handleRenderCondition(Configs.Actions.RENDER_VILLAGER_TRADES, Configs.Generic.INSPECT_VILLAGER_TRADES, null, context)) {
+            if (handleRenderCondition(Configs.Actions.RENDER_VILLAGER_TRADES, Configs.Generic.INSPECT_VILLAGER_TRADES, null, Configs.Admin.INSPECT_VILLAGER_TRADES)) {
                 GuiRenderUtils.renderTrades(Configs.Actions.VILLAGER_TRADES, GuiUtils.getScaledWindowWidth() / 2,
                         GuiUtils.getScaledWindowHeight() / 2, context);
             }
@@ -79,8 +84,8 @@ public class InGameHudMixin {
     }
 
     @Unique
-    private boolean handleRenderCondition(boolean renderFlag, DuckConfigHotkeyToggleable inspectFlag, ContainerType containerType, DrawContext context) {
+    private boolean handleRenderCondition(boolean renderFlag, DuckConfigHotkeyToggleable inspectFlag, ContainerType containerType, DuckConfigLevel adminconf) {
         return renderFlag && inspectFlag.getKeybind().isKeybindHeld() && inspectFlag.getBooleanValue()
-                && (containerType == null || Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP == containerType.value);
+                && (containerType == null || Configs.Actions.RENDER_DOUBLE_CHEST_TOOLTIP == containerType.value) && adminconf.getBooleanValue();
     }
 }

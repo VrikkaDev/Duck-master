@@ -3,6 +3,7 @@ package net.VrikkaDuck.duck.event;
 import fi.dy.masa.malilib.interfaces.IClientTickHandler;
 import net.VrikkaDuck.duck.config.client.Configs;
 import net.VrikkaDuck.duck.networking.ContainerType;
+import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.packet.ContainerPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -15,6 +16,8 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
@@ -64,21 +67,36 @@ public class ClientTickHandler implements IClientTickHandler {
         this.blockHitHandler.lookingNewEntity(mc.targetedEntity);
     }
 
+    private Instant unusedContainerLast = Instant.now();
     private void checkUnusedContainers(MinecraftClient mc){
         if(mc.player == null){
             return;
         }
-        BlockPos ppos = mc.getCameraEntity().getBlockPos();
 
-        // Remove containers that are further away from player than 10
-        Configs.Actions.WORLD_CONTAINERS.entrySet().removeIf(entry -> !ppos.isWithinDistance(entry.getKey(), 10));
-    }
+        if(!Configs.Generic.INSPECT_CONTAINER.getBooleanValue()){
+            return;
+        }
 
-    private int containerCheck = 0;
+        if(Duration.between(containerCheck, Instant.now()).toMillis() > 1000){
+            unusedContainerLast = Instant.now();
+            BlockPos ppos = mc.getCameraEntity().getBlockPos();
+
+            // Remove containers that are further away from player than 10
+            Configs.Actions.WORLD_CONTAINERS.entrySet().removeIf(entry -> !ppos.isWithinDistance(entry.getKey(), 10));
+        }
+      }
+
+    private Instant containerCheck = Instant.now();
     private CompletableFuture<Void> future;
     private final AtomicBoolean found = new AtomicBoolean(false);
 
     private void checkNewContainers(MinecraftClient mc){
+
+        // Don't send packets if inspect container isnt enabled
+        if(!Configs.Generic.INSPECT_CONTAINER.getBooleanValue()){
+            return;
+        }
+
 
         if(future != null && !future.isDone()){
             return;
@@ -87,7 +105,7 @@ public class ClientTickHandler implements IClientTickHandler {
         if(found.get()){
 
             ContainerPacket.ContainerC2SPacket packet = new ContainerPacket.ContainerC2SPacket(mc.player.getUuid(), mc.getCameraEntity().getBlockPos());
-            ClientPlayNetworking.send(packet);
+            NetworkHandler.SendToServer(packet);
 
             found.set(false);
         }
@@ -96,17 +114,15 @@ public class ClientTickHandler implements IClientTickHandler {
 
         //todo need different system...
 
-        containerCheck ++;
-        if(containerCheck >= 20){
-            containerCheck = 0;
+        if(Duration.between(containerCheck, Instant.now()).toMillis() > 400){
+            containerCheck = Instant.now();
 
             found.set(false);
 
 
-            Box box = new Box(mc.player.getBlockPos()).expand(5);
+            Box box = new Box(mc.getCameraEntity().getBlockPos()).expand(5);
             Stream<BlockEntity> blockEntities = BlockPos.stream(box).map(mc.world::getBlockEntity);
 
-            // todo maybe make run in parallel at some point?
             future = CompletableFuture.allOf(
                     blockEntities
                             .map(blockEntity -> CompletableFuture.runAsync(() -> {

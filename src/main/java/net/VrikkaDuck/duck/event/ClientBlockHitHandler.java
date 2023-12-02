@@ -3,6 +3,7 @@ package net.VrikkaDuck.duck.event;
 import net.VrikkaDuck.duck.config.client.Configs;
 import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.networking.EntityDataType;
+import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.packet.EntityPacket;
 import net.VrikkaDuck.duck.util.ChestUtils;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -103,13 +104,17 @@ public class ClientBlockHitHandler {
         }
 
         if(entity.getType().equals(EntityType.PLAYER)){
-            EntityPacket.EntityC2SPacket packet = new EntityPacket.EntityC2SPacket(mc.player.getUuid(), EntityDataType.PLAYER_INVENTORY, entity.getUuid());
+            if(Configs.Generic.INSPECT_PLAYER_INVENTORY.getBooleanValue()){
+                EntityPacket.EntityC2SPacket packet = new EntityPacket.EntityC2SPacket(mc.player.getUuid(), EntityDataType.PLAYER_INVENTORY, entity.getUuid());
 
-            ClientPlayNetworking.send(packet);
+                NetworkHandler.SendToServer(packet);
+            }
         }else if(entity.getType().equals(EntityType.VILLAGER)){
-            EntityPacket.EntityC2SPacket packet = new EntityPacket.EntityC2SPacket(mc.player.getUuid(), EntityDataType.VILLAGER_TRADES, entity.getUuid());
+            if(Configs.Generic.INSPECT_VILLAGER_TRADES.getBooleanValue()){
+                EntityPacket.EntityC2SPacket packet = new EntityPacket.EntityC2SPacket(mc.player.getUuid(), EntityDataType.VILLAGER_TRADES, entity.getUuid());
 
-            ClientPlayNetworking.send(packet);
+                NetworkHandler.SendToServer(packet);
+            }
         } else{
             resetAll();
             return;

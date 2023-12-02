@@ -3,6 +3,7 @@ package net.VrikkaDuck.duck.mixin.common;
 import net.VrikkaDuck.duck.networking.PacketsC2S;
 import net.VrikkaDuck.duck.networking.ServerPlayerManager;
 import net.VrikkaDuck.duck.networking.packet.ContainerPacket;
+import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -17,8 +18,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-@Mixin(LootableContainerBlockEntity.class)
-public class LootableContainerBlockEntityMixin {
+@Mixin(HopperBlockEntity.class)
+public class HopperBlockEntityMixin {
     @Inject(method = "setStack*", at = @At("RETURN"))
     private void duck$setStack(int slot, ItemStack stack, CallbackInfo ci){
 
@@ -35,7 +36,6 @@ public class LootableContainerBlockEntityMixin {
 
             return pos.isWithinDistance(_p, 10);
         });
-
         for(var player : players.toList()){
             if(player instanceof ServerPlayerEntity splayer){
 

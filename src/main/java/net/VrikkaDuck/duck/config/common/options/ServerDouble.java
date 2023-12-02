@@ -54,7 +54,7 @@ public class ServerDouble implements IServerLevel {
         }
         catch (Exception e)
         {
-            Variables.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
+            Variables.LOGGER.warn("Failed to set config value for '{}'   from the JSON element '{}'", this.getName(), element, e);
         }
     }
 

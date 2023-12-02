@@ -12,6 +12,7 @@ public class GameWorld {
     private static MinecraftServer server;
     private static World world;
     private static MinecraftClient mc;
+    private static boolean hasClient = false;
 
     public static MinecraftServer getServer() {
         return server;
@@ -47,8 +48,18 @@ public class GameWorld {
     public static File getDataFolder(){
         return GameWorld.getServer().getSavePath(WorldSavePath.ROOT).resolve("data").toFile();
     }
-
     public static boolean hasPermissionLevel(int level, MinecraftClient player){
         return player.player.hasPermissionLevel(level);
+    }
+    public static boolean hasClient(){
+
+        if(!hasClient){
+            if(MinecraftClient.getInstance() == null){
+                return false;
+            }
+            hasClient = true;
+        }
+
+        return true;
     }
 }

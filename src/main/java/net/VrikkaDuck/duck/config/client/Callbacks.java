@@ -11,6 +11,7 @@ import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
 import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
 import net.VrikkaDuck.duck.gui.ConfigGui;
+import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.packet.AdminPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -30,7 +31,7 @@ public class Callbacks {
             compound.putBoolean("request", false);
             compound.put("options", Configs.Admin.getAsNbtList());
             AdminPacket.AdminC2SPacket packet = new AdminPacket.AdminC2SPacket(MinecraftClient.getInstance().player.getUuid(), compound);
-            ClientPlayNetworking.send(packet);
+            NetworkHandler.SendToServer(packet);
         }
     }
     public static class AdminDoubleCallback implements IValueChangeCallback<DuckConfigDouble>
@@ -42,7 +43,7 @@ public class Callbacks {
             compound.putBoolean("request", false);
             compound.put("options", Configs.Admin.getAsNbtList());
             AdminPacket.AdminC2SPacket packet = new AdminPacket.AdminC2SPacket(MinecraftClient.getInstance().player.getUuid(), compound);
-            ClientPlayNetworking.send(packet);
+            NetworkHandler.SendToServer(packet);
         }
     }
 

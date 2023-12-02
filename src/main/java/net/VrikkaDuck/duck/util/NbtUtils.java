@@ -22,10 +22,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-public class PacketUtils {
+public class NbtUtils {
 
     private static Object2IntOpenHashMap<Identifier> recipesUsed = new Object2IntOpenHashMap<>();
     private static float currentFurnaceXp = 0.0f;
@@ -37,55 +39,66 @@ public class PacketUtils {
         PacketsC2S.onAdminPacket(t, player, null);
     }
 
-    public static Optional<ContainerPacket.ContainerS2CPacket> getContainerPacket(BlockPos pos, ServerPlayerEntity player) {
-        if (!ServerConfigs.Generic.INSPECT_CONTAINER.getBooleanValue() || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_CONTAINER.getPermissionLevel())) {
+    public static Optional<ContainerPacket.ContainerS2CPacket> getContainerPacket(List<BlockPos> positions, ServerPlayerEntity player) {
+        if (!ServerConfigs.Generic.INSPECT_CONTAINER.getBooleanValue()
+                || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_CONTAINER.getPermissionLevel())
+                || positions.isEmpty()) {
             return Optional.empty();
         }
 
-        BlockEntity blockEntity = player.getWorld().getBlockEntity(pos);
+        Map<BlockPos, NbtCompound> rmap = new HashMap<>();
 
-        if (blockEntity == null) {
-            Variables.LOGGER.warn("Could not find BlockEntity from the given position");
-            return Optional.empty();
-        }
+        for(BlockPos pos : positions){
+            BlockEntity blockEntity = player.getWorld().getBlockEntity(pos);
 
-        NbtCompound compound = blockEntity.createNbtWithId();
+            if (blockEntity == null) {
+                Variables.LOGGER.warn("Could not find BlockEntity from the given position");
+                return Optional.empty();
+            }
 
-        if (compound.isEmpty()) {
-            return Optional.empty();
-        }
+            NbtCompound compound = blockEntity.createNbtWithId();
+
+            if (compound.isEmpty()) {
+                return Optional.empty();
+            }
 
 
-        BlockPos blockPos = blockEntity.getPos();
-        ContainerType type = ContainerType.fromBlockEntity(blockEntity);
+            BlockPos blockPos = blockEntity.getPos();
+            ContainerType type = ContainerType.fromBlockEntity(blockEntity);
 
-        switch (type){
-            case DOUBLE_CHEST -> {
-                ChestBlockEntity sbEntity = (ChestBlockEntity)blockEntity;
-                BlockState state = sbEntity.getCachedState();
+            switch (type){
+                case DOUBLE_CHEST -> {
+                    ChestBlockEntity sbEntity = (ChestBlockEntity)blockEntity;
+                    BlockState state = sbEntity.getCachedState();
 
-                Direction direction = ChestBlock.getFacing(state);
-                ChestBlockEntity doubleChest = (ChestBlockEntity) player.getWorld().getBlockEntity(sbEntity.getPos().offset(direction, 1));
+                    Direction direction = ChestBlock.getFacing(state);
+                    ChestBlockEntity doubleChest = (ChestBlockEntity) player.getWorld().getBlockEntity(sbEntity.getPos().offset(direction, 1));
 
-                if (state.get(ChestBlock.CHEST_TYPE).equals(ChestType.RIGHT)) {
-                    blockPos = ChestUtils.getOtherChestBlockPos(player.getServerWorld(), blockEntity.getPos());
-                    compound = getDoubleChestNbt(sbEntity.createNbtWithId(), doubleChest.createNbtWithId());
-                } else {
-                    blockPos = blockEntity.getPos();
-                    compound = getDoubleChestNbt(doubleChest.createNbtWithId(), sbEntity.createNbtWithId());
+                    if (state.get(ChestBlock.CHEST_TYPE).equals(ChestType.RIGHT)) {
+                        blockPos = ChestUtils.getOtherChestBlockPos(player.getServerWorld(), blockEntity.getPos());
+                        compound = getDoubleChestNbt(sbEntity.createNbtWithId(), doubleChest.createNbtWithId());
+                    } else {
+                        blockPos = blockEntity.getPos();
+                        compound = getDoubleChestNbt(doubleChest.createNbtWithId(), sbEntity.createNbtWithId());
+                    }
+                }
+
+                case ENDER_CHEST -> compound = getEnderChestNbt(player).orElse(new NbtCompound());
+                case FURNACE -> compound = getFurnaceNbt((AbstractFurnaceBlockEntity) blockEntity, player).orElse(new NbtCompound());
+                case BEEHIVE -> compound = getBeehiveNbt((BeehiveBlockEntity) blockEntity, player).orElse(new NbtCompound());
+
+                default -> {
                 }
             }
 
-            case FURNACE -> compound = getFurnaceNbt((AbstractFurnaceBlockEntity) blockEntity, player).orElse(new NbtCompound());
-            case BEEHIVE -> compound = getBeehiveNbt((BeehiveBlockEntity) blockEntity, player).orElse(new NbtCompound());
+            compound.putInt("containerType", type.value);
 
-            default -> {
-            }
+            rmap.put(blockPos, compound);
         }
 
 
 
-        return Optional.of(new ContainerPacket.ContainerS2CPacket(player.getUuid(), type, compound, blockPos));
+        return Optional.of(new ContainerPacket.ContainerS2CPacket(player.getUuid(), rmap));
     }
     public static Optional<NbtCompound> getFurnaceNbt(AbstractFurnaceBlockEntity fblockEntity, ServerPlayerEntity player) {
 
@@ -118,6 +131,17 @@ public class PacketUtils {
         fcompound.putFloat("xp", currentFurnaceXp);
 
         return Optional.of(fcompound);
+    }
+
+    public static Optional<NbtCompound> getEnderChestNbt(ServerPlayerEntity player){
+        if(player == null){
+            return Optional.empty();
+        }
+
+        NbtCompound compound = new NbtCompound();
+        compound.put("Items", player.getEnderChestInventory().toNbtList());
+
+        return Optional.of(compound);
     }
 
     public static Optional<NbtCompound> getBeehiveNbt(BeehiveBlockEntity beeblockEntity, ServerPlayerEntity player) {

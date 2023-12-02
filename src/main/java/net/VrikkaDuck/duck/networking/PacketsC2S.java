@@ -22,10 +22,10 @@ import net.minecraft.util.math.Box;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static net.VrikkaDuck.duck.util.PacketUtils.*;
+import static net.VrikkaDuck.duck.util.NbtUtils.*;
 
 public class PacketsC2S {
-    public static final Map<UUID, Map<String, Object>> playerProperties = new HashMap<>();
+
 
     public static void register() {
         ServerPlayNetworking.registerGlobalReceiver(ContainerPacket.ContainerC2SPacket.TYPE, PacketsC2S::onContainerPacket);
@@ -36,11 +36,16 @@ public class PacketsC2S {
     }
 
     public static void onContainerPacket(ContainerPacket.ContainerC2SPacket packet, ServerPlayerEntity player, PacketSender responseSender) {
+
         BlockPos ppos = packet.pos();
 
-        Box box = new Box(ppos).expand(6);
+        ServerPlayerManager.putProperty(packet.uuid(), "playerLastBlockpos", ppos);
+
+        Box box = new Box(ppos).expand(5);
         Stream<BlockEntity> blockEntities = BlockPos.stream(box).map(player.getWorld()::getBlockEntity);
-        // todo make parallel?
+
+        List<BlockPos> _posl = new ArrayList<>();
+
         blockEntities.forEach(blockEntity -> {
 
             if(blockEntity == null){
@@ -48,18 +53,20 @@ public class PacketsC2S {
             }
 
             if(ContainerType.fromBlockEntity(blockEntity).value != -1){
-
-                Optional<ContainerPacket.ContainerS2CPacket> p = getContainerPacket(blockEntity.getPos(), player);
-                p.ifPresent(containerS2CPacket -> ServerPlayNetworking.send(player, containerS2CPacket));
+                _posl.add(blockEntity.getPos());
             }
         });
+
+        Optional<ContainerPacket.ContainerS2CPacket> p = getContainerPacket(_posl, player);
+        p.ifPresent(containerS2CPacket -> NetworkHandler.SendToClient(player, containerS2CPacket));
     }
 
     private static void onErrorPacket(ErrorPacket.ErrorC2SPacket packet, ServerPlayerEntity player, PacketSender responseSender){
+
         ErrorLevel errorLevel = packet.level();
         switch (errorLevel){
             case INFO -> Variables.LOGGER.info(packet.error().getString());
-            case INFO_INCHAT -> Objects.requireNonNull(player.getServer()).sendMessage(packet.error());
+            case INFO_INCHAT -> player.sendMessage(packet.error());
             case WARN -> Variables.LOGGER.warn(packet.error().getString());
             case ERROR -> Variables.LOGGER.error(packet.error().getString());
             default -> Variables.LOGGER.warn(("""
@@ -72,17 +79,15 @@ public class PacketsC2S {
     }
 
     private static void onHandshakePacket(HandshakePacket.HandshakeC2SPacket packet, ServerPlayerEntity player, PacketSender responseSender){
-       if(!playerProperties.containsKey(packet.uuid())){
-           playerProperties.put(packet.uuid(), new HashMap<>());
-       }
 
-       playerProperties.get(packet.uuid()).put("duckVersion", packet.duckVersion());
+        ServerPlayerManager.putProperty(packet.uuid(), "duckVersion", packet.duckVersion());
 
-        HandshakePacket.HandshakeS2CPacket rp = new HandshakePacket.HandshakeS2CPacket(packet.uuid(), Variables.MODVERSION);
-        responseSender.sendPacket(rp);
+        HandshakePacket.HandshakeS2CPacket r = new HandshakePacket.HandshakeS2CPacket(packet.uuid(), Variables.MODVERSION);
+        NetworkHandler.SendToClient(player, r);
     }
 
     public static void onAdminPacket(AdminPacket.AdminC2SPacket packet, ServerPlayerEntity player, PacketSender responseSender){
+
         NbtCompound n = packet.nbtCompound();
 
         if(n.getBoolean("request")){
@@ -92,7 +97,7 @@ public class PacketsC2S {
             rn.put("options", ServerConfigs.Generic.getAsNbtList());
 
             AdminPacket.AdminS2CPacket r = new AdminPacket.AdminS2CPacket(packet.uuid(), rn);
-            ServerPlayNetworking.send(player, r);
+            NetworkHandler.SendToClient(player, r);
             return;
         }
         // If type isn't request it is setadmin
@@ -160,6 +165,7 @@ public class PacketsC2S {
     }
 
     private static void onEntityPacket(EntityPacket.EntityC2SPacket packet, ServerPlayerEntity player, PacketSender responseSender){
+
         Entity entity = player.getServerWorld().getEntity(packet.entityUuid());
 
         NbtCompound compound = new NbtCompound();
@@ -171,6 +177,6 @@ public class PacketsC2S {
         }
 
         EntityPacket.EntityS2CPacket r = new EntityPacket.EntityS2CPacket(packet.uuid(), packet.type(), compound);
-        ServerPlayNetworking.send(player, r);
+        NetworkHandler.SendToClient(player, r);
     }
 }

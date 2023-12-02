@@ -78,7 +78,8 @@ public abstract class WidgetConfigOptionMixin extends WidgetConfigOptionBase<Gui
 
                 //+configWidth/2
                 ButtonGeneric activeButton = new ConfigButtonBoolean(x,y,configWidth/2, configHeight, toggleable);
-                ButtonGeneric resetButton = this.createResetButton(x + configWidth + 2, y, (IConfigResettable) config);
+                ButtonGeneric resetButton = this.createResetButton(x + configWidth /2 , y, (IConfigResettable) config);
+                resetButton.setHoverStrings("Is activated true/false");
 
                 ConfigOptionChangeListenerButton listenerChange = new ConfigOptionChangeListenerButton((IConfigResettable) config, resetButton, null);
 

@@ -57,7 +57,7 @@ public class ConfigGui extends GuiConfigsBase {
         }catch (Exception e){
             e.printStackTrace();
         }
-        if(ConfigGui.tab == ConfigGuiTab.ADMIN){
+        if(ConfigGui.tab == ConfigGuiTab.ADMIN || ConfigGui.tab == ConfigGuiTab.DEBUG){
             return;
         }
         if (this.getListWidget() != null)
@@ -112,6 +112,8 @@ public class ConfigGui extends GuiConfigsBase {
             if(!MinecraftClient.getInstance().player.hasPermissionLevel(Variables.PERMISSIONLEVEL)){
                 return 0;
             }
+        } else if(tab.equals(ConfigGuiTab.DEBUG) && !Variables.DEBUG){
+            return 0;
         }
 
         ButtonGeneric button = new ButtonGeneric(x, y, width, 20, tab.getDisplayName());
@@ -153,6 +155,9 @@ public class ConfigGui extends GuiConfigsBase {
         else if (tab == ConfigGuiTab.ADMIN)
         {
             configs = Configs.Admin.DEFAULT_OPTIONS;
+        }
+        else if (tab == ConfigGuiTab.DEBUG){
+            configs = Configs.Debug.DEFAULT_OPTIONS;
         }
         else
         {
@@ -197,7 +202,8 @@ public class ConfigGui extends GuiConfigsBase {
     public enum ConfigGuiTab
     {
         GENERIC         ("duck.gui.button.config_gui.generic"),
-        ADMIN         ("duck.gui.button.config_gui.admin");
+        ADMIN         ("duck.gui.button.config_gui.admin"),
+        DEBUG("duck.gui.button.config_gui.debug");
 
         private final String translationKey;
 

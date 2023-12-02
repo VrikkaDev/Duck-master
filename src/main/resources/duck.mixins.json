@@ -4,9 +4,11 @@
   "package": "net.VrikkaDuck.duck.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "common.HopperBlockEntityMixin",
     "common.LootableContainerBlockEntityMixin",
     "common.MinecraftServerMixin",
-    "common.ServerPlayerNetworkHandlerMixin"
+    "common.ServerPlayerNetworkHandlerMixin",
+    "common.VillagerEntityMixin"
   ],
   "client": [
     "client.ClientConnectionHandler",

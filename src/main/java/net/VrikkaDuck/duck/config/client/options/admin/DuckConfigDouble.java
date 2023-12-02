@@ -1,6 +1,7 @@
 package net.VrikkaDuck.duck.config.client.options.admin;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigValue;
@@ -62,7 +63,8 @@ public class DuckConfigDouble extends ConfigBase<DuckConfigDouble> implements IC
         {
             if (element.isJsonPrimitive())
             {
-                String value = element.getAsString();
+                JsonObject obj = element.getAsJsonObject();
+                String value = obj.getAsString();
                 this.value = value.isEmpty() ? getDefaultDoubleValue() : Double.parseDouble(value);
             }
             else
@@ -72,7 +74,7 @@ public class DuckConfigDouble extends ConfigBase<DuckConfigDouble> implements IC
         }
         catch (Exception e)
         {
-            Variables.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
+            Variables.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}' ", this.getName(), element, e);
         }
     }
 

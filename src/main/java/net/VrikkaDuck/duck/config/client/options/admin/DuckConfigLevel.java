@@ -1,6 +1,7 @@
 package net.VrikkaDuck.duck.config.client.options.admin;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import fi.dy.masa.malilib.config.options.ConfigBase;
 import net.VrikkaDuck.duck.Variables;
@@ -60,6 +61,12 @@ public class DuckConfigLevel extends ConfigBase<DuckConfigLevel> implements IAdm
     }
 
     @Override
+    public void setValuesWithoutCallback(boolean b, int l) {
+        this.value = b;
+        this.levelValue = l;
+    }
+
+    @Override
     public int getPermissionLevel() {
         return this.levelValue;
     }
@@ -75,9 +82,10 @@ public class DuckConfigLevel extends ConfigBase<DuckConfigLevel> implements IAdm
         {
             if (element.isJsonObject())
             {
-                String[] values = element.getAsString().split(",");
+                JsonObject obj = element.getAsJsonObject();
+                String[] values = obj.getAsString().split(",");
                 this.value = !values[0].isEmpty() && Boolean.parseBoolean(values[0]);
-                this.levelValue = values[1].isEmpty() ? PermissionLevel.OP : Integer.valueOf(values[1]);
+                this.levelValue = values[1].isEmpty() ? PermissionLevel.OP : Integer.parseInt(values[1]);
             }
             else
             {
@@ -86,7 +94,7 @@ public class DuckConfigLevel extends ConfigBase<DuckConfigLevel> implements IAdm
         }
         catch (Exception e)
         {
-            Variables.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}' {}", this.getName(), element, e);
+            Variables.LOGGER.warn("Failed to set config value for  '{}' from the JSON element '{}' {}", this.getName(), element, e);
         }
     }
 

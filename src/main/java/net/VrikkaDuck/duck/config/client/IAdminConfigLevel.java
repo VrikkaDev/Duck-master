@@ -17,6 +17,8 @@ public interface IAdminConfigLevel extends IConfigValue
 
     default void togglePermissionLevel(){this.setPermissionLevel(PermissionLevel.nextInt(this.getPermissionLevel()));};
 
+    void setValuesWithoutCallback(boolean b, int l);
+
     int getPermissionLevel();
 
     int getDefaultPermissionLevel();

@@ -6,6 +6,7 @@ import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.common.IServerLevel;
 import net.VrikkaDuck.duck.config.common.options.ServerDouble;
 import net.VrikkaDuck.duck.config.common.options.ServerLevel;
+import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.packet.AdminPacket;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.VrikkaDuck.duck.util.PermissionLevel;
@@ -17,6 +18,9 @@ import net.minecraft.nbt.NbtList;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,7 +61,7 @@ public class ServerConfigs {
         NbtCompound compound = new NbtCompound();
         compound.putBoolean("request", true);
         AdminPacket.AdminC2SPacket packet = new AdminPacket.AdminC2SPacket(MinecraftClient.getInstance().player.getUuid(), compound);
-        ClientPlayNetworking.send(packet);
+        NetworkHandler.SendToServer(packet);
     }
 
     public static void loadFromFile() {
@@ -79,6 +83,7 @@ public class ServerConfigs {
     }
 
     public static void saveToFile() {
+
         if (GameWorld.getServer() == null) {
             return;
         }
@@ -150,7 +155,18 @@ public class ServerConfigs {
         }
     }
 
+    private static Instant lastSave = Instant.now();
+
     public static boolean writeJsonToFile(JsonObject root, File file) {
+
+        // Get time since last save in milliseconds
+        // This is for safety.
+        long delta = Duration.between(lastSave, Instant.now()).toMillis();
+        if(delta < 1000){
+            return false;
+        }
+        lastSave = Instant.now();
+
         File fileTmp = new File(file.getParentFile(), file.getName() + ".tmp");
 
         if (fileTmp.exists()) {

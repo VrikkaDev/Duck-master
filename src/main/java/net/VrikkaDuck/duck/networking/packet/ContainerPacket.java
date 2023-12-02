@@ -17,24 +17,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class ContainerPacket {
-    public record ContainerS2CPacket(UUID uuid, ContainerType type, NbtCompound nbtCompound,
-                                     BlockPos pos) implements FabricPacket {
+    public record ContainerS2CPacket(UUID uuid, Map<BlockPos,NbtCompound> nbtMap) implements FabricPacket {
 
         public static final PacketType<ContainerS2CPacket> TYPE = PacketType.create(new Identifier("duck", "s2c/container"), ContainerS2CPacket::read);
 
         public static ContainerS2CPacket read(PacketByteBuf buf) {
-            return new ContainerS2CPacket(buf.readUuid(), ContainerType.fromValue(buf.readVarInt()), buf.readNbt(), buf.readBlockPos());
+            return new ContainerS2CPacket(buf.readUuid(), buf.readMap(PacketByteBuf::readBlockPos, PacketByteBuf::readNbt));
         }
 
         @Override
         public void write(PacketByteBuf buf) {
             buf.writeUuid(uuid);
-            buf.writeVarInt(type.value);
-            buf.writeNbt(nbtCompound);
-            buf.writeBlockPos(pos);
+            buf.writeMap(nbtMap, PacketByteBuf::writeBlockPos, PacketByteBuf::writeNbt);
         }
 
         @Override

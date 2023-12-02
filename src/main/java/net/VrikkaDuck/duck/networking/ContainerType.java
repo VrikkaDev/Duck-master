@@ -11,14 +11,15 @@ public enum ContainerType {
     NONE(-1),
     CHEST(0),
     DOUBLE_CHEST(1),
-    HOPPER(2),
-    DISPENSER(3),
+    ENDER_CHEST(2),
+    HOPPER(5),
+    DISPENSER(7),
     FURNACE(10),
     BEEHIVE(15),
     SHULKER(0);
 
     public final int value;
-    private ContainerType(int value){
+    ContainerType(int value){
         this.value = value;
     }
 
@@ -40,17 +41,19 @@ public enum ContainerType {
         BlockEntityType<?> type = blockEntity.getType();
 
 
-        if(type.equals(BlockEntityType.CHEST) || type.equals(BlockEntityType.TRAPPED_CHEST) || type.equals(BlockEntityType.BARREL)){
+        if(type.equals(BlockEntityType.CHEST) || type.equals(BlockEntityType.TRAPPED_CHEST) || type.equals(BlockEntityType.BARREL)) {
 
-            if(blockEntity instanceof ChestBlockEntity sbEntity) {
-                if(sbEntity.getCachedState().get(ChestBlock.CHEST_TYPE).equals(ChestType.SINGLE)){
+            if (blockEntity instanceof ChestBlockEntity sbEntity) {
+                if (sbEntity.getCachedState().get(ChestBlock.CHEST_TYPE).equals(ChestType.SINGLE)) {
                     return ContainerType.CHEST;
-                }else{
+                } else {
                     return ContainerType.DOUBLE_CHEST;
                 }
             }
 
             return ContainerType.CHEST;
+        }else if(type.equals(BlockEntityType.ENDER_CHEST)){
+            return ContainerType.ENDER_CHEST;
         }else if(type.equals(BlockEntityType.HOPPER)){
             return ContainerType.HOPPER;
         }else if(type.equals(BlockEntityType.DROPPER) || type.equals(BlockEntityType.DISPENSER)){

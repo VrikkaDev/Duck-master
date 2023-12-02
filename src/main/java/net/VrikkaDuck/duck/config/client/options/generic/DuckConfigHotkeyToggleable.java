@@ -2,6 +2,7 @@ package net.VrikkaDuck.duck.config.client.options.generic;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigBoolean;
@@ -97,7 +98,7 @@ public class DuckConfigHotkeyToggleable extends ConfigBase<DuckConfigHotkeyToggl
     {
         try
         {
-            if (element.isJsonObject())
+            if (element.isJsonPrimitive())
             {
                 JsonObject obj = element.getAsJsonObject();
 
@@ -111,7 +112,7 @@ public class DuckConfigHotkeyToggleable extends ConfigBase<DuckConfigHotkeyToggl
         }
         catch (Exception e)
         {
-            Variables.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
+            Variables.LOGGER.warn("Failed to set config value for '{}'  from the JSON element '{}' {}", this.getName(), element, e);
         }
     }
 
@@ -120,7 +121,7 @@ public class DuckConfigHotkeyToggleable extends ConfigBase<DuckConfigHotkeyToggl
     {
         JsonObject r = new JsonObject();
         r.add("keybind", this.keybind.getAsJsonElement());
-        r.addProperty("active", this.active);
+        r.add("active", new JsonPrimitive(this.active));
         return r;
     }
 
