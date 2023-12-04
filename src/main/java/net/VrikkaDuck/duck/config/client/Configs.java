@@ -1,61 +1,65 @@
 package net.VrikkaDuck.duck.config.client;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.ConfigUtils;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
-import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import fi.dy.masa.malilib.config.options.ConfigOptionList;
-import fi.dy.masa.malilib.gui.button.ConfigButtonBoolean;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.client.gui.DuckPrintOutputType;
-import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigDouble;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
 import net.VrikkaDuck.duck.config.client.options.generic.DuckConfigHotkeyToggleable;
-import net.VrikkaDuck.duck.config.common.IServerLevel;
 import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.networking.ContainerType;
+import net.VrikkaDuck.duck.networking.EntityDataType;
 import net.VrikkaDuck.duck.util.PermissionLevel;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.village.TradeOfferList;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Configs implements IConfigHandler {
     private static final String CONFIG_FILE_NAME = Variables.MODID + ".json";
 
     public static class Generic {
-        public static final DuckConfigHotkeyToggleable INSPECT_CONTAINER = new DuckConfigHotkeyToggleable("inspectContainers", true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Allows you to inspect containers while they are placed.");
-        public static final DuckConfigHotkeyToggleable INSPECT_PLAYER_INVENTORY = new DuckConfigHotkeyToggleable("inspectPlayerInventory", true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Inspect player entity inventory");
-        public static final DuckConfigHotkeyToggleable INSPECT_VILLAGER_TRADES = new DuckConfigHotkeyToggleable("inspectVillagerTrades", true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Inspect villager trades");
-        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
-        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
-        public static final ImmutableList<DuckConfigHotkeyToggleable> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
+        public static final DuckConfigHotkeyToggleable INSPECT_CONTAINER = new DuckConfigHotkeyToggleable(ServerConfigs.Generic.INSPECT_CONTAINER.getName(), true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Allows you to inspect containers while they are placed.");
+        public static final DuckConfigHotkeyToggleable INSPECT_MINECART_CONTAINERS = new DuckConfigHotkeyToggleable(ServerConfigs.Generic.INSPECT_MINECART_CONTAINERS.getName(), true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Inspect minecart containers");
+        public static final DuckConfigHotkeyToggleable INSPECT_PLAYER_INVENTORY = new DuckConfigHotkeyToggleable(ServerConfigs.Generic.INSPECT_PLAYER_INVENTORY.getName(), true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Inspect player entity inventory");
+        public static final DuckConfigHotkeyToggleable INSPECT_VILLAGER_TRADES = new DuckConfigHotkeyToggleable(ServerConfigs.Generic.INSPECT_VILLAGER_TRADES.getName(), true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Inspect villager trades");
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
+        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
+        public static final ImmutableList<DuckConfigHotkeyToggleable> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
+        public static boolean isAnyPressed(){
+            return isAnyPressed(new ArrayList<>());
+        }
+        public static boolean isAnyPressed(List<DuckConfigHotkeyToggleable> exclude){
+
+            for(DuckConfigHotkeyToggleable h : CONFIG_HOTKEYS){
+                if(h.isKeybindHeld() && Admin.fromName(h.getName()).getBooleanValue() && !exclude.contains(h)){
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public static class Admin {
-        public static final DuckConfigLevel INSPECT_CONTAINER = new DuckConfigLevel("inspectContainers", true, PermissionLevel.NORMAL ,"Inspect Containers when placed");
-        public static final DuckConfigLevel INSPECT_PLAYER_INVENTORY = new DuckConfigLevel("inspectPlayerInventory", false, PermissionLevel.NORMAL,"inspect entity inventory");
-        public static final DuckConfigLevel INSPECT_VILLAGER_TRADES = new DuckConfigLevel("inspectVillagerTrades", false, PermissionLevel.NORMAL, "Inspect villager trades");
+        public static final DuckConfigLevel INSPECT_CONTAINER = new DuckConfigLevel(Generic.INSPECT_CONTAINER.getName(), true, PermissionLevel.NORMAL ,Generic.INSPECT_CONTAINER.getComment());
+        public static final DuckConfigLevel INSPECT_MINECART_CONTAINERS = new DuckConfigLevel(Generic.INSPECT_MINECART_CONTAINERS.getName(), false, PermissionLevel.NORMAL, Generic.INSPECT_MINECART_CONTAINERS.getComment());
+        public static final DuckConfigLevel INSPECT_PLAYER_INVENTORY = new DuckConfigLevel(Generic.INSPECT_PLAYER_INVENTORY.getName(), false, PermissionLevel.NORMAL,Generic.INSPECT_PLAYER_INVENTORY.getComment());
+        public static final DuckConfigLevel INSPECT_VILLAGER_TRADES = new DuckConfigLevel(Generic.INSPECT_VILLAGER_TRADES.getName(), false, PermissionLevel.NORMAL, Generic.INSPECT_VILLAGER_TRADES.getComment());
 
-        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
 
-        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
+        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
 
         public static NbtList getAsNbtList(){
 
@@ -75,25 +79,34 @@ public class Configs implements IConfigHandler {
 
             return _l;
         }
+
+        public static DuckConfigLevel fromName(String name){
+            for(IConfigBase cb : Configs.Admin.OPTIONS) {
+
+                if (cb.getName().equals(name)){
+                    return (DuckConfigLevel)cb;
+                }
+            }
+            return null;
+        }
     }
 
     public static class Debug {
+        public static final ConfigBoolean DRAW_DEBUG_PIE = new ConfigBoolean("draw_debug_pie", false, "Draws debug pie");
         public static final ConfigBoolean PRINT_PACKETS_S2C = new ConfigBoolean("print_packets_s2c", false, "Prints duck packets");
         public static final ConfigBoolean PRINT_PACKETS_C2S = new ConfigBoolean("print_packets_c2s", false, "Prints duck packets");
         public static final ConfigOptionList PRINT_TYPE = new ConfigOptionList("print_type", DuckPrintOutputType.NONE, "");
-        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(PRINT_PACKETS_S2C, PRINT_PACKETS_C2S, PRINT_TYPE);
-        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(PRINT_PACKETS_S2C, PRINT_PACKETS_C2S, PRINT_TYPE);
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(DRAW_DEBUG_PIE, PRINT_PACKETS_S2C, PRINT_PACKETS_C2S, PRINT_TYPE);
+        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(DRAW_DEBUG_PIE, PRINT_PACKETS_S2C, PRINT_PACKETS_C2S, PRINT_TYPE);
     }
 
     public static class Actions{
-        public static boolean RENDER_CONTAINER_TOOLTIP = false;
-        public static boolean RENDER_PLAYER_INVENTORY_PREVIEW = false;
-        public static boolean RENDER_VILLAGER_TRADES = false;
+        // todo change
         public static int RENDER_DOUBLE_CHEST_TOOLTIP = 0;
-        public static TradeOfferList VILLAGER_TRADES;
-        public static Inventory TARGET_PLAYER_INVENTORY;
         public static BlockPos LOOKING_AT;
+        public static UUID LOOKING_AT_ENTITY;
         public static Map<BlockPos, Map.Entry<NbtCompound, ContainerType>> WORLD_CONTAINERS = new HashMap<>();
+        public static Map<UUID, Map.Entry<NbtCompound, EntityDataType>> WORLD_ENTITIES = new HashMap<>();
     }
 
     public static void loadFromFile()

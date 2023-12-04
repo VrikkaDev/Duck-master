@@ -5,7 +5,6 @@ import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.InventoryUtils;
-import net.VrikkaDuck.duck.config.client.Configs;
 import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
@@ -339,9 +338,9 @@ public class GuiRenderUtils {
 
         DrawContext dc = new DrawContext(mc(), mc().getBufferBuilders().getEntityVertexConsumers());
 
-        InventoryOverlay.renderInventoryStacks(InventoryRenderType.FIXED_27, Configs.Actions.TARGET_PLAYER_INVENTORY, x, y,9,9, 27, mc, dc);
+        InventoryOverlay.renderInventoryStacks(InventoryRenderType.FIXED_27, inventory, x, y,9,9, 27, mc, dc);
         y += 58;
-        InventoryOverlay.renderInventoryStacks(InventoryRenderType.FIXED_27, Configs.Actions.TARGET_PLAYER_INVENTORY, x, y,9,0, 9, mc, dc);
+        InventoryOverlay.renderInventoryStacks(InventoryRenderType.FIXED_27, inventory, x, y,9,0, 9, mc, dc);
 
         RenderSystem.applyModelViewMatrix();
     }

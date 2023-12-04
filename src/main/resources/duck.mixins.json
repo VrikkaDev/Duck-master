@@ -8,10 +8,12 @@
     "common.LootableContainerBlockEntityMixin",
     "common.MinecraftServerMixin",
     "common.ServerPlayerNetworkHandlerMixin",
+    "common.VehicleInventoryMixin",
     "common.VillagerEntityMixin"
   ],
   "client": [
     "client.ClientConnectionHandler",
+    "client.IClientWorldMixin",
     "client.InGameHudMixin",
     "client.WidgetConfigOptionMixin",
     "client.WidgetListBaseMixin"

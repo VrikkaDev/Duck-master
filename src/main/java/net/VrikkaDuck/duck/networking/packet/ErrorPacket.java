@@ -3,11 +3,9 @@ package net.VrikkaDuck.duck.networking.packet;
 import net.VrikkaDuck.duck.networking.ErrorLevel;
 import net.fabricmc.fabric.api.networking.v1.FabricPacket;
 import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 
 import java.util.UUID;
 

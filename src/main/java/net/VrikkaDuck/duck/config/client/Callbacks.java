@@ -10,16 +10,17 @@ import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigDouble;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
 import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
-import net.VrikkaDuck.duck.gui.ConfigGui;
+import net.VrikkaDuck.duck.event.ClientEntityHitHandler;
 import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.packet.AdminPacket;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.VrikkaDuck.duck.rendering.gui.ConfigGui;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 
 public class Callbacks {
 
     private static final ClientBlockHitHandler blockHitHandler = ClientBlockHitHandler.INSTANCE();
+    private static final ClientEntityHitHandler entityHitHandler = ClientEntityHitHandler.INSTANCE();
     private static final MinecraftClient mc = MinecraftClient.getInstance();
 
     public static class AdminLevelCallback implements IValueChangeCallback<DuckConfigLevel>
@@ -74,10 +75,6 @@ public class Callbacks {
                 ServerConfigs.refreshFromServer();
                 GuiBase.openGui(new ConfigGui());
                 return true;
-            }else if(key == Configs.Generic.INSPECT_CONTAINER.getKeybind()){
-                blockHitHandler.reload();
-            }else if (key == Configs.Generic.INSPECT_PLAYER_INVENTORY.getKeybind()){
-                blockHitHandler.lookingNewEntity(mc.targetedEntity);
             }
             return false;
         }

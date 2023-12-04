@@ -34,6 +34,9 @@ public class GameWorld {
     }
 
     public static World getWorld() {
+        if(world == null){
+            world = server.getOverworld();
+        }
         return world;
     }
 

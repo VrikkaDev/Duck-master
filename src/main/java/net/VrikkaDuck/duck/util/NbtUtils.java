@@ -10,10 +10,17 @@ import net.VrikkaDuck.duck.networking.packet.AdminPacket;
 import net.VrikkaDuck.duck.networking.packet.ContainerPacket;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
-import net.minecraft.block.entity.*;
+import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.block.entity.BeehiveBlockEntity;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.entity.vehicle.ChestMinecartEntity;
+import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.Recipe;
@@ -194,6 +201,35 @@ public class NbtUtils {
         }
 
         return Optional.of(entity.getOffers().toNbt());
+    }
+
+    public static Optional<NbtCompound> getMinecartContainerNbt(AbstractMinecartEntity entity, ServerPlayerEntity player){
+
+        NbtCompound compound = new NbtCompound();
+        if(entity instanceof HopperMinecartEntity m){
+            m.writeInventoryToNbt(compound);
+        }else if(entity instanceof ChestMinecartEntity m){
+            m.writeInventoryToNbt(compound);
+        }else {
+            return Optional.empty();
+        }
+
+        // Add Air in there if its empty so the renderer renders it :) i am lazy
+        NbtList _list = compound.getList("Items", NbtElement.COMPOUND_TYPE);
+        if(_list.isEmpty()){
+            NbtCompound c = new NbtCompound();
+            c.putByte("Count", (byte) 1);
+            c.putByte("Slot", (byte) 1);
+            c.putString("id", "minecraft:air");
+            _list.add(c);
+        }
+
+        // Add BlockEntityTag so can render it with the same function as the blockentity rend
+        NbtCompound tcomp = new NbtCompound();
+        tcomp.put("BlockEntityTag", compound);
+        compound = tcomp;
+
+        return Optional.of(compound);
     }
 
     public static NbtCompound getDoubleChestNbt(NbtCompound first, NbtCompound second) {

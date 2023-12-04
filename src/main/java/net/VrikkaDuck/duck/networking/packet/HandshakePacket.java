@@ -3,7 +3,6 @@ package net.VrikkaDuck.duck.networking.packet;
 import net.fabricmc.fabric.api.networking.v1.FabricPacket;
 import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.UUID;

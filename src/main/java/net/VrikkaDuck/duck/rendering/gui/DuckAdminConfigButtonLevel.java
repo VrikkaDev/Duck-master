@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.gui;
+package net.VrikkaDuck.duck.rendering.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import fi.dy.masa.malilib.gui.GuiBase;

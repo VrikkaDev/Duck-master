@@ -12,6 +12,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -37,9 +38,11 @@ public class PacketsC2S {
 
     public static void onContainerPacket(ContainerPacket.ContainerC2SPacket packet, ServerPlayerEntity player, PacketSender responseSender) {
 
+        Variables.PROFILER.start("packetsC2S_processContainerPacket");
+
         BlockPos ppos = packet.pos();
 
-        ServerPlayerManager.putProperty(packet.uuid(), "playerLastBlockpos", ppos);
+        ServerPlayerManager.INSTANCE().putProperty(packet.uuid(), "playerLastBlockpos", ppos);
 
         Box box = new Box(ppos).expand(5);
         Stream<BlockEntity> blockEntities = BlockPos.stream(box).map(player.getWorld()::getBlockEntity);
@@ -59,6 +62,8 @@ public class PacketsC2S {
 
         Optional<ContainerPacket.ContainerS2CPacket> p = getContainerPacket(_posl, player);
         p.ifPresent(containerS2CPacket -> NetworkHandler.SendToClient(player, containerS2CPacket));
+
+        Variables.PROFILER.stop("packetsC2S_processContainerPacket");
     }
 
     private static void onErrorPacket(ErrorPacket.ErrorC2SPacket packet, ServerPlayerEntity player, PacketSender responseSender){
@@ -80,13 +85,14 @@ public class PacketsC2S {
 
     private static void onHandshakePacket(HandshakePacket.HandshakeC2SPacket packet, ServerPlayerEntity player, PacketSender responseSender){
 
-        ServerPlayerManager.putProperty(packet.uuid(), "duckVersion", packet.duckVersion());
+        ServerPlayerManager.INSTANCE().putProperty(packet.uuid(), "duckVersion", packet.duckVersion());
 
         HandshakePacket.HandshakeS2CPacket r = new HandshakePacket.HandshakeS2CPacket(packet.uuid(), Variables.MODVERSION);
         NetworkHandler.SendToClient(player, r);
     }
 
     public static void onAdminPacket(AdminPacket.AdminC2SPacket packet, ServerPlayerEntity player, PacketSender responseSender){
+
 
         NbtCompound n = packet.nbtCompound();
 
@@ -100,6 +106,9 @@ public class PacketsC2S {
             NetworkHandler.SendToClient(player, r);
             return;
         }
+
+        Variables.PROFILER.start("packetsC2S_processAdminPacket");
+
         // If type isn't request it is setadmin
 
         NbtList cl = n.getList("options", NbtList.COMPOUND_TYPE);
@@ -161,22 +170,43 @@ public class PacketsC2S {
 
             PacketsC2S.onAdminPacket(t, pl, null);
         }
+        Variables.PROFILER.stop("packetsC2S_processAdminPacket");
 
     }
 
-    private static void onEntityPacket(EntityPacket.EntityC2SPacket packet, ServerPlayerEntity player, PacketSender responseSender){
+    public static void onEntityPacket(EntityPacket.EntityC2SPacket packet, ServerPlayerEntity player, PacketSender responseSender){
 
-        Entity entity = player.getServerWorld().getEntity(packet.entityUuid());
+        Variables.PROFILER.start("packetsC2S_processEntityPacket");
 
-        NbtCompound compound = new NbtCompound();
+        NbtList _list = new NbtList();
 
-        switch (packet.type()){
-            case VILLAGER_TRADES -> compound = getVillagerTradesNbt((VillagerEntity) entity, player).orElse(new NbtCompound());
-            case PLAYER_INVENTORY -> compound = getPlayerInventoryNbt((ServerPlayerEntity) entity, player).orElse(new NbtCompound());
-            default -> {}
+
+        // todo add max entity limit
+        Box box = new Box(packet.playerpos()).expand(5);
+        List<Entity> entities = player.getEntityWorld().getOtherEntities(player, box);
+
+        for(Entity entity : entities){
+
+            NbtCompound compound = new NbtCompound();
+            EntityDataType type = EntityDataType.fromEntity(entity);
+
+            switch (type){
+                case VILLAGER_TRADES -> compound = getVillagerTradesNbt((VillagerEntity) entity, player).orElse(new NbtCompound());
+                case PLAYER_INVENTORY -> compound = getPlayerInventoryNbt((ServerPlayerEntity) entity, player).orElse(new NbtCompound());
+                case MINECART_CHEST, MINECART_HOPPER -> compound = getMinecartContainerNbt((AbstractMinecartEntity) entity, player).orElse(new NbtCompound());
+                default -> {continue;}
+            }
+
+            compound.putUuid("uuid", entity.getUuid());
+            compound.putInt("entityType", type.value);
+            _list.add(compound);
         }
 
-        EntityPacket.EntityS2CPacket r = new EntityPacket.EntityS2CPacket(packet.uuid(), packet.type(), compound);
+        NbtCompound n = new NbtCompound();
+        n.put("entities", _list);
+        EntityPacket.EntityS2CPacket r = new EntityPacket.EntityS2CPacket(packet.uuid(), n);
         NetworkHandler.SendToClient(player, r);
+
+        Variables.PROFILER.stop("packetsC2S_processEntityPacket");
     }
 }

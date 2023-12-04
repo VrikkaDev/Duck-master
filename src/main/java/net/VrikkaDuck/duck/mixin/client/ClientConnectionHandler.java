@@ -2,12 +2,9 @@ package net.VrikkaDuck.duck.mixin.client;
 
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.common.ServerConfigs;
-import net.VrikkaDuck.duck.networking.ErrorLevel;
 import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.PacketsS2C;
-import net.VrikkaDuck.duck.networking.packet.ErrorPacket;
 import net.VrikkaDuck.duck.networking.packet.HandshakePacket;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.player.PlayerEntity;

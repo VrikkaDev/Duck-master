@@ -2,7 +2,6 @@ package net.VrikkaDuck.duck.config.client.gui;
 
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
-import fi.dy.masa.malilib.util.MessageOutputType;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public enum DuckPrintOutputType implements IConfigOptionListEntry {

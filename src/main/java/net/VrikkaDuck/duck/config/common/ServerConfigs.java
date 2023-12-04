@@ -3,14 +3,11 @@ package net.VrikkaDuck.duck.config.common;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.common.IServerLevel;
-import net.VrikkaDuck.duck.config.common.options.ServerDouble;
 import net.VrikkaDuck.duck.config.common.options.ServerLevel;
 import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.packet.AdminPacket;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.VrikkaDuck.duck.util.PermissionLevel;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -20,7 +17,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,12 +26,14 @@ public class ServerConfigs {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static class Generic {
-        public static final IServerLevel INSPECT_CONTAINER = new ServerLevel("inspectContainers", false, PermissionLevel.NORMAL);
+        public static final IServerLevel INSPECT_CONTAINER = new ServerLevel("inspectContainers", true, PermissionLevel.NORMAL);
+        public static final IServerLevel INSPECT_MINECART_CONTAINERS = new ServerLevel("inspectMinecartContainers", true, PermissionLevel.NORMAL);
         public static final IServerLevel INSPECT_PLAYER_INVENTORY = new ServerLevel("inspectPlayerInventory", false, PermissionLevel.NORMAL);
         public static final IServerLevel INSPECT_VILLAGER_TRADES = new ServerLevel("inspectVillagerTrades", false, PermissionLevel.NORMAL);
 
         public static ImmutableList<IServerLevel> OPTIONS = ImmutableList.of(
                 INSPECT_CONTAINER,
+                INSPECT_MINECART_CONTAINERS,
                 INSPECT_PLAYER_INVENTORY,
                 INSPECT_VILLAGER_TRADES
         );

@@ -3,12 +3,8 @@ package net.VrikkaDuck.duck.config.client.options.generic;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigBoolean;
-import fi.dy.masa.malilib.config.IConfigResettable;
 import fi.dy.masa.malilib.config.options.ConfigBase;
-import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeybindMulti;
@@ -16,7 +12,6 @@ import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.VrikkaDuck.duck.Variables;
-import net.VrikkaDuck.duck.config.client.IAdminConfigLevel;
 
 public class DuckConfigHotkeyToggleable extends ConfigBase<DuckConfigHotkeyToggleable> implements IHotkey, IConfigBoolean {
     private final IKeybind keybind;
@@ -45,6 +40,10 @@ public class DuckConfigHotkeyToggleable extends ConfigBase<DuckConfigHotkeyToggl
         this.keybind = KeybindMulti.fromStorageString(defaultStorageString, settings);
         this.active = defaultValue;
         this.activeDefault = defaultValue;
+    }
+
+    public boolean isKeybindHeld(){
+        return this.getBooleanValue() && this.getKeybind().isKeybindHeld();
     }
 
     @Override

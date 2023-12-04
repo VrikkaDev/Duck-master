@@ -1,14 +1,12 @@
-package net.VrikkaDuck.duck.util;
+package net.VrikkaDuck.duck.debug;
 
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.client.Configs;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.VrikkaDuck.duck.util.GameWorld;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.NetworkSide;
 import net.minecraft.text.Text;
 
-public class DebugUtils {
+public class DebugPrinter {
     public static void DebugPrint(Object obj, boolean a){
         if(!Variables.DEBUG || !a || !GameWorld.hasClient()){
             return;

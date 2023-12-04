@@ -2,14 +2,12 @@ package net.VrikkaDuck.duck.networking;
 
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.IConfigBase;
-import fi.dy.masa.malilib.util.InventoryUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.client.Configs;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigDouble;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
-import net.VrikkaDuck.duck.config.common.ServerConfigs;
+import net.VrikkaDuck.duck.debug.DebugPrinter;
 import net.VrikkaDuck.duck.networking.packet.*;
-import net.VrikkaDuck.duck.util.DebugUtils;
 import net.VrikkaDuck.duck.util.GameWorld;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,12 +15,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.village.TradeOfferList;
 
 import java.util.*;
 
@@ -42,7 +36,9 @@ public class PacketsS2C {
 
     private static void onContainerPacket(ContainerPacket.ContainerS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender){
 
-        DebugUtils.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
+        Variables.PROFILER.start("packetsS2C_processContainerPacket");
+
+        DebugPrinter.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
         
 
         for(Map.Entry<BlockPos, NbtCompound> entry : packet.nbtMap().entrySet()){
@@ -79,13 +75,11 @@ public class PacketsS2C {
 
             Configs.Actions.WORLD_CONTAINERS.put(entry.getKey(), Map.entry(nbt, type));
         }
-
-
-        Configs.Actions.RENDER_CONTAINER_TOOLTIP = true;
+        Variables.PROFILER.stop("packetsS2C_processContainerPacket");
     }
 
     private static void onErrorPacket(ErrorPacket.ErrorS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender){
-        DebugUtils.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
+        DebugPrinter.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
 
         ErrorLevel errorLevel = packet.level();
         switch (errorLevel){
@@ -103,12 +97,15 @@ public class PacketsS2C {
     }
 
     private static void onHandshakePacket(HandshakePacket.HandshakeS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender){
-        DebugUtils.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
+        DebugPrinter.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
         serverProperties.put("duckVersion", packet.duckVersion());
     }
 
     private static void onAdminPacket(AdminPacket.AdminS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender){
-        DebugUtils.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
+
+        Variables.PROFILER.start("packetsS2C_processAdminPacket");
+
+        DebugPrinter.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
 
         Map<String, NbtCompound> _map = new HashMap<>();
         for(NbtElement element : packet.nbtCompound().getList("options", NbtList.COMPOUND_TYPE)){
@@ -139,33 +136,28 @@ public class PacketsS2C {
             }
         }
         Configs.Generic.OPTIONS = ImmutableList.copyOf(_list);
+        Variables.PROFILER.stop("packetsS2C_processAdminPacket");
     }
 
     private static void onEntityPacket(EntityPacket.EntityS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender){
-        DebugUtils.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
 
-        switch (packet.type()){
-            case PLAYER_INVENTORY -> {
-                NbtCompound invnbt = packet.nbt();
-                NbtList invList = invnbt.getList("Inventory", 10);
-                DefaultedList<ItemStack> itemsasstack = DefaultedList.ofSize(121, new ItemStack(Items.AIR));
-                for (NbtElement a : invList) {
-                    ItemStack sst = ItemStack.fromNbt((NbtCompound) a);
-                    if (((NbtCompound) a).getByte("Slot") == -106) {
-                        itemsasstack.set(120, sst);
-                    } else {
-                        itemsasstack.set(((NbtCompound) a).getByte("Slot"), sst);
-                    }
-                }
-                Configs.Actions.TARGET_PLAYER_INVENTORY = InventoryUtils.getAsInventory(itemsasstack);
-                Configs.Actions.RENDER_PLAYER_INVENTORY_PREVIEW = true;
-            }
+        Variables.PROFILER.start("packetsS2C_processEntityPacket");
 
-            case VILLAGER_TRADES -> {
-                TradeOfferList veList = new TradeOfferList(packet.nbt());
-                Configs.Actions.RENDER_VILLAGER_TRADES = true;
-                Configs.Actions.VILLAGER_TRADES = veList;
+        DebugPrinter.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
+
+        NbtList _list = packet.nbt().getList("entities", NbtElement.COMPOUND_TYPE);
+        for(NbtElement ele : _list){
+
+            if(ele instanceof NbtCompound comp){
+                UUID uuid = comp.getUuid("uuid");
+                EntityDataType type = EntityDataType.fromValue(comp.getInt("entityType"));
+
+                comp.remove("uuid");
+                comp.remove("entityType");
+
+                Configs.Actions.WORLD_ENTITIES.put(uuid, Map.entry(comp, type));
             }
         }
+        Variables.PROFILER.stop("packetsS2C_processEntityPacket");
     }
 }
