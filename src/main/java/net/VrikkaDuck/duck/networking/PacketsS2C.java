@@ -6,6 +6,7 @@ import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.client.Configs;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigDouble;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
+import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.debug.DebugPrinter;
 import net.VrikkaDuck.duck.networking.packet.*;
 import net.VrikkaDuck.duck.util.GameWorld;
@@ -99,6 +100,8 @@ public class PacketsS2C {
     private static void onHandshakePacket(HandshakePacket.HandshakeS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender){
         DebugPrinter.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_S2C.getBooleanValue());
         serverProperties.put("duckVersion", packet.duckVersion());
+
+        ServerConfigs.refreshFromServer();
     }
 
     private static void onAdminPacket(AdminPacket.AdminS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender){
@@ -156,6 +159,8 @@ public class PacketsS2C {
                 comp.remove("entityType");
 
                 Configs.Actions.WORLD_ENTITIES.put(uuid, Map.entry(comp, type));
+            }else {
+                DebugPrinter.DebugPrint("%s is not instanceof nbtcompound".formatted(ele), Configs.Debug.PRINT_MISC.getBooleanValue());
             }
         }
         Variables.PROFILER.stop("packetsS2C_processEntityPacket");

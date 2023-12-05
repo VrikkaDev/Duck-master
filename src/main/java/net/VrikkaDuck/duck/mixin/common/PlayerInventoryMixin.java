@@ -5,29 +5,30 @@ import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.ServerPlayerManager;
 import net.VrikkaDuck.duck.networking.packet.EntityPacket;
 import net.VrikkaDuck.duck.util.NbtUtils;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.vehicle.ChestMinecartEntity;
+import net.minecraft.entity.vehicle.StorageMinecartEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.village.TradeOfferList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
-@Mixin(VillagerEntity.class)
-public class VillagerEntityMixin {
-
+@Mixin(PlayerInventory.class)
+public class PlayerInventoryMixin {
     @Unique
     private void sendP(){
-        VillagerEntity self = ((VillagerEntity) (Object)this);
+        PlayerEntity self = ((PlayerInventory) (Object)this).player;
 
         Stream<? extends PlayerEntity> players = self.getWorld().getPlayers().stream().filter(p -> {
             Optional<Object> _fp = ServerPlayerManager.INSTANCE().getProperty(p.getUuid(), "playerLastBlockpos");
@@ -42,10 +43,10 @@ public class VillagerEntityMixin {
 
                 NbtCompound compound = new NbtCompound();
                 NbtList _l = new NbtList();
-                NbtCompound tc = NbtUtils.getVillagerTradesNbt(self, splayer).orElse(new NbtCompound());
+                NbtCompound tc = NbtUtils.getPlayerInventoryNbt((ServerPlayerEntity) self, splayer).orElse(new NbtCompound());
 
                 tc.putUuid("uuid", self.getUuid());
-                tc.putInt("entityType",  EntityDataType.VILLAGER_TRADES.value);
+                tc.putInt("entityType",  EntityDataType.PLAYER_INVENTORY.value);
                 _l.add(tc);
                 compound.put("entities", _l);
 
@@ -56,17 +57,17 @@ public class VillagerEntityMixin {
             }
         }
     }
+    @Inject(method = "setStack", at = @At("RETURN"))
+    private void duck$setStack(int slot, ItemStack stack, CallbackInfo ci){
+        sendP();
+    }
 
-    @Inject(method = "restock", at = @At("RETURN"))
-    private void duck$restock(CallbackInfo ci){
+    @Inject(method = "removeStack(I)Lnet/minecraft/item/ItemStack;", at = @At("RETURN"))
+    private void duck$removeStack1(int slot, CallbackInfoReturnable<ItemStack> cir){
         sendP();
     }
-    @Inject(method = "setOffers", at = @At("RETURN"))
-    private void duck$setOffers(TradeOfferList offers, CallbackInfo ci){
-        sendP();
-    }
-    @Inject(method = "levelUp", at = @At("RETURN"))
-    private void duck$levelUp(CallbackInfo ci){
+    @Inject(method = "removeStack(II)Lnet/minecraft/item/ItemStack;", at = @At("RETURN"))
+    private void duck$removeStack2(int slot, int amount, CallbackInfoReturnable<ItemStack> cir){
         sendP();
     }
 }

@@ -49,6 +49,15 @@ public class Configs implements IConfigHandler {
             }
             return false;
         }
+
+        public static boolean isAnyBoolean(DuckConfigHotkeyToggleable... h){
+            for(DuckConfigHotkeyToggleable a : h){
+                if(a.getBooleanValue() && Admin.fromName(a.getName()).getBooleanValue()){
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public static class Admin {
@@ -93,11 +102,13 @@ public class Configs implements IConfigHandler {
 
     public static class Debug {
         public static final ConfigBoolean DRAW_DEBUG_PIE = new ConfigBoolean("draw_debug_pie", false, "Draws debug pie");
+        public static final ConfigBoolean DRAW_DEBUG_INFO = new ConfigBoolean("draw_debug_info", false, "Draws some debugging info");
         public static final ConfigBoolean PRINT_PACKETS_S2C = new ConfigBoolean("print_packets_s2c", false, "Prints duck packets");
         public static final ConfigBoolean PRINT_PACKETS_C2S = new ConfigBoolean("print_packets_c2s", false, "Prints duck packets");
+        public static final ConfigBoolean PRINT_MISC = new ConfigBoolean("print_misc", false, "Prints misc things");
         public static final ConfigOptionList PRINT_TYPE = new ConfigOptionList("print_type", DuckPrintOutputType.NONE, "");
-        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(DRAW_DEBUG_PIE, PRINT_PACKETS_S2C, PRINT_PACKETS_C2S, PRINT_TYPE);
-        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(DRAW_DEBUG_PIE, PRINT_PACKETS_S2C, PRINT_PACKETS_C2S, PRINT_TYPE);
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(DRAW_DEBUG_PIE, DRAW_DEBUG_INFO, PRINT_PACKETS_S2C, PRINT_PACKETS_C2S, PRINT_MISC, PRINT_TYPE);
+        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(DRAW_DEBUG_PIE, DRAW_DEBUG_INFO, PRINT_PACKETS_S2C, PRINT_PACKETS_C2S, PRINT_MISC, PRINT_TYPE);
     }
 
     public static class Actions{

@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.rendering;
+package net.VrikkaDuck.duck.render.debug;
 
 import fi.dy.masa.malilib.render.RenderUtils;
 import net.VrikkaDuck.duck.Variables;
@@ -24,9 +24,8 @@ public class DebugPieRenderer {
 
         if (profileEntries != null) {
             Variables.PROFILER.start("debugPie");
-            DrawContext drawContext = new DrawContext(mc, mc.getBufferBuilders().getEntityVertexConsumers());
-            this.drawProfilerResults(drawContext, profileEntries);
-            drawContext.draw();
+            this.drawProfilerResults(context, profileEntries);
+            context.draw();
             Variables.PROFILER.stop("debugPie");
         }
     }
@@ -38,16 +37,16 @@ public class DebugPieRenderer {
         RenderUtils.setupBlend();
         RenderUtils.color(1f, 1f, 1f, 1f);
 
-        RenderUtils.drawRect(window.getWidth()/2 - 120, 5, 115, window.getHeight()/2 - 10, ColorHelper.Argb.getArgb(190, 10, 10, 10));
+       // RenderUtils.drawRect(window.getWidth()/2 - 120, 5, 115, window.getHeight()/2 - 10, ColorHelper.Argb.getArgb(190, 10, 10, 10));
         int i = ONE + 1;
         for(DebugProfiler.ProfileEntry entry : list){
             List<String> t = List.of(entry.methodName, "took average " + entry.getAverageElapsed()/1000 + " ms");
 
-            context.getMatrices().loadIdentity();
-            context.getMatrices().scale(0.6f, 0.6f, 0.6f);
+            context.getMatrices().push();
 
-            RenderUtils.renderText(window.getWidth() - 338, i, ColorHelper.Argb.getArgb(255, 255, 255, 255), t, context);
+            RenderUtils.renderText(50, i, ColorHelper.Argb.getArgb(255, 255, 255, 255), t, context);
 
+            context.getMatrices().pop();
             i += ONE * 2 + 1;
         }
     }

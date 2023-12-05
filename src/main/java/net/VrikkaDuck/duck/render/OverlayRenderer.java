@@ -1,11 +1,15 @@
-package net.VrikkaDuck.duck.rendering;
+package net.VrikkaDuck.duck.render;
 
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.client.Configs;
+import net.VrikkaDuck.duck.config.common.ServerConfigs;
+import net.VrikkaDuck.duck.debug.DebugPrinter;
 import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.networking.EntityDataType;
+import net.VrikkaDuck.duck.render.debug.DebugPieRenderer;
+import net.VrikkaDuck.duck.render.debug.DebugRenderer;
 import net.VrikkaDuck.duck.util.GuiRenderUtils;
 import net.VrikkaDuck.duck.util.InvUtils;
 import net.minecraft.client.MinecraftClient;
@@ -21,7 +25,7 @@ import java.util.Map;
 
 public class OverlayRenderer {
 
-    private DebugPieRenderer debugPieRenderer = new DebugPieRenderer();
+    private DebugRenderer debugRenderer = new DebugRenderer();
 
     OverlayRenderer(){
     }
@@ -36,8 +40,8 @@ public class OverlayRenderer {
 
     public void render(DrawContext context){
 
-        if(Variables.DEBUG && Configs.Debug.DRAW_DEBUG_PIE.getBooleanValue()){
-            renderDebugPie(context);
+        if(Variables.DEBUG){
+            this.debugRenderer.render(context);
         }
 
         if (!Configs.Generic.isAnyPressed()) {
@@ -45,16 +49,16 @@ public class OverlayRenderer {
         }
 
         if(Configs.Generic.INSPECT_CONTAINER.isKeybindHeld()){
+            Variables.PROFILER.start("overlayRenderer_renderContainerOverlay");
             renderContainerOverlay(context);
+            Variables.PROFILER.stop("overlayRenderer_renderContainerOverlay");
         }
         // If any pressed INSPECT_CONTAINER excluded
         if(Configs.Generic.isAnyPressed(List.of(Configs.Generic.INSPECT_CONTAINER))){
+            Variables.PROFILER.start("overlayRenderer_renderEntityOverlay");
             renderEntityOverlay(context);
+            Variables.PROFILER.stop("overlayRenderer_renderEntityOverlay");
         }
-    }
-
-    private void renderDebugPie(DrawContext context){
-        this.debugPieRenderer.render(context);
     }
 
     private void renderContainerOverlay(DrawContext context){
@@ -88,6 +92,7 @@ public class OverlayRenderer {
                     GuiUtils.getScaledWindowHeight() / 2, context);
             default -> {}
         }
+
     }
 
     private void renderEntityOverlay(DrawContext context){
@@ -100,25 +105,26 @@ public class OverlayRenderer {
         Map.Entry<NbtCompound, EntityDataType> entry = Configs.Actions.WORLD_ENTITIES.get(Configs.Actions.LOOKING_AT_ENTITY);
 
         if(entry == null){
+            DebugPrinter.DebugPrint("%s entry doesnt exist".formatted(Configs.Actions.LOOKING_AT_ENTITY), Configs.Debug.PRINT_MISC.getBooleanValue());
             return;
         }
 
         switch (entry.getValue()){
             case PLAYER_INVENTORY -> {
-                if(Configs.Generic.INSPECT_PLAYER_INVENTORY.isKeybindHeld()){
+                if(Configs.Generic.INSPECT_PLAYER_INVENTORY.isKeybindHeld() && Configs.Admin.INSPECT_PLAYER_INVENTORY.getBooleanValue()){
                     GuiRenderUtils.renderPlayerInventory(InvUtils.fromNbt(entry.getKey()), GuiUtils.getScaledWindowWidth() / 2,
                             GuiUtils.getScaledWindowHeight() / 2, context);
                 }
             }
             case VILLAGER_TRADES -> {
-                if(Configs.Generic.INSPECT_VILLAGER_TRADES.isKeybindHeld()){
+                if(Configs.Generic.INSPECT_VILLAGER_TRADES.isKeybindHeld() && Configs.Admin.INSPECT_VILLAGER_TRADES.getBooleanValue()){
                     GuiRenderUtils.renderTrades(new TradeOfferList(entry.getKey()), GuiUtils.getScaledWindowWidth() / 2,
                             GuiUtils.getScaledWindowHeight() / 2, context);
                 }
             }
             case MINECART_CHEST, MINECART_HOPPER -> {
 
-                if(Configs.Generic.INSPECT_MINECART_CONTAINERS.isKeybindHeld()){
+                if(Configs.Generic.INSPECT_MINECART_CONTAINERS.isKeybindHeld() && Configs.Admin.INSPECT_MINECART_CONTAINERS.getBooleanValue()){
 
                     ItemStack cis = new ItemStack(Items.WHITE_SHULKER_BOX);
                     cis.setNbt(entry.getKey());

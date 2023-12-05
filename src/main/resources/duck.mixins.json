@@ -6,8 +6,11 @@
   "mixins": [
     "common.HopperBlockEntityMixin",
     "common.LootableContainerBlockEntityMixin",
+    "common.MerchantEntityMixin",
     "common.MinecraftServerMixin",
+    "common.PlayerInventoryMixin",
     "common.ServerPlayerNetworkHandlerMixin",
+    "common.StorageMinecartEntityMixin",
     "common.VehicleInventoryMixin",
     "common.VillagerEntityMixin"
   ],

@@ -13,7 +13,7 @@ import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
 import net.VrikkaDuck.duck.event.ClientEntityHitHandler;
 import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.packet.AdminPacket;
-import net.VrikkaDuck.duck.rendering.gui.ConfigGui;
+import net.VrikkaDuck.duck.render.gui.ConfigGui;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 

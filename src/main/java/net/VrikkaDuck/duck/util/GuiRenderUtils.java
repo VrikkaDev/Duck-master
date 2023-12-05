@@ -354,6 +354,7 @@ public class GuiRenderUtils {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, MERCHANT_TEXTURE);
 
+
         x -= 105;
         y -= 82;
 
@@ -362,6 +363,8 @@ public class GuiRenderUtils {
         int h = 84;
 
         //top
+        //RenderUtils.drawTexturedRect();
+       // RenderUtils.drawTexturedRect()//93
         drawTexture(context, x+9, y, 5, 0, 0, 93, h, 512, 256);//left
         drawTexture(context, x+102, y, 5, 100, 0, 7, h, 512, 256);//mid line
         drawTexture(context, x+105, y, 5, 4, 0, 90, h, 512, 256);//mid right
@@ -471,20 +474,38 @@ public class GuiRenderUtils {
     }
 
     public static void drawTexture(DrawContext context, int x, int y, int z, float u, float v, int width, int height, int textureWidth, int textureHeight) {
+
         drawTexture(context, x, x + width, y, y + height, z, width, height, u, v, textureWidth, textureHeight);
     }
     private static void drawTexture(DrawContext context, int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight) {
         drawTexturedQuad(context.getMatrices().peek().getPositionMatrix(), x0, x1, y0, y1, z, (u + 0.0F) / (float)textureWidth, (u + (float)regionWidth) / (float)textureWidth, (v + 0.0F) / (float)textureHeight, (v + (float)regionHeight) / (float)textureHeight);
     }
     private static void drawTexturedQuad(Matrix4f matrix, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        /*RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(matrix, (float)x0, (float)y1, (float)z).texture(u0, v1).next();
         bufferBuilder.vertex(matrix, (float)x1, (float)y1, (float)z).texture(u1, v1).next();
         bufferBuilder.vertex(matrix, (float)x1, (float)y0, (float)z).texture(u1, v0).next();
         bufferBuilder.vertex(matrix, (float)x0, (float)y0, (float)z).texture(u0, v0).next();
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());*/
+
+        RenderUtils.setupBlend();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.applyModelViewMatrix();
+        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+
+        buffer.vertex(matrix, (float)x0, (float)y1, (float)z).texture(u0, v1).next();
+        buffer.vertex(matrix, (float)x1, (float)y1, (float)z).texture(u1, v1).next();
+        buffer.vertex(matrix, (float)x1, (float)y0, (float)z).texture(u1, v0).next();
+        buffer.vertex(matrix, (float)x0, (float)y0, (float)z).texture(u0, v0).next();
+
+        RenderSystem.enableDepthTest();
+        RenderSystem.enableBlend();
+
+        tessellator.draw();
     }
 
     private static void renderTradeButton(int x, int y, DrawContext context){

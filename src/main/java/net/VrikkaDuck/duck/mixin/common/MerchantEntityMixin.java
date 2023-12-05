@@ -5,14 +5,14 @@ import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.ServerPlayerManager;
 import net.VrikkaDuck.duck.networking.packet.EntityPacket;
 import net.VrikkaDuck.duck.util.NbtUtils;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.village.TradeOfferList;
+import net.minecraft.village.TradeOffer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,12 +22,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-@Mixin(VillagerEntity.class)
-public class VillagerEntityMixin {
+@Mixin(MerchantEntity.class)
+public class MerchantEntityMixin {
 
     @Unique
     private void sendP(){
-        VillagerEntity self = ((VillagerEntity) (Object)this);
+        MerchantEntity s = ((MerchantEntity) (Object)this);
+
+        if(!(s instanceof VillagerEntity self)){
+            return;
+        }
 
         Stream<? extends PlayerEntity> players = self.getWorld().getPlayers().stream().filter(p -> {
             Optional<Object> _fp = ServerPlayerManager.INSTANCE().getProperty(p.getUuid(), "playerLastBlockpos");
@@ -56,17 +60,8 @@ public class VillagerEntityMixin {
             }
         }
     }
-
-    @Inject(method = "restock", at = @At("RETURN"))
-    private void duck$restock(CallbackInfo ci){
-        sendP();
-    }
-    @Inject(method = "setOffers", at = @At("RETURN"))
-    private void duck$setOffers(TradeOfferList offers, CallbackInfo ci){
-        sendP();
-    }
-    @Inject(method = "levelUp", at = @At("RETURN"))
-    private void duck$levelUp(CallbackInfo ci){
+    @Inject(method = "trade", at = @At("RETURN"))
+    private void duck$trade(TradeOffer offer, CallbackInfo ci){
         sendP();
     }
 }

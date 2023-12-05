@@ -59,8 +59,13 @@ public class ClientEntityHitHandler {
                 return;
             }
             lastEntityId = entityHitResult.getEntity().getId();
+
+            EntityPacket.EntityC2SPacket p = new EntityPacket.EntityC2SPacket(mc.player.getUuid(), entity.getBlockPos());
+            NetworkHandler.SendToServer(p);
+
         }else if(entityHitResult.getType() == HitResult.Type.MISS){
             Configs.Actions.LOOKING_AT_ENTITY = null;
+            lastEntityId = 0;
         }
 
     }
@@ -83,7 +88,8 @@ public class ClientEntityHitHandler {
             return;
         }
 
-        if(!Configs.Generic.isAnyPressed(List.of(Configs.Generic.INSPECT_CONTAINER))){
+        if(!Configs.Generic.isAnyBoolean(Configs.Generic.INSPECT_VILLAGER_TRADES,
+                Configs.Generic.INSPECT_MINECART_CONTAINERS, Configs.Generic.INSPECT_PLAYER_INVENTORY)){
             return;
         }
 
@@ -116,7 +122,8 @@ public class ClientEntityHitHandler {
 
     private void checkNewEntities(MinecraftClient mc){
 
-        if(!Configs.Generic.isAnyPressed(List.of(Configs.Generic.INSPECT_CONTAINER))){
+        if(!Configs.Generic.isAnyBoolean(Configs.Generic.INSPECT_VILLAGER_TRADES,
+                Configs.Generic.INSPECT_MINECART_CONTAINERS, Configs.Generic.INSPECT_PLAYER_INVENTORY)){
             return;
         }
 

@@ -1,7 +1,7 @@
 package net.VrikkaDuck.duck.mixin.client;
 
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
-import net.VrikkaDuck.duck.rendering.gui.ConfigGui;
+import net.VrikkaDuck.duck.render.gui.ConfigGui;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

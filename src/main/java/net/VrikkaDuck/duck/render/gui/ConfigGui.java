@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.rendering.gui;
+package net.VrikkaDuck.duck.render.gui;
 
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.GuiConfigsBase;

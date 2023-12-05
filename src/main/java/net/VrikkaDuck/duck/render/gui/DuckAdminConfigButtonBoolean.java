@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.rendering.gui;
+package net.VrikkaDuck.duck.render.gui;
 
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;

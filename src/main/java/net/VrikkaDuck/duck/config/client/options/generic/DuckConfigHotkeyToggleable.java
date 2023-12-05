@@ -12,6 +12,7 @@ import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.VrikkaDuck.duck.Variables;
+import net.VrikkaDuck.duck.config.common.ServerConfigs;
 
 public class DuckConfigHotkeyToggleable extends ConfigBase<DuckConfigHotkeyToggleable> implements IHotkey, IConfigBoolean {
     private final IKeybind keybind;
