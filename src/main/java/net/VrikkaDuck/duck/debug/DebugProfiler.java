@@ -6,7 +6,7 @@ import java.util.*;
 
 public class DebugProfiler{
     public final int MAX_ENTRIES;
-    private final ThreadLocal<Queue<ProfileEntry>> threadLocalQueue = ThreadLocal.withInitial(LinkedList::new);
+    private final ThreadLocal<Stack<ProfileEntry>> threadLocalStack = ThreadLocal.withInitial(Stack::new);
     private final ArrayDeque<ProfileEntry> profilingResults = new ArrayDeque<>(1);
 
     public DebugProfiler(int maxEntries) {
@@ -18,10 +18,13 @@ public class DebugProfiler{
             return;
         }
 
-        Queue<ProfileEntry> queue = threadLocalQueue.get();
-        queue.offer(new ProfileEntry(methodName, System.nanoTime(), 0));
-        if (queue.size() > MAX_ENTRIES) {
-            queue.poll(); // Remove the oldest entry to keep the size bounded
+        Stack<ProfileEntry> stack = threadLocalStack.get();
+        ProfileEntry parent = stack.isEmpty() ? null : stack.peek();
+        ProfileEntry entry = new ProfileEntry(methodName, System.nanoTime(), 0, parent);
+        stack.push(entry);
+
+        if (stack.size() > MAX_ENTRIES) {
+            stack.pop(); // Remove the oldest entry to keep the size bounded
         }
     }
 
@@ -30,9 +33,9 @@ public class DebugProfiler{
             return;
         }
 
-        Queue<ProfileEntry> queue = threadLocalQueue.get();
+        Stack<ProfileEntry> stack = threadLocalStack.get();
 
-        ProfileEntry entry = queue.poll();
+        ProfileEntry entry = stack.isEmpty() ? null : stack.pop();
         if (entry != null && entry.methodName.equals(methodName)) {
             long endTime = System.nanoTime();
             entry.elapsedTime = endTime - entry.startTime;
@@ -40,7 +43,7 @@ public class DebugProfiler{
             // Store the profiling result in the list
             storeProfilingResult(entry);
         } else {
-            Variables.LOGGER.warn("Method " + methodName + " was not properly started or already stopped." + " Should be " + entry.methodName);
+            Variables.LOGGER.warn("Method " + methodName + " was not properly started or already stopped.");
         }
     }
 
@@ -66,7 +69,7 @@ public class DebugProfiler{
 
             resultMap.compute(pe.methodName, (key, existingEntry) -> {
                 if (existingEntry == null) {
-                    return new ProfileEntry(pe.methodName, pe.startTime, pe.elapsedTime);
+                    return new ProfileEntry(pe.methodName, pe.startTime, pe.elapsedTime, null);
                 } else {
                     existingEntry.addAnother(pe);
                     return existingEntry;
@@ -82,12 +85,14 @@ public class DebugProfiler{
         public long startTime;
         public long elapsedTime;
         public int entries;
+        public ProfileEntry parent;
 
-        ProfileEntry(String methodName, long startTime, long elapsedTime) {
+        ProfileEntry(String methodName, long startTime, long elapsedTime, ProfileEntry parent) {
             this.methodName = methodName;
             this.startTime = startTime;
             this.elapsedTime = elapsedTime;
-            entries = 1;
+            this.entries = 1;
+            this.parent = parent;
         }
 
         public long getAverageElapsed() {

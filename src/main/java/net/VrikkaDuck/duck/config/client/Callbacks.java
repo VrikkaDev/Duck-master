@@ -32,7 +32,7 @@ public class Callbacks {
             compound.putBoolean("request", false);
             compound.put("options", Configs.Admin.getAsNbtList());
             AdminPacket.AdminC2SPacket packet = new AdminPacket.AdminC2SPacket(MinecraftClient.getInstance().player.getUuid(), compound);
-            NetworkHandler.SendToServer(packet);
+            NetworkHandler.Client.SendToServer(packet);
         }
     }
     public static class AdminDoubleCallback implements IValueChangeCallback<DuckConfigDouble>
@@ -44,7 +44,7 @@ public class Callbacks {
             compound.putBoolean("request", false);
             compound.put("options", Configs.Admin.getAsNbtList());
             AdminPacket.AdminC2SPacket packet = new AdminPacket.AdminC2SPacket(MinecraftClient.getInstance().player.getUuid(), compound);
-            NetworkHandler.SendToServer(packet);
+            NetworkHandler.Client.SendToServer(packet);
         }
     }
 

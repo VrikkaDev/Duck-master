@@ -2,7 +2,7 @@ package net.VrikkaDuck.duck.mixin.common;
 
 import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.networking.PacketsC2S;
-import net.VrikkaDuck.duck.util.GameWorld;
+import net.VrikkaDuck.duck.world.common.GameWorld;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;

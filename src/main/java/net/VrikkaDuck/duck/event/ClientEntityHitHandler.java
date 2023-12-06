@@ -60,8 +60,8 @@ public class ClientEntityHitHandler {
             }
             lastEntityId = entityHitResult.getEntity().getId();
 
-            EntityPacket.EntityC2SPacket p = new EntityPacket.EntityC2SPacket(mc.player.getUuid(), entity.getBlockPos());
-            NetworkHandler.SendToServer(p);
+            /*EntityPacket.EntityC2SPacket p = new EntityPacket.EntityC2SPacket(mc.player.getUuid(), entity.getBlockPos());
+            NetworkHandler.Client.SendToServer(p);*/
 
         }else if(entityHitResult.getType() == HitResult.Type.MISS){
             Configs.Actions.LOOKING_AT_ENTITY = null;
@@ -134,7 +134,7 @@ public class ClientEntityHitHandler {
         if(found.get()){
 
             EntityPacket.EntityC2SPacket packet = new EntityPacket.EntityC2SPacket(mc.player.getUuid(), mc.getCameraEntity().getBlockPos());
-            NetworkHandler.SendToServer(packet);
+            NetworkHandler.Client.SendToServer(packet);
 
             found.set(false);
         }

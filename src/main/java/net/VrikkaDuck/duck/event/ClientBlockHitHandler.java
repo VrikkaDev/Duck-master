@@ -6,6 +6,7 @@ import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.packet.ContainerPacket;
 import net.VrikkaDuck.duck.util.ChestUtils;
+import net.VrikkaDuck.duck.util.NbtUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -153,7 +154,7 @@ public class ClientBlockHitHandler {
         if(found.get()){
 
             ContainerPacket.ContainerC2SPacket packet = new ContainerPacket.ContainerC2SPacket(mc.player.getUuid(), mc.getCameraEntity().getBlockPos());
-            NetworkHandler.SendToServer(packet);
+            NetworkHandler.Client.SendToServer(packet);
 
             found.set(false);
         }

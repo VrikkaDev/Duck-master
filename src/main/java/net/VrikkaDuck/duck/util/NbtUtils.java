@@ -1,6 +1,8 @@
 package net.VrikkaDuck.duck.util;
 
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.common.ServerConfigs;
@@ -39,11 +41,12 @@ public class NbtUtils {
     private static Object2IntOpenHashMap<Identifier> recipesUsed = new Object2IntOpenHashMap<>();
     private static float currentFurnaceXp = 0.0f;
 
-    public static void sendServerConfigsToPlayer(ServerPlayerEntity player) {
-        NbtCompound c = new NbtCompound();
-        c.putBoolean("request", true);
-        AdminPacket.AdminC2SPacket t = new AdminPacket.AdminC2SPacket(player.getUuid(), c);
-        PacketsC2S.onAdminPacket(t, player, null);
+    public static Map<BlockPos, Integer> getHashedmap(List<BlockEntity> blockEntities){
+        Map<BlockPos, Integer> r = new HashMap<>();
+        for(BlockEntity be : blockEntities){
+            r.put(be.getPos(), be.createNbtWithId().hashCode());
+        }
+        return r;
     }
 
     public static Optional<ContainerPacket.ContainerS2CPacket> getContainerPacket(List<BlockPos> positions, ServerPlayerEntity player) {
@@ -97,6 +100,8 @@ public class NbtUtils {
                 default -> {
                 }
             }
+
+            removeExtra(compound);
 
             compound.putInt("containerType", type.value);
 
@@ -185,6 +190,8 @@ public class NbtUtils {
         NbtList list = new NbtList();
         list = target.getInventory().writeNbt(list);
         NbtCompound playerInvCompound = new NbtCompound();
+
+
         playerInvCompound.put("Inventory", list);
 
         return Optional.of(playerInvCompound);
@@ -205,6 +212,10 @@ public class NbtUtils {
 
     public static Optional<NbtCompound> getMinecartContainerNbt(AbstractMinecartEntity entity, ServerPlayerEntity player){
 
+        if (!ServerConfigs.Generic.INSPECT_MINECART_CONTAINERS.getBooleanValue() || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_MINECART_CONTAINERS.getPermissionLevel())) {
+            return Optional.empty();
+        }
+
         NbtCompound compound = new NbtCompound();
         if(entity instanceof HopperMinecartEntity m){
             m.writeInventoryToNbt(compound);
@@ -213,6 +224,8 @@ public class NbtUtils {
         }else {
             return Optional.empty();
         }
+
+        removeExtra(compound);
 
         // Add Air in there if its empty so the renderer renders it :) i am lazy
         NbtList _list = compound.getList("Items", NbtElement.COMPOUND_TYPE);
@@ -243,5 +256,35 @@ public class NbtUtils {
         }
         a.put("Items", list);
         return a;
+    }
+
+    private static void removeExtra(NbtCompound compound){
+
+
+        if(!compound.contains("Items")){
+            return;
+        }
+
+        NbtList _list = compound.getList("Items", NbtList.COMPOUND_TYPE);
+
+        for(NbtElement element : _list){
+            if(!(element instanceof NbtCompound c)){
+                continue;
+            }
+            if(!c.contains("tag")){
+                continue;
+            }
+            NbtCompound cc = c.getCompound("tag");
+            if(!cc.contains("BlockEntityTag")){
+                continue;
+            }
+            NbtCompound ccc = cc.getCompound("BlockEntityTag");
+            if(!ccc.contains("Items")){
+                continue;
+            }
+
+            ccc.remove("Items");
+        }
+
     }
 }

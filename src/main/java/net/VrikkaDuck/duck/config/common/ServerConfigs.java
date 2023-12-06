@@ -6,7 +6,7 @@ import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.common.options.ServerLevel;
 import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.packet.AdminPacket;
-import net.VrikkaDuck.duck.util.GameWorld;
+import net.VrikkaDuck.duck.world.common.GameWorld;
 import net.VrikkaDuck.duck.util.PermissionLevel;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
@@ -59,7 +59,7 @@ public class ServerConfigs {
         NbtCompound compound = new NbtCompound();
         compound.putBoolean("request", true);
         AdminPacket.AdminC2SPacket packet = new AdminPacket.AdminC2SPacket(MinecraftClient.getInstance().player.getUuid(), compound);
-        NetworkHandler.SendToServer(packet);
+        NetworkHandler.Client.SendToServer(packet);
     }
 
     public static void loadFromFile() {

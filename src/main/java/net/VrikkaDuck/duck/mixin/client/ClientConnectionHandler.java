@@ -27,7 +27,7 @@ public class ClientConnectionHandler {
         PlayerEntity player = MinecraftClient.getInstance().player;
 
         HandshakePacket.HandshakeC2SPacket packet = new HandshakePacket.HandshakeC2SPacket(player.getUuid(), Variables.MODVERSION);
-        NetworkHandler.SendToServer(packet);
+        NetworkHandler.Client.SendToServer(packet);
 
         if(Variables.DEBUG){
             player.sendMessage(Text.of("§eWARNING you are using debug mode of the duck mod"));

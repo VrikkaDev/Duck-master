@@ -9,7 +9,7 @@ import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
 import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.debug.DebugPrinter;
 import net.VrikkaDuck.duck.networking.packet.*;
-import net.VrikkaDuck.duck.util.GameWorld;
+import net.VrikkaDuck.duck.world.common.GameWorld;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;

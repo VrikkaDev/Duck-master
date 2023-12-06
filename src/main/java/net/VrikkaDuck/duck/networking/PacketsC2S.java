@@ -7,6 +7,7 @@ import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.config.common.options.ServerDouble;
 import net.VrikkaDuck.duck.config.common.options.ServerLevel;
 import net.VrikkaDuck.duck.networking.packet.*;
+import net.VrikkaDuck.duck.world.common.ContainerWorld;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.entity.BlockEntity;
@@ -61,7 +62,7 @@ public class PacketsC2S {
         });
 
         Optional<ContainerPacket.ContainerS2CPacket> p = getContainerPacket(_posl, player);
-        p.ifPresent(containerS2CPacket -> NetworkHandler.SendToClient(player, containerS2CPacket));
+        p.ifPresent(containerS2CPacket -> NetworkHandler.Server.SendToClient(player, containerS2CPacket));
 
         Variables.PROFILER.stop("packetsC2S_processContainerPacket");
     }
@@ -88,7 +89,7 @@ public class PacketsC2S {
         ServerPlayerManager.INSTANCE().putProperty(packet.uuid(), "duckVersion", packet.duckVersion());
 
         HandshakePacket.HandshakeS2CPacket r = new HandshakePacket.HandshakeS2CPacket(packet.uuid(), Variables.MODVERSION);
-        NetworkHandler.SendToClient(player, r);
+        NetworkHandler.Server.SendToClient(player, r);
     }
 
     public static void onAdminPacket(AdminPacket.AdminC2SPacket packet, ServerPlayerEntity player, PacketSender responseSender){
@@ -103,7 +104,7 @@ public class PacketsC2S {
             rn.put("options", ServerConfigs.Generic.getAsNbtList());
 
             AdminPacket.AdminS2CPacket r = new AdminPacket.AdminS2CPacket(packet.uuid(), rn);
-            NetworkHandler.SendToClient(player, r);
+            NetworkHandler.Server.SendToClient(player, r);
             return;
         }
 
@@ -205,7 +206,7 @@ public class PacketsC2S {
         NbtCompound n = new NbtCompound();
         n.put("entities", _list);
         EntityPacket.EntityS2CPacket r = new EntityPacket.EntityS2CPacket(packet.uuid(), n);
-        NetworkHandler.SendToClient(player, r);
+        NetworkHandler.Server.SendToClient(player, r);
 
         Variables.PROFILER.stop("packetsC2S_processEntityPacket");
     }

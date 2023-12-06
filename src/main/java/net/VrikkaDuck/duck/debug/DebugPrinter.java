@@ -2,7 +2,7 @@ package net.VrikkaDuck.duck.debug;
 
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.client.Configs;
-import net.VrikkaDuck.duck.util.GameWorld;
+import net.VrikkaDuck.duck.world.common.GameWorld;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 

@@ -25,43 +25,8 @@ import java.util.stream.Stream;
 @Mixin(MerchantEntity.class)
 public class MerchantEntityMixin {
 
-    @Unique
-    private void sendP(){
-        MerchantEntity s = ((MerchantEntity) (Object)this);
-
-        if(!(s instanceof VillagerEntity self)){
-            return;
-        }
-
-        Stream<? extends PlayerEntity> players = self.getWorld().getPlayers().stream().filter(p -> {
-            Optional<Object> _fp = ServerPlayerManager.INSTANCE().getProperty(p.getUuid(), "playerLastBlockpos");
-            BlockPos _p = _fp.map(o -> (BlockPos) o).orElseGet(p::getBlockPos);
-
-            return self.getPos().isInRange(_p.toCenterPos(), 10);
-        });
-
-
-        for(var player : players.toList()){
-            if(player instanceof ServerPlayerEntity splayer){
-
-                NbtCompound compound = new NbtCompound();
-                NbtList _l = new NbtList();
-                NbtCompound tc = NbtUtils.getVillagerTradesNbt(self, splayer).orElse(new NbtCompound());
-
-                tc.putUuid("uuid", self.getUuid());
-                tc.putInt("entityType",  EntityDataType.VILLAGER_TRADES.value);
-                _l.add(tc);
-                compound.put("entities", _l);
-
-
-                EntityPacket.EntityS2CPacket p = new EntityPacket.EntityS2CPacket(splayer.getUuid(), compound);
-
-                NetworkHandler.SendToClient(splayer, p);
-            }
-        }
-    }
     @Inject(method = "trade", at = @At("RETURN"))
     private void duck$trade(TradeOffer offer, CallbackInfo ci){
-        sendP();
+        NetworkHandler.Server.SendEntityToNearby(((MerchantEntity)(Object)this));
     }
 }

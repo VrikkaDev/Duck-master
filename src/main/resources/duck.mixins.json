@@ -4,8 +4,9 @@
   "package": "net.VrikkaDuck.duck.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "common.AbstractFurnaceBlockEntityMixin",
+    "common.BlockEntityMixin",
     "common.HopperBlockEntityMixin",
-    "common.LootableContainerBlockEntityMixin",
     "common.MerchantEntityMixin",
     "common.MinecraftServerMixin",
     "common.PlayerInventoryMixin",

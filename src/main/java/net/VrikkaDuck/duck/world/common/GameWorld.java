@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.util;
+package net.VrikkaDuck.duck.world.common;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.MinecraftServer;

@@ -8,22 +8,24 @@ import net.VrikkaDuck.duck.util.NbtUtils;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-// TODO finish this class in 1.0.9 or 1.1.0
+// nevermind
 
 // CURRENTLY NOT IN USE
 public class ContainerWorld {
     private final ServerPlayerEntity player;
     public Map<BlockPos, BlockEntity> blockEntities = new HashMap<>();
     private Map<UUID, Entity> entities = new HashMap<>();
-    private Map.Entry<Integer, List<Integer>> lastHashedBlockEntities;
+    private Pair<Integer, Map<BlockPos, Integer>> lastHashedBlockEntities;
     private Instant lastReload = Instant.now();
 
     public ContainerWorld(ServerPlayerEntity player){
@@ -43,8 +45,8 @@ public class ContainerWorld {
         return (BlockPos) ServerPlayerManager.INSTANCE().getProperty(player.getUuid(), "playerLastBlockpos").orElse(new BlockPos(0,0,0));
     }
 
-    private Map.Entry<Integer, List<Integer>> getHashedBlockEntities(List<BlockEntity> blents){
-        List<Integer> _list = new ArrayList<>();
+    private Pair<Integer, Map<BlockPos, Integer>> getHashedBlockEntities(List<BlockEntity> blents){
+        Map<BlockPos, Integer> _map = new HashMap<>();
         int l = 0;
         for (BlockEntity a : blents){
 
@@ -52,11 +54,11 @@ public class ContainerWorld {
                 continue;
             }
             int _i = a.createNbtWithId().hashCode();
-            _list.add(_i);
+            _map.put(a.getPos(), _i);
             l = (l+_i);
             l = Integer.hashCode(l);
         }
-        return Map.entry(l, _list);
+        return new Pair<>(l, _map);
     }
 
     private List<BlockEntity> getBlockEntitiesAround(BlockPos pos){
@@ -74,21 +76,38 @@ public class ContainerWorld {
 
         Variables.PROFILER.start("containerWorld_updateIfChanged");
 
+
+
+
+        Variables.PROFILER.stop("containerWorld_updateIfChanged");
+        return;
+    }
+
+    private void updateBlockEntities(){
         List<BlockEntity> bents = getBlockEntitiesAround(getLastBlockPos());
 
-        Map.Entry<Integer, List<Integer>> hn = getHashedBlockEntities(bents);
+        Pair<Integer, Map<BlockPos, Integer>> hn = getHashedBlockEntities(bents);
 
-        if(Objects.equals(hn.getKey(), lastHashedBlockEntities.getKey())){
+        if(lastHashedBlockEntities == null){
+            lastHashedBlockEntities = hn;
+
+            Optional<ContainerPacket.ContainerS2CPacket> packet = NbtUtils.getContainerPacket(bents.stream().map(BlockEntity::getPos).toList(), player);
+
+            packet.ifPresent((p -> NetworkHandler.Server.SendToClient(player, p)));
             return;
         }
 
-        Map<BlockPos, BlockEntity> diffBlocks = getDifferences(bents, lastHashedBlockEntities.getValue());
+        if(Objects.equals(hn.getLeft(), lastHashedBlockEntities.getLeft())){
+            return;
+        }
+
+        List<BlockPos> diffBlocks = getDifferences(hn.getRight(), lastHashedBlockEntities.getRight());
 
         lastHashedBlockEntities = hn;
 
-        Optional<ContainerPacket.ContainerS2CPacket> packet = NbtUtils.getContainerPacket(diffBlocks.keySet().stream().toList(), player);
+        Optional<ContainerPacket.ContainerS2CPacket> packet = NbtUtils.getContainerPacket(diffBlocks, player);
 
-        packet.ifPresent((p -> NetworkHandler.SendToClient(player, p)));
+        packet.ifPresent((p -> NetworkHandler.Server.SendToClient(player, p)));
 
 
         blockEntities.clear();
@@ -97,20 +116,16 @@ public class ContainerWorld {
                 blockEntities.put(be.getPos(), be);
             }
         }));
-
-
-
-        Variables.PROFILER.stop("containerWorld_updateIfChanged");
-        return;
     }
 
-    private Map<BlockPos, BlockEntity> getDifferences(List<BlockEntity> be1, List<Integer> be2){
+    private List<BlockPos> getDifferences(Map<BlockPos, Integer> be1, Map<BlockPos, Integer> be2){
         Variables.PROFILER.start("containerWorld_getDifferences");
 
-        Map<BlockPos, BlockEntity> differences = new HashMap<>();
-        for (BlockEntity entity : be1) {
-            if (!be2.contains(entity.createNbtWithId().hashCode())) {
-                differences.put(entity.getPos(), entity);
+        List<BlockPos> differences = new ArrayList<>();
+        for (Map.Entry<BlockPos, Integer> entry : be1.entrySet()) {
+            Integer ehash = be2.get(entry.getKey());
+            if (ehash == null || !be2.containsValue(entry.getValue())) {
+                differences.add(entry.getKey());
             }
         }
 
