@@ -16,6 +16,7 @@ public enum ContainerType {
     DISPENSER(7),
     FURNACE(10),
     BEEHIVE(15),
+    CHISELED_BOOKSHELF(20),
     SHULKER(0);
 
     public final int value;
@@ -64,6 +65,8 @@ public enum ContainerType {
             return ContainerType.FURNACE;
         }else if(type.equals(BlockEntityType.BEEHIVE)){
             return ContainerType.BEEHIVE;
+        }else if(type.equals(BlockEntityType.CHISELED_BOOKSHELF)){
+            return ContainerType.CHISELED_BOOKSHELF;
         }
 
         return ContainerType.NONE;

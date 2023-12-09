@@ -2,7 +2,7 @@ package net.VrikkaDuck.duck.compat.modmenu;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import net.VrikkaDuck.duck.render.gui.ConfigGui;
+import net.VrikkaDuck.duck.render.gui.config.ConfigGui;
 
 public class ModMenuImpl implements ModMenuApi {
     @Override
