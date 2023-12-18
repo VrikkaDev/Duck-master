@@ -19,7 +19,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 // nevermind
-
+// todo actually make it so the client sends
+//  hashed int list and send the client only containers that the client doesnt already have right
 // CURRENTLY NOT IN USE
 public class ContainerWorld {
     private final ServerPlayerEntity player;

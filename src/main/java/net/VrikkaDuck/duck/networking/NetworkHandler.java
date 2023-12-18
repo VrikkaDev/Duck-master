@@ -1,5 +1,6 @@
 package net.VrikkaDuck.duck.networking;
 
+import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.client.Configs;
 import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.debug.DebugPrinter;
@@ -28,6 +29,19 @@ import static net.VrikkaDuck.duck.util.NbtUtils.*;
 public class NetworkHandler {
     public static class Server{
         public static void SendToClient(ServerPlayerEntity player, FabricPacket packet){
+
+            System.out.println(packet.toString().length());
+            if(packet.toString().length() > 900000){
+                if(packet instanceof ContainerPacket.ContainerS2CPacket s2CPacket){
+                    while (s2CPacket.toString().length() > 900000){
+                        s2CPacket.nbtMap().remove(s2CPacket.nbtMap().keySet().stream().toList().get(0));
+                    }
+                }else{
+                    Variables.LOGGER.warn("Tried to send packet too large");
+                    return;
+                }
+            }
+
             ServerPlayNetworking.send(player, packet);
         }
         public static void SendBlockEntityToNearby(World world, BlockPos pos){

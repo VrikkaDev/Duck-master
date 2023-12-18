@@ -99,7 +99,6 @@ public class GuiRenderUtils {
         RenderUtils.drawTexturedRectBatched(x +  7, y, 176-width,0, width,7,buffer); // top (right)
         RenderUtils.drawTexturedRectBatched(x,y + height,0,159, width,7, buffer); // bottom (left)
         RenderUtils.drawTexturedRectBatched(x + width, y + 7, 169, 166-height,7, height, buffer); // right (bottom)
-        //RenderUtils.drawTexturedRectBatched(x + 7, y + 7,5, 16,width-7,height-7, buffer); // middle
 
         if(width >= 150){
             RenderUtils.drawTexturedRectBatched(x+7, y,10,0,150,7, buffer); // top
