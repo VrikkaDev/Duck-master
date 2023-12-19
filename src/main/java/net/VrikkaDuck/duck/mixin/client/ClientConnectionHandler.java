@@ -5,6 +5,7 @@ import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.PacketsS2C;
 import net.VrikkaDuck.duck.networking.packet.HandshakePacket;
+import net.VrikkaDuck.duck.world.common.GameWorld;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,6 +21,8 @@ public class ClientConnectionHandler {
     private void onJoin(CallbackInfo ci){
 
         PacketsS2C.register();
+
+        GameWorld.setServer(MinecraftClient.getInstance().getServer());
 
         ServerConfigs.loadFromFile();
         ServerConfigs.refreshFromServer();

@@ -30,7 +30,6 @@ public class NetworkHandler {
     public static class Server{
         public static void SendToClient(ServerPlayerEntity player, FabricPacket packet){
 
-            System.out.println(packet.toString().length());
             if(packet.toString().length() > 900000){
                 if(packet instanceof ContainerPacket.ContainerS2CPacket s2CPacket){
                     while (s2CPacket.toString().length() > 900000){
@@ -45,7 +44,7 @@ public class NetworkHandler {
             ServerPlayNetworking.send(player, packet);
         }
         public static void SendBlockEntityToNearby(World world, BlockPos pos){
-            if(!ServerConfigs.Generic.INSPECT_CONTAINER.getBooleanValue()){
+            if(!ServerConfigs.Generic.INSPECT_CONTAINER.getBooleanValue() || world == null){
                 return;
             }
 

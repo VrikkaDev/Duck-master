@@ -9,7 +9,7 @@ public class Variables {
     public static final int PERMISSIONLEVEL = 4;
     public static final String MODNAME = "duck";
     public static final String MODID = "duck";
-    public static final String MODVERSION = "1.0.9+b1";
+    public static final String MODVERSION = "1.0.9+b2";
 
     // DEBUG
     public static final Boolean DEBUG = true;

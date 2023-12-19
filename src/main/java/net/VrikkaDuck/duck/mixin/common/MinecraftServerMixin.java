@@ -10,15 +10,19 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.function.Function;
 
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin {
     @Shadow public abstract ServerWorld getOverworld();
 
-    @Inject(at = @At("RETURN"), method = "<init>")
-    private void init(CallbackInfo ci){
+    @Inject(at = @At("HEAD"), method = "runServer")
+    private void duck$runServer(CallbackInfo ci){
 
         PacketsC2S.register();
+
 
         GameWorld.setWorld(this.getOverworld());
         GameWorld.setServer(((MinecraftServer)(Object)this));
