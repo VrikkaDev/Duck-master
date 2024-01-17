@@ -1,11 +1,14 @@
 package net.VrikkaDuck.duck.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.util.GuiUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
@@ -55,6 +58,9 @@ public class GuiRenderUtils {
             return;
         }
 
+        TextRenderer textRenderer = mc.textRenderer;
+        final int bgMargin = 2;
+
         drawContext.getMatrices().push();
         Matrix4f m = drawContext.getMatrices().peek().getPositionMatrix();
 
@@ -62,21 +68,25 @@ public class GuiRenderUtils {
 
         if (!lines.isEmpty())
         {
-            TextRenderer textRenderer = mc.textRenderer;
 
             for (Text line : lines)
             {
+                final int width = (int) (textRenderer.getWidth(line) * scale);
 
                 int tw = line.getString().length();
 
-                drawContext.getMatrices().push();
-                RenderUtils.drawRect((int) (x - (tw*2*0.9f)),y-1, (int) (line.getString().length()*4.5f), 7, bgcolor);
-                drawContext.getMatrices().pop();
+                if (bgcolor!=0)
+                {
+                    drawContext.getMatrices().push();
+                    RenderUtils.drawRect((int) (x - (tw*2*scale) - bgMargin),y-1, (int) (width + bgMargin * 2), 7, bgcolor);
+                    drawContext.getMatrices().pop();
+                }
 
                 textRenderer.draw(line, x / scale - tw*2, y/scale, color, false, m, drawContext.getVertexConsumers(), TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
                 y += 7;
             }
         }
+
         drawContext.getMatrices().pop();
     }
 

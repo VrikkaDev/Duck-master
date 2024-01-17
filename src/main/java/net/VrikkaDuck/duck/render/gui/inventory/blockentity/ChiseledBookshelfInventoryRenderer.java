@@ -56,7 +56,6 @@ public class ChiseledBookshelfInventoryRenderer {
             //context.drawTooltip(mc.textRenderer, Text.of("Depth Strider 3").getWithStyle(Style.EMPTY.withColor(Formatting.YELLOW)), x-40, y+40);
 
 
-
             NbtList _l = is.getOrCreateNbt().getList("StoredEnchantments", NbtList.COMPOUND_TYPE);
 
             List<Text> enchantmentss = new ArrayList<>();

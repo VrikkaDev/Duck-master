@@ -139,6 +139,11 @@ public class ServerConfigs {
             JsonObject pif = parsedIdFile.getAsJsonObject();
             return UUID.fromString(pif.get("uuid").getAsString());
         }else{
+            File idf = new File(GameWorld.getDataFolder(), UUID_FILE_NAME);
+            if(!idf.exists()){
+                createUuidFile(idf);
+                return getWorldUUID();
+            }
             Variables.LOGGER.warn("Couldn't parse world id file.");
             return null;
         }

@@ -98,7 +98,7 @@ public class DuckConfigHotkeyToggleable extends ConfigBase<DuckConfigHotkeyToggl
     {
         try
         {
-            if (element.isJsonPrimitive())
+            if (element.isJsonObject())
             {
                 JsonObject obj = element.getAsJsonObject();
 
