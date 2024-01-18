@@ -1,5 +1,5 @@
 {
-  "duck.gui.title.configs": "Configs",
+  "duck.gui.title.configs": "Duck Configs - %s",
   "duck.gui.button.config_gui.generic": "Generic",
   "duck.gui.button.config_gui.admin": "Admin",
   "duck.gui.button.config_gui.debug": "DEBUG",
