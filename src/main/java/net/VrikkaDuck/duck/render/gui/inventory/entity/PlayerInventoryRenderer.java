@@ -18,10 +18,11 @@ public class PlayerInventoryRenderer {
 
     private static final EquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
     private static final Identifier[] EMPTY_SLOT_TEXTURES = new Identifier[] { // todo maybe do someday
-            new Identifier("item/empty_armor_slot_boots"),
-            new Identifier("item/empty_armor_slot_leggings"),
+            new Identifier("item/empty_armor_slot_helmet"),
             new Identifier("item/empty_armor_slot_chestplate"),
-            new Identifier("item/empty_armor_slot_helmet") };
+            new Identifier("item/empty_armor_slot_leggings"),
+            new Identifier("item/empty_armor_slot_boots")
+    };
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
     public PlayerInventoryRenderer(){
@@ -69,7 +70,9 @@ public class PlayerInventoryRenderer {
             final EquipmentSlot eqSlot = VALID_EQUIPMENT_SLOTS[i];
             ItemStack stack = getEquippedStack(eqSlot, inventory);
 
-            if (!stack.isEmpty()) {
+            if (stack.isEmpty()) {
+                RenderUtils.renderSprite(x + xOff + 1, y + yOff + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, EMPTY_SLOT_TEXTURES[i], context);
+            }else{
                 renderStackAt(stack, x + xOff + 1, y + yOff + 1, 1, mc, context);
             }
         }
@@ -77,7 +80,9 @@ public class PlayerInventoryRenderer {
             final EquipmentSlot eqSlot = VALID_EQUIPMENT_SLOTS[i];
             ItemStack stack = getEquippedStack(eqSlot, inventory);
 
-            if (!stack.isEmpty()) {
+            if (stack.isEmpty()) {
+                RenderUtils.renderSprite(x + xOff + 1, y + yOff + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, EMPTY_SLOT_TEXTURES[i], context);
+            }else{
                 renderStackAt(stack, x + xOff + 1, y + yOff + 1, 1, mc, context);
             }
         }

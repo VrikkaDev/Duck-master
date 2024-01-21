@@ -15,6 +15,7 @@ import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.client.gui.DuckPrintOutputType;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
 import net.VrikkaDuck.duck.config.client.options.generic.DuckConfigHotkeyToggleable;
+import net.VrikkaDuck.duck.config.client.options.generic.DuckConfigString;
 import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.networking.EntityDataType;
@@ -27,6 +28,7 @@ import java.io.File;
 import java.util.*;
 
 public class Configs implements IConfigHandler {
+    //TODO Needs cleanup
     private static final String CONFIG_FILE_NAME = Variables.MODID + ".json";
 
     public static class Generic {
@@ -34,8 +36,15 @@ public class Configs implements IConfigHandler {
         public static final DuckConfigHotkeyToggleable INSPECT_MINECART_CONTAINERS = new DuckConfigHotkeyToggleable(ServerConfigs.Generic.INSPECT_MINECART_CONTAINERS.getName(), true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Inspect minecart containers");
         public static final DuckConfigHotkeyToggleable INSPECT_PLAYER_INVENTORY = new DuckConfigHotkeyToggleable(ServerConfigs.Generic.INSPECT_PLAYER_INVENTORY.getName(), true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Inspect player entity inventory");
         public static final DuckConfigHotkeyToggleable INSPECT_VILLAGER_TRADES = new DuckConfigHotkeyToggleable(ServerConfigs.Generic.INSPECT_VILLAGER_TRADES.getName(), true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Inspect villager trades");
+
         public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
-        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
+        public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(
+                INSPECT_CONTAINER,
+                INSPECT_MINECART_CONTAINERS,
+                INSPECT_PLAYER_INVENTORY,
+                INSPECT_VILLAGER_TRADES,
+                Hotkeys.OPEN_CONFIG_GUI
+        );
         public static final ImmutableList<DuckConfigHotkeyToggleable> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
         public static boolean isAnyPressed(){
             return isAnyPressed(new ArrayList<>());

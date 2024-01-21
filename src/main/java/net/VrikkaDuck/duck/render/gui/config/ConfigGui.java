@@ -11,6 +11,7 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.client.Configs;
+import net.VrikkaDuck.duck.config.client.options.IDuckOption;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
 import net.VrikkaDuck.duck.world.common.GameWorld;
 import net.minecraft.client.MinecraftClient;
@@ -21,6 +22,7 @@ import java.util.List;
 
 public class ConfigGui extends GuiConfigsBase {
 
+    //TODO Needs cleanup
     private static ConfigGuiTab tab = ConfigGuiTab.GENERIC;
     public static List<?> listWidgets;
     private static List<String> hoverText(){
@@ -70,8 +72,24 @@ public class ConfigGui extends GuiConfigsBase {
                     WidgetConfigOption w = (WidgetConfigOption) widget;
 
                     isOn = false;
+
+                    /*System.out.println(w.getEntry().getConfig() + " :  " + (w instanceof IDuckOption));
+                    System.out.println(w.getEntry().getConfig() + " :  " + (w.getEntry() instanceof IDuckOption));
+                    System.out.println(w.getEntry().getConfig() + " :  " + (w.getEntry().getConfig() instanceof IDuckOption));
+*/
+                    if(w.getEntry().getConfig() instanceof IDuckOption){
+                        if(!((IDuckOption) w.getEntry().getConfig()).canDisable()){
+                            isOn = true;
+                            continue;
+                        }
+                    }
+
                     for(IConfigBase ob : Configs.Admin.OPTIONS){
+                        if(isOn){
+                            break;
+                        }
                         if(ob.getName().equals(w.getEntry().getConfig().getName())){
+
                             if(ob instanceof DuckConfigLevel) {
                                 if(MinecraftClient.getInstance().world == null){
                                     isOn = true;
