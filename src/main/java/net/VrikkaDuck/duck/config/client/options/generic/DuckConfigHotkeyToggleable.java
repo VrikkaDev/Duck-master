@@ -12,9 +12,10 @@ import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.VrikkaDuck.duck.Variables;
+import net.VrikkaDuck.duck.config.client.options.IDuckOption;
 import net.VrikkaDuck.duck.config.common.ServerConfigs;
 
-public class DuckConfigHotkeyToggleable extends ConfigBase<DuckConfigHotkeyToggleable> implements IHotkey, IConfigBoolean {
+public class DuckConfigHotkeyToggleable extends ConfigBase<DuckConfigHotkeyToggleable> implements IHotkey, IConfigBoolean, IDuckOption {
     private final IKeybind keybind;
     private boolean active = false;
     private boolean activeDefault = false;
@@ -144,5 +145,10 @@ public class DuckConfigHotkeyToggleable extends ConfigBase<DuckConfigHotkeyToggl
         {
             this.onValueChanged();
         }
+    }
+
+    @Override
+    public boolean canDisable() {
+        return true;
     }
 }

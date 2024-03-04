@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
+import static net.minecraft.client.gui.screen.recipebook.RecipeBookWidget.BUTTON_TEXTURES;
+
 public class DuckAdminConfigButtonLevel extends ButtonGeneric {
 
     private static List<String> hoverText(){
@@ -61,9 +63,8 @@ public class DuckAdminConfigButtonLevel extends ButtonGeneric {
 
             if (this.renderDefaultBackground)
             {
-                this.bindTexture(BUTTON_TEXTURES);
-                RenderUtils.drawTexturedRect(this.x, this.y, 0, 46 + buttonStyle * 20, this.width / 2, this.height);
-                RenderUtils.drawTexturedRect(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + buttonStyle * 20, this.width / 2, this.height);
+                this.bindTexture(BUTTON_TEXTURE);
+                context.drawGuiTexture(this.getTexture(this.hovered), this.x, this.y, this.width, this. height);
             }
 
             if (this.icon != null)
@@ -77,12 +78,12 @@ public class DuckAdminConfigButtonLevel extends ButtonGeneric {
                 RenderUtils.drawTexturedRect(x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight());
             }
 
-            if (StringUtils.isBlank(this.displayString) == false)
+            if (!StringUtils.isBlank(this.displayString))
             {
                 int y = this.y + (this.height - 8) / 2;
                 int color = 0xE0E0E0;
 
-                if (this.enabled == false)
+                if (!this.enabled)
                 {
                     color = 0xA0A0A0;
                 }

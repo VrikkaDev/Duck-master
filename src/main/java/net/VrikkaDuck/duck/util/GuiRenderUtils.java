@@ -4,12 +4,19 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
+import net.fabricmc.fabric.impl.client.indigo.renderer.helper.TextureHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.ShaderProgram;
+import net.minecraft.client.gl.ShaderStage;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.data.client.TextureMap;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
 
@@ -18,6 +25,8 @@ import java.util.List;
 import static fi.dy.masa.malilib.render.InventoryOverlay.*;
 
 public class GuiRenderUtils {
+
+    public static final Identifier TEXTURE_DEMO_BACKGROUND = new Identifier("textures/gui/demo_background.png");
     private static final MinecraftClient mc = MinecraftClient.getInstance();
 
     public static void drawTexture(DrawContext context, int x, int y, int z, int u, int v, int width, int height) {
@@ -120,7 +129,16 @@ public class GuiRenderUtils {
 
         tessellator.draw();
 
-        RenderUtils.drawRect(x+7 , y+7, width - 7, height - 7, ColorHelper.Argb.getArgb(255, 198, 198, 198));
+
+        RenderUtils.bindTexture(TEXTURE_DEMO_BACKGROUND);
+        RenderUtils.drawTexturedRect(x+7 , y+7, 10,10,width - 7, height - 7);
+
+        if (width >= 150){
+            RenderUtils.bindTexture(TEXTURE_DEMO_BACKGROUND);
+            RenderUtils.drawTexturedRect(x+150 , y+7, 10,10,width - 150, height - 7);
+        }
+
+        //RenderUtils.drawRect(x+7 , y+7, width - 7, height - 7, ColorHelper.Argb.getArgb(255, 198, 198, 198));
 
     }
         private static MinecraftClient mc()

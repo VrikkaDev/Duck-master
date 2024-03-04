@@ -19,6 +19,9 @@ public class DispenserInventoryRenderer {
 
         Inventory inv = fi.dy.masa.malilib.util.InventoryUtils.getAsInventory(items);
 
+
+        y -= 12;
+
         InventoryOverlay.renderInventoryBackground(InventoryOverlay.InventoryRenderType.DISPENSER, x, y, 3, 9, mc);
         InventoryOverlay.renderInventoryStacks(InventoryOverlay.InventoryRenderType.DISPENSER, inv, x + 8, y + 8, 3, 0, 9 ,mc, context);
     }

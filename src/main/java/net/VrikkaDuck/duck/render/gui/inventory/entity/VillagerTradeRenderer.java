@@ -2,6 +2,7 @@ package net.VrikkaDuck.duck.render.gui.inventory.entity;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import fi.dy.masa.malilib.render.RenderUtils;
+import net.VrikkaDuck.duck.util.GuiRenderUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
@@ -19,8 +20,8 @@ public class VillagerTradeRenderer {
     private final MinecraftClient mc = MinecraftClient.getInstance();
     public VillagerTradeRenderer(){
     }
-    private static final Identifier MERCHANT_TEXTURE = new Identifier("textures/gui/container/villager2.png");
-    private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
+    private static final Identifier MERCHANT_TEXTURE = new Identifier("textures/gui/container/villager.png");
+    private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/sprites/widget/button.png");
 
     public void render(TradeOfferList trades, int x, int y, DrawContext context){
         RenderSystem.applyModelViewMatrix();
@@ -126,7 +127,7 @@ public class VillagerTradeRenderer {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
-        drawTexture(context, x+35, y-2, 5,152, 65, 48, 21, 256, 256);//right
-        drawTexture(context, x-5, y-2,5, 0, 65, 45, 21, 256, 256);//left
+        drawTexture(context, x+35, y-2, 5,152, 0, 48, 21, 200, 20);//right
+        drawTexture(context, x-5, y-2,5, 0, 0, 45, 21, 200, 20);//left
     }
 }

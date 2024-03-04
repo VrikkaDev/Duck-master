@@ -79,17 +79,19 @@ public class ConfigGui extends GuiConfigsBase {
 */
                     if(w.getEntry().getConfig() instanceof IDuckOption){
                         if(!((IDuckOption) w.getEntry().getConfig()).canDisable()){
-                            isOn = true;
                             continue;
                         }
+                    }else{
+                        continue;
                     }
 
+                    boolean hasServerSetting = false;
                     for(IConfigBase ob : Configs.Admin.OPTIONS){
                         if(isOn){
                             break;
                         }
                         if(ob.getName().equals(w.getEntry().getConfig().getName())){
-
+                            hasServerSetting = true;
                             if(ob instanceof DuckConfigLevel) {
                                 if(MinecraftClient.getInstance().world == null){
                                     isOn = true;
@@ -100,7 +102,7 @@ public class ConfigGui extends GuiConfigsBase {
                             break;
                         }
                     }
-                    if(!isOn){
+                    if(!isOn && hasServerSetting){
                         RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
                         if(w.isMouseOver(mouseX, mouseY) && mouseX > w.getWidth()/3){
                             RenderUtils.drawHoverText(mouseX, mouseY, hoverText(), context);

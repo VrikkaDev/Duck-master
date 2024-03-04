@@ -9,9 +9,9 @@ public class Variables {
     public static final int PERMISSIONLEVEL = 4;
     public static final String MODNAME = "duck";
     public static final String MODID = "duck";
-    public static final String MODVERSION = "1.1.0+b1";
+    public static final String MODVERSION = "1.1.0+b5";
 
     // DEBUG
-    public static final Boolean DEBUG = true;
+    public static final Boolean DEBUG = false;
     public static DebugProfiler PROFILER = new DebugProfiler(100);
 }

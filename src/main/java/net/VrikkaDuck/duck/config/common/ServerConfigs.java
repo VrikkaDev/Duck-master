@@ -12,7 +12,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 
-import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -223,7 +222,6 @@ public class ServerConfigs {
         return GameWorld.getServer().getFile("config");
     }
 
-    @Nullable
     public static JsonElement parseJsonFile(File file) {
         if (file != null && file.exists() && file.isFile() && file.canRead()) {
             String fileName = file.getAbsolutePath();
@@ -238,7 +236,6 @@ public class ServerConfigs {
         return null;
     }
 
-    @Nullable
     public static JsonObject getNestedObject(JsonObject parent, String key, boolean create) {
         if (!parent.has(key) || !parent.get(key).isJsonObject()) {
             if (!create) {

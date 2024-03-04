@@ -14,6 +14,7 @@ public class OverlayRenderer {
     private final DebugRenderer debugRenderer = new DebugRenderer();
     private final ContainerGuiRenderer containerGuiRenderer = new ContainerGuiRenderer();
     private final EntityInventoryRenderer entityInventoryRenderer = new EntityInventoryRenderer();
+    private final BlockStateInfoRenderer blockStateInfoRenderer = new BlockStateInfoRenderer();
 
     OverlayRenderer(){
     }
@@ -41,8 +42,13 @@ public class OverlayRenderer {
             containerGuiRenderer.render(context);
             Variables.PROFILER.stop("overlayRenderer_renderContainerOverlay");
         }
+        if(Configs.Generic.SHOW_STATE_INFO.isKeybindHeld()){
+            Variables.PROFILER.start("overlayRenderer_renderBlockStateInfo");
+            blockStateInfoRenderer.render(context);
+            Variables.PROFILER.stop("overlayRenderer_renderBlockStateInfo");
+        }
         // If any pressed INSPECT_CONTAINER excluded
-        if(Configs.Generic.isAnyPressed(List.of(Configs.Generic.INSPECT_CONTAINER))){
+        if(Configs.Generic.isAnyPressed(List.of(Configs.Generic.INSPECT_CONTAINER, Configs.Generic.SHOW_STATE_INFO))){
             Variables.PROFILER.start("overlayRenderer_renderEntityOverlay");
             entityInventoryRenderer.render(context);
             Variables.PROFILER.stop("overlayRenderer_renderEntityOverlay");

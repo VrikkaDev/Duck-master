@@ -8,6 +8,7 @@ import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import fi.dy.masa.malilib.config.options.ConfigOptionList;
+import fi.dy.masa.malilib.gui.button.ConfigButtonBoolean;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
@@ -36,22 +37,27 @@ public class Configs implements IConfigHandler {
         public static final DuckConfigHotkeyToggleable INSPECT_MINECART_CONTAINERS = new DuckConfigHotkeyToggleable(ServerConfigs.Generic.INSPECT_MINECART_CONTAINERS.getName(), true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Inspect minecart containers");
         public static final DuckConfigHotkeyToggleable INSPECT_PLAYER_INVENTORY = new DuckConfigHotkeyToggleable(ServerConfigs.Generic.INSPECT_PLAYER_INVENTORY.getName(), true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Inspect player entity inventory");
         public static final DuckConfigHotkeyToggleable INSPECT_VILLAGER_TRADES = new DuckConfigHotkeyToggleable(ServerConfigs.Generic.INSPECT_VILLAGER_TRADES.getName(), true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Inspect villager trades");
+        public static final DuckConfigHotkeyToggleable SHOW_STATE_INFO = new DuckConfigHotkeyToggleable("showBlockstateInfo", true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME,"When enabled while inspecting there will be a window\n that shows more info about inspected thing.");
 
-        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES, SHOW_STATE_INFO);
         public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(
                 INSPECT_CONTAINER,
                 INSPECT_MINECART_CONTAINERS,
                 INSPECT_PLAYER_INVENTORY,
                 INSPECT_VILLAGER_TRADES,
+                SHOW_STATE_INFO,
                 Hotkeys.OPEN_CONFIG_GUI
         );
-        public static final ImmutableList<DuckConfigHotkeyToggleable> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES);
+        public static final ImmutableList<DuckConfigHotkeyToggleable> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES, SHOW_STATE_INFO);
         public static boolean isAnyPressed(){
             return isAnyPressed(new ArrayList<>());
         }
         public static boolean isAnyPressed(List<DuckConfigHotkeyToggleable> exclude){
 
             for(DuckConfigHotkeyToggleable h : CONFIG_HOTKEYS){
+                if (Admin.fromName(h.getName()) == null){
+                    continue;
+                }
                 if(h.isKeybindHeld() && Admin.fromName(h.getName()).getBooleanValue() && !exclude.contains(h)){
                     return true;
                 }
@@ -61,7 +67,7 @@ public class Configs implements IConfigHandler {
 
         public static boolean isAnyBoolean(DuckConfigHotkeyToggleable... h){
             for(DuckConfigHotkeyToggleable a : h){
-                if(a.getBooleanValue() && Admin.fromName(a.getName()).getBooleanValue()){
+                if(a.getBooleanValue() && Objects.requireNonNull(Admin.fromName(a.getName())).getBooleanValue()){
                     return true;
                 }
             }

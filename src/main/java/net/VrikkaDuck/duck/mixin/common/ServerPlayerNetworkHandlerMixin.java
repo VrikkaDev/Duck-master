@@ -9,6 +9,7 @@ import net.VrikkaDuck.duck.world.common.ContainerWorld;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +32,7 @@ public abstract class ServerPlayerNetworkHandlerMixin {
     @Shadow public ServerPlayerEntity player;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void duck$ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci){
+    private void duck$ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData, CallbackInfo ci){
 
         ServerPlayerManager.INSTANCE().putProperty(player.getUuid(), "containerWorld", new ContainerWorld(player));
 

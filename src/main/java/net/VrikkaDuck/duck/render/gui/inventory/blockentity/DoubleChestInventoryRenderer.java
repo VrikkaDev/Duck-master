@@ -19,6 +19,8 @@ public class DoubleChestInventoryRenderer {
     }
     public void render(ItemStack stack, int baseX, int baseY, DrawContext context)
     {
+        baseY -= 30;
+
         if (stack.hasNbt())
         {
             DefaultedList<ItemStack> items = InventoryUtils.getStoredItems(stack, -1);

@@ -135,8 +135,9 @@ public class NbtUtils {
 
         recipesUsed.object2IntEntrySet().forEach(entry -> {
             player.getWorld().getRecipeManager().get(entry.getKey()).ifPresent(recipe -> {
-                list.add(recipe);
-                currentFurnaceXp += entry.getIntValue() * ((AbstractCookingRecipe) recipe).getExperience();
+                list.add(recipe.value());
+
+                currentFurnaceXp += entry.getIntValue() * ((AbstractCookingRecipe) recipe.value()).getExperience();
             });
         });
 
