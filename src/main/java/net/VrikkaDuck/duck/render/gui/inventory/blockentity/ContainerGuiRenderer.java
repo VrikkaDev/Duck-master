@@ -22,6 +22,7 @@ public class ContainerGuiRenderer {
     private final FurnaceInventoryRenderer furnaceInventoryRenderer = new FurnaceInventoryRenderer();
     private final BeehiveInventoryRenderer beehiveInventoryRenderer = new BeehiveInventoryRenderer();
     private final ChiseledBookshelfInventoryRenderer chiseledBookshelfInventoryRenderer = new ChiseledBookshelfInventoryRenderer();
+    private final CrafterInventoryRenderer crafterInventoryRenderer = new CrafterInventoryRenderer();
 
     public ContainerGuiRenderer(){
     }
@@ -50,6 +51,7 @@ public class ContainerGuiRenderer {
             case FURNACE -> furnaceInventoryRenderer.render(entry.getKey(), ScaledWidth() / 2 - 59, ScaledHeight() / 2 + 30, context);
             case BEEHIVE -> beehiveInventoryRenderer.render(entry.getKey(), ScaledWidth() / 2, ScaledHeight() / 2, context);
             case CHISELED_BOOKSHELF -> chiseledBookshelfInventoryRenderer.render(entry.getKey(), ScaledWidth() / 2, ScaledHeight() / 2, context);
+            case CRAFTER -> crafterInventoryRenderer.render(entry.getKey(), ScaledWidth() / 2, ScaledHeight() / 2, context);
             default -> {}
         }
     }

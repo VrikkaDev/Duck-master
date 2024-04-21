@@ -98,7 +98,9 @@ public class ServerConfigs {
             }
             JsonObject root = element.getAsJsonObject();
 
-            JsonElement wre = root.get(Objects.requireNonNull(getWorldUUID()).toString());
+            UUID worldUUID = getWorldUUID();
+
+            JsonElement wre = root.get(Objects.requireNonNull(worldUUID).toString());
 
             if (wre == null || !wre.isJsonObject()) {
                 return;
@@ -123,6 +125,10 @@ public class ServerConfigs {
             return;
         }
 
+        if(!file.getParentFile().exists()){
+            file.getParentFile().mkdirs();
+        }
+
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             JsonObject root = new JsonObject();
             root.addProperty("uuid", UUID.randomUUID().toString());
@@ -132,16 +138,19 @@ public class ServerConfigs {
         }
     }
 
+    private static int gwuCount = 0;
     private static UUID getWorldUUID(){
         JsonElement parsedIdFile = parseJsonFile(new File(GameWorld.getDataFolder(), UUID_FILE_NAME));
         if(parsedIdFile != null && parsedIdFile.isJsonObject()){
             JsonObject pif = parsedIdFile.getAsJsonObject();
+            gwuCount = 0;
             return UUID.fromString(pif.get("uuid").getAsString());
         }else{
             File idf = new File(GameWorld.getDataFolder(), UUID_FILE_NAME);
             if(!idf.exists()){
                 createUuidFile(idf);
-                return getWorldUUID();
+                gwuCount++;
+                return gwuCount >= 10 ? null : getWorldUUID();
             }
             Variables.LOGGER.warn("Couldn't parse world id file.");
             return null;

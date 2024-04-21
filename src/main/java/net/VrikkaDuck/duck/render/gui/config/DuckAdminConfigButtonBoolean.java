@@ -3,6 +3,7 @@ package net.VrikkaDuck.duck.render.gui.config;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import net.VrikkaDuck.duck.config.client.IAdminConfigLevel;
+import net.minecraft.client.gui.DrawContext;
 
 public class DuckAdminConfigButtonBoolean extends ButtonGeneric {
 
