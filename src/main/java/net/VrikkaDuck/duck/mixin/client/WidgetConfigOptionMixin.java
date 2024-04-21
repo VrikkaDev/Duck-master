@@ -30,6 +30,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+
+//TODO rewrite or something
 @Mixin(value = WidgetConfigOption.class, remap = false, priority = 500)
 public abstract class WidgetConfigOptionMixin extends WidgetConfigOptionBase<GuiConfigsBase.ConfigOptionWrapper>{
 
@@ -84,11 +86,9 @@ public abstract class WidgetConfigOptionMixin extends WidgetConfigOptionBase<Gui
                 ConfigOptionChangeListenerButton listenerChange = new ConfigOptionChangeListenerButton((IConfigResettable) config, resetButton, null);
 
                 WidgetConfigOption.HotkeyedBooleanResetListener listenerReset = new WidgetConfigOption.HotkeyedBooleanResetListener(
-
                         toggleable, activeButton, keybindButton, resetButton, this.host);
 
                 this.host.addKeybindChangeListener(listenerReset::updateButtons);
-
 
                 this.addButton(activeButton, listenerChange);
                 this.addButton(resetButton, listenerReset);

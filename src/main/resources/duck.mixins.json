@@ -21,6 +21,7 @@
     "client.IClientWorldMixin",
     "client.InGameHudMixin",
     "client.WidgetConfigOptionMixin",
+    "client.WidgetContainerMixin",
     "client.WidgetListBaseMixin"
   ],
   "injectors": {

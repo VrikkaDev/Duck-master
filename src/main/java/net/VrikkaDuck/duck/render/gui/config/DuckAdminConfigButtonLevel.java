@@ -109,7 +109,7 @@ public class DuckAdminConfigButtonLevel extends ButtonGeneric {
                 }
             }
 
-            if(this.hovered){
+            if(this.hovered && !ConfigGui.somethingWithTooltipOrSomethingIdk){
                 RenderUtils.drawHoverText(mouseX,mouseY,hoverText(), context);
             }
 

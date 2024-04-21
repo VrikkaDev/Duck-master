@@ -11,8 +11,10 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.client.Configs;
+import net.VrikkaDuck.duck.config.client.IAdminConfigLevel;
 import net.VrikkaDuck.duck.config.client.options.IDuckOption;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
+import net.VrikkaDuck.duck.networking.PacketsS2C;
 import net.VrikkaDuck.duck.world.common.GameWorld;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -23,11 +25,11 @@ import java.util.List;
 public class ConfigGui extends GuiConfigsBase {
 
     //TODO Needs cleanup
+    public static boolean somethingWithTooltipOrSomethingIdk = false;
     private static ConfigGuiTab tab = ConfigGuiTab.GENERIC;
     public static List<?> listWidgets;
-    private static List<String> hoverText(){
-      return List.of("This feature is disabled", "in this server!");
-    }
+    private static final List<String> disabledOnServerText = List.of("This feature is disabled", "in this server!");
+    private static final List<String> noServerModText = List.of("This server doesn't", "have the duck mod installed!");
     static boolean isOn = false;
 
     public ConfigGui()
@@ -51,32 +53,51 @@ public class ConfigGui extends GuiConfigsBase {
         }
     }
 
-    @Override
-    public void drawContents(DrawContext context, int mouseX, int mouseY, float partialTicks)
+    private void _draw(DrawContext context, int mouseX, int mouseY, float partialTicks)
     {
-        try {
-            this.getListWidget().drawContents(context, mouseX, mouseY, partialTicks);
-        }catch (Exception e){
-            e.printStackTrace();
+        if(ConfigGui.tab == ConfigGuiTab.DEBUG){
+            return;
         }
-        if(ConfigGui.tab == ConfigGuiTab.ADMIN || ConfigGui.tab == ConfigGuiTab.DEBUG){
+        if (ConfigGui.tab == ConfigGuiTab.ADMIN){
+            if(listWidgets != null) {
+                for (Object widget : listWidgets) {
+
+                    if (!(widget instanceof WidgetConfigOption)){
+                        continue;
+                    }
+
+                    WidgetConfigOption w = (WidgetConfigOption) widget;
+
+
+                    if (!PacketsS2C.serverProperties.containsKey("duckVersion")){
+                        somethingWithTooltipOrSomethingIdk = true;
+                        RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
+                        RenderUtils.drawHoverText(mouseX, mouseY, noServerModText, context);
+                    }
+                }
+            }
             return;
         }
         if (this.getListWidget() != null)
         {
+
             if(listWidgets != null) {
                 for (Object widget : listWidgets) {
+
                     if (!(widget instanceof WidgetConfigOption) || widget == null) {
-                        break;
+                        continue;
                     }
                     WidgetConfigOption w = (WidgetConfigOption) widget;
 
+                    if (!PacketsS2C.serverProperties.containsKey("duckVersion")){
+                        somethingWithTooltipOrSomethingIdk = true;
+                        RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
+                        RenderUtils.drawHoverText(mouseX, mouseY, noServerModText, context);
+                        continue;
+                    }
+
                     isOn = false;
 
-                    /*System.out.println(w.getEntry().getConfig() + " :  " + (w instanceof IDuckOption));
-                    System.out.println(w.getEntry().getConfig() + " :  " + (w.getEntry() instanceof IDuckOption));
-                    System.out.println(w.getEntry().getConfig() + " :  " + (w.getEntry().getConfig() instanceof IDuckOption));
-*/
                     if(w.getEntry().getConfig() instanceof IDuckOption){
                         if(!((IDuckOption) w.getEntry().getConfig()).canDisable()){
                             continue;
@@ -105,7 +126,9 @@ public class ConfigGui extends GuiConfigsBase {
                     if(!isOn && hasServerSetting){
                         RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
                         if(w.isMouseOver(mouseX, mouseY) && mouseX > w.getWidth()/3){
-                            RenderUtils.drawHoverText(mouseX, mouseY, hoverText(), context);
+                            somethingWithTooltipOrSomethingIdk = true;
+
+                            RenderUtils.drawHoverText(mouseX, mouseY, disabledOnServerText, context);
                         }
                     }
                 }
@@ -113,6 +136,18 @@ public class ConfigGui extends GuiConfigsBase {
 
 
         }
+    }
+
+    @Override
+    public void drawContents(DrawContext context, int mouseX, int mouseY, float partialTicks)
+    {
+        _draw(context, mouseX, mouseY, partialTicks);
+        try {
+            this.getListWidget().drawContents(context, mouseX, mouseY, partialTicks);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        somethingWithTooltipOrSomethingIdk = false;
     }
 
     @Override

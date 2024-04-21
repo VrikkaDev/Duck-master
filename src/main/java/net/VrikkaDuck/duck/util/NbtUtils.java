@@ -18,14 +18,17 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.entity.vehicle.HopperMinecartEntity;
+import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.recipe.AbstractCookingRecipe;
-import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.*;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -96,7 +99,7 @@ public class NbtUtils {
                 case ENDER_CHEST -> compound = getEnderChestNbt(player).orElse(new NbtCompound());
                 case FURNACE -> compound = getFurnaceNbt((AbstractFurnaceBlockEntity) blockEntity, player).orElse(new NbtCompound());
                 case BEEHIVE -> compound = getBeehiveNbt((BeehiveBlockEntity) blockEntity, player).orElse(new NbtCompound());
-
+                case CRAFTER -> compound = addResultRecipe(player, compound).orElse(new NbtCompound());
                 default -> {
                 }
             }
@@ -144,6 +147,40 @@ public class NbtUtils {
         fcompound.putFloat("xp", currentFurnaceXp);
 
         return Optional.of(fcompound);
+    }
+
+    public static Optional<NbtCompound> addResultRecipe(ServerPlayerEntity player, NbtCompound nbt){
+
+        CraftingInventory craftingInventory = new CraftingInventory(new ScreenHandler(null, -1) {
+            @Override
+            public ItemStack quickMove(PlayerEntity player, int slot) {
+                return null;
+            }
+
+            @Override
+            public boolean canUse(PlayerEntity player) {
+                return false;
+            }
+        }, 3, 3);
+
+        for(NbtElement c : nbt.getList("Items", NbtList.COMPOUND_TYPE)){
+            NbtCompound cc = (NbtCompound) c;
+            ItemStack stak = ItemStack.fromNbt(cc);
+            byte slot = cc.getByte("Slot");
+            craftingInventory.setStack(slot, stak);
+        }
+
+        Optional<RecipeEntry<CraftingRecipe>> optional = player.getServerWorld().getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, player.getServerWorld());
+        if (optional.isPresent()) {
+            RecipeEntry<CraftingRecipe> recipeEntry = optional.get();
+            ItemStack ss = recipeEntry.value().getResult(player.getServerWorld().getRegistryManager());
+
+            NbtCompound cc = new NbtCompound();
+            ss.writeNbt(cc);
+            nbt.put("result", cc);
+        }
+
+        return Optional.of(nbt);
     }
 
     public static Optional<NbtCompound> getEnderChestNbt(ServerPlayerEntity player){
