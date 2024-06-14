@@ -33,6 +33,7 @@ public class ContainerPacket {
     }
 
 
+    // Uuid of player and blockpos is player camera pos
     public record ContainerC2SPacket(UUID uuid, BlockPos pos) implements FabricPacket {
 
         public static final PacketType<ContainerC2SPacket> TYPE = PacketType.create(new Identifier("duck", "c2s/container"), ContainerC2SPacket::read);

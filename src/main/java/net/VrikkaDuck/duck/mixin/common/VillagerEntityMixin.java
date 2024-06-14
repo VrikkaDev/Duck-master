@@ -37,4 +37,8 @@ public class VillagerEntityMixin {
     private void duck$levelUp(CallbackInfo ci){
         NetworkHandler.Server.SendEntityToNearby(((VillagerEntity)(Object)this));
     }
+    @Inject(method = "fillRecipes", at = @At("RETURN"))
+    private void duck$fillRecipes(CallbackInfo ci){
+        NetworkHandler.Server.SendEntityToNearby(((VillagerEntity)(Object)this));
+    }
 }

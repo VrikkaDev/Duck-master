@@ -12,8 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-import static net.minecraft.client.gui.screen.recipebook.RecipeBookWidget.BUTTON_TEXTURES;
-
 public class DuckAdminConfigButtonLevel extends ButtonGeneric {
 
     private static List<String> hoverText(){
@@ -109,9 +107,10 @@ public class DuckAdminConfigButtonLevel extends ButtonGeneric {
                 }
             }
 
-            if(this.hovered && !ConfigGui.somethingWithTooltipOrSomethingIdk){
+            if(this.hovered && !ConfigGui.shouldRenderConfigTooltip){
                 RenderUtils.drawHoverText(mouseX,mouseY,hoverText(), context);
             }
+
 
         }
     }

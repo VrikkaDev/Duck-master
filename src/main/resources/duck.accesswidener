@@ -1,0 +1,8 @@
+accessWidener v1 named
+accessible field net/minecraft/block/entity/BrewingStandBlockEntity itemBrewing Lnet/minecraft/item/Item;
+accessible field net/minecraft/block/entity/BrewingStandBlockEntity brewTime I
+accessible field net/minecraft/block/entity/BrewingStandBlockEntity fuel I
+accessible field net/minecraft/block/entity/BrewingStandBlockEntity inventory Lnet/minecraft/util/collection/DefaultedList;
+accessible method net/minecraft/block/entity/BrewingStandBlockEntity canCraft (Lnet/minecraft/util/collection/DefaultedList;)Z
+accessible method net/minecraft/block/entity/BrewingStandBlockEntity getSlotsEmpty ()[Z
+accessible field net/minecraft/block/entity/BrewingStandBlockEntity slotsEmptyLastTick [Z

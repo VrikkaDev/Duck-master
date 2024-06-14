@@ -23,6 +23,7 @@ public class ContainerGuiRenderer {
     private final BeehiveInventoryRenderer beehiveInventoryRenderer = new BeehiveInventoryRenderer();
     private final ChiseledBookshelfInventoryRenderer chiseledBookshelfInventoryRenderer = new ChiseledBookshelfInventoryRenderer();
     private final CrafterInventoryRenderer crafterInventoryRenderer = new CrafterInventoryRenderer();
+    private final BrewingInventoryRenderer brewingInventoryRenderer = new BrewingInventoryRenderer();
 
     public ContainerGuiRenderer(){
     }
@@ -52,6 +53,7 @@ public class ContainerGuiRenderer {
             case BEEHIVE -> beehiveInventoryRenderer.render(entry.getKey(), ScaledWidth() / 2, ScaledHeight() / 2, context);
             case CHISELED_BOOKSHELF -> chiseledBookshelfInventoryRenderer.render(entry.getKey(), ScaledWidth() / 2, ScaledHeight() / 2, context);
             case CRAFTER -> crafterInventoryRenderer.render(entry.getKey(), ScaledWidth() / 2, ScaledHeight() / 2, context);
+            case BREWING_STAND -> brewingInventoryRenderer.render(entry.getKey(), ScaledWidth() / 2, ScaledHeight() / 2, context);
             default -> {}
         }
     }

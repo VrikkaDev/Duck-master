@@ -7,8 +7,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 
 public class DebugPrinter {
-    public static void DebugPrint(Object obj, boolean a){
-        if(!Variables.DEBUG || !a || !GameWorld.hasClient()){
+    public static void DebugPrint(Object obj, boolean print){
+        if(!Variables.DEBUG || !print || !GameWorld.hasClient()){
             return;
         }
 
