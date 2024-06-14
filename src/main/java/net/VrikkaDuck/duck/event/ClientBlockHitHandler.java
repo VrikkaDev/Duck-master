@@ -13,6 +13,9 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -20,6 +23,7 @@ import net.minecraft.util.math.Box;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
@@ -61,9 +65,42 @@ public class ClientBlockHitHandler {
         checkNewContainers(mc);
         checkUnusedContainers(mc);
 
+        Variables.PROFILER.start("clientBlockHitHandler_tickBlockData");
+        tickBlockData();
+        Variables.PROFILER.stop("clientBlockHitHandler_tickBlockData");
+
+
         Variables.PROFILER.start("clientBlockHitHandler_reloadRaycast");
         this.reload();
         Variables.PROFILER.stop("clientBlockHitHandler_reloadRaycast");
+    }
+
+    private void tickBlockData(){
+        Map.Entry<NbtCompound, ContainerType> entry = Configs.Actions.WORLD_CONTAINERS.get(Configs.Actions.LOOKING_AT);
+
+        if(entry == null){
+            return;
+        }
+
+        switch (entry.getValue()){
+            case BREWING_STAND -> {
+                // Decrement of brewtime in client
+
+                NbtCompound nn = entry.getKey().getCompound("BlockEntityTag");
+                int btime = nn.getShort("BrewTime");
+
+                if (btime <= 0){
+                    break;
+                }
+
+                nn.remove("BrewTime");
+                nn.putShort("BrewTime", (short) (btime-1));
+                NbtCompound heh = new NbtCompound();
+                heh.put("BlockEntityTag", nn);
+                Configs.Actions.WORLD_CONTAINERS.replace(Configs.Actions.LOOKING_AT, Map.entry(heh, entry.getValue()));
+            }
+            default -> {}
+        }
     }
 
     public void lookingNewBlock(BlockPos blockPos){

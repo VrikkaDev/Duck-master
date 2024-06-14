@@ -141,8 +141,4 @@ public class GuiRenderUtils {
         //RenderUtils.drawRect(x+7 , y+7, width - 7, height - 7, ColorHelper.Argb.getArgb(255, 198, 198, 198));
 
     }
-        private static MinecraftClient mc()
-    {
-        return MinecraftClient.getInstance();
-    }
 }

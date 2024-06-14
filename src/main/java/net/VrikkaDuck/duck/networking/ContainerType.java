@@ -18,6 +18,7 @@ public enum ContainerType {
     BEEHIVE(15),
     CHISELED_BOOKSHELF(20),
     CRAFTER(25),
+    BREWING_STAND(30),
     SHULKER(0);
 
     public final int value;
@@ -43,6 +44,7 @@ public enum ContainerType {
         BlockEntityType<?> type = blockEntity.getType();
 
 
+        // HEhe. maybe switch this
         if(type.equals(BlockEntityType.CHEST) || type.equals(BlockEntityType.TRAPPED_CHEST) || type.equals(BlockEntityType.BARREL)) {
 
             if (blockEntity instanceof ChestBlockEntity sbEntity) {
@@ -70,6 +72,8 @@ public enum ContainerType {
             return ContainerType.CHISELED_BOOKSHELF;
         }else if(type.equals(BlockEntityType.CRAFTER)){
             return ContainerType.CRAFTER;
+        } else if (type.equals(BlockEntityType.BREWING_STAND)) {
+            return ContainerType.BREWING_STAND;
         }
 
         return ContainerType.NONE;

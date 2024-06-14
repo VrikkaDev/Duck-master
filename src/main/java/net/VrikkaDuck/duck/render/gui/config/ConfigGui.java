@@ -11,7 +11,6 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.client.Configs;
-import net.VrikkaDuck.duck.config.client.IAdminConfigLevel;
 import net.VrikkaDuck.duck.config.client.options.IDuckOption;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
 import net.VrikkaDuck.duck.networking.PacketsS2C;
@@ -25,7 +24,7 @@ import java.util.List;
 public class ConfigGui extends GuiConfigsBase {
 
     //TODO Needs cleanup
-    public static boolean somethingWithTooltipOrSomethingIdk = false;
+    public static boolean shouldRenderConfigTooltip = false;
     private static ConfigGuiTab tab = ConfigGuiTab.GENERIC;
     public static List<?> listWidgets;
     private static final List<String> disabledOnServerText = List.of("This feature is disabled", "in this server!");
@@ -70,7 +69,7 @@ public class ConfigGui extends GuiConfigsBase {
 
 
                     if (!PacketsS2C.serverProperties.containsKey("duckVersion")){
-                        somethingWithTooltipOrSomethingIdk = true;
+                        shouldRenderConfigTooltip = true;
                         RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
                         RenderUtils.drawHoverText(mouseX, mouseY, noServerModText, context);
                     }
@@ -90,7 +89,7 @@ public class ConfigGui extends GuiConfigsBase {
                     WidgetConfigOption w = (WidgetConfigOption) widget;
 
                     if (!PacketsS2C.serverProperties.containsKey("duckVersion")){
-                        somethingWithTooltipOrSomethingIdk = true;
+                        shouldRenderConfigTooltip = true;
                         RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
                         RenderUtils.drawHoverText(mouseX, mouseY, noServerModText, context);
                         continue;
@@ -126,7 +125,7 @@ public class ConfigGui extends GuiConfigsBase {
                     if(!isOn && hasServerSetting){
                         RenderUtils.drawRect(w.getX(), w.getY(), w.getWidth(), w.getHeight(), 0x8F4F4F4F);
                         if(w.isMouseOver(mouseX, mouseY) && mouseX > w.getWidth()/3){
-                            somethingWithTooltipOrSomethingIdk = true;
+                            shouldRenderConfigTooltip = true;
 
                             RenderUtils.drawHoverText(mouseX, mouseY, disabledOnServerText, context);
                         }
@@ -147,7 +146,7 @@ public class ConfigGui extends GuiConfigsBase {
         }catch (Exception e){
             e.printStackTrace();
         }
-        somethingWithTooltipOrSomethingIdk = false;
+
     }
 
     @Override

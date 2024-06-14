@@ -6,6 +6,7 @@
   "mixins": [
     "common.AbstractFurnaceBlockEntityMixin",
     "common.BlockEntityMixin",
+    "common.BrewingStandBlockEntityMixin",
     "common.ChiseledBookshelfBlockEntityMixin",
     "common.HopperBlockEntityMixin",
     "common.MerchantEntityMixin",
