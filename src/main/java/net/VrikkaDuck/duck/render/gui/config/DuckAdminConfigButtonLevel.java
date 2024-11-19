@@ -8,11 +8,14 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import net.VrikkaDuck.duck.config.client.IAdminConfigLevel;
 import net.VrikkaDuck.duck.util.PermissionLevel;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 public class DuckAdminConfigButtonLevel extends ButtonGeneric {
+
+    private static Identifier BTN_TEXTURE = new Identifier("textures/gui/sprites/widget/button.png");
 
     private static List<String> hoverText(){
         return List.of("Minimum permission level,", "required to use this feature","" , "NORMAL,", "OP");
@@ -61,7 +64,7 @@ public class DuckAdminConfigButtonLevel extends ButtonGeneric {
 
             if (this.renderDefaultBackground)
             {
-                this.bindTexture(BUTTON_TEXTURE);
+                this.bindTexture(BTN_TEXTURE);
                 context.drawGuiTexture(this.getTexture(this.hovered), this.x, this.y, this.width, this. height);
             }
 

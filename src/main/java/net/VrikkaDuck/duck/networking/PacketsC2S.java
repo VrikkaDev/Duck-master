@@ -61,7 +61,7 @@ public class PacketsC2S {
             }
         });
 
-        Optional<ContainerPacket.ContainerS2CPacket> p = getContainerPacket(_posl, player);
+        Optional<ContainerPacket.ContainerS2CPacket> p = getContainerPacket(_posl, player, player.getServerWorld());
         p.ifPresent(containerS2CPacket -> NetworkHandler.Server.SendToClient(player, containerS2CPacket));
 
         Variables.PROFILER.stop("packetsC2S_processContainerPacket");
@@ -193,7 +193,7 @@ public class PacketsC2S {
 
             switch (type){
                 case VILLAGER_TRADES -> compound = getVillagerTradesNbt((VillagerEntity) entity, player).orElse(new NbtCompound());
-                case PLAYER_INVENTORY -> compound = getPlayerInventoryNbt((ServerPlayerEntity) entity, player).orElse(new NbtCompound());
+                case PLAYER_INVENTORY -> compound = getPlayerInventoryNbt((ServerPlayerEntity) entity, player, player.getServerWorld()).orElse(new NbtCompound());
                 case MINECART_CHEST, MINECART_HOPPER -> compound = getMinecartContainerNbt((AbstractMinecartEntity) entity, player).orElse(new NbtCompound());
                 default -> {continue;}
             }

@@ -1,6 +1,7 @@
 package net.VrikkaDuck.duck.mixin.common;
 
 import net.VrikkaDuck.duck.config.common.ServerConfigs;
+import net.VrikkaDuck.duck.handler.common.TickHandler;
 import net.VrikkaDuck.duck.networking.PacketsC2S;
 import net.VrikkaDuck.duck.world.common.GameWorld;
 import net.minecraft.server.MinecraftServer;
@@ -12,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 @Mixin(MinecraftServer.class)
@@ -28,5 +30,10 @@ public abstract class MinecraftServerMixin {
         GameWorld.setServer(((MinecraftServer)(Object)this));
 
         ServerConfigs.loadFromFile();
+    }
+
+    @Inject(method = "tick", at = @At("RETURN"))
+    private void duck$tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci){
+        TickHandler.INSTANCE().Tick();
     }
 }

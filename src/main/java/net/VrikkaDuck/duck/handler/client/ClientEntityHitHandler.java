@@ -1,4 +1,4 @@
-package net.VrikkaDuck.duck.event;
+package net.VrikkaDuck.duck.handler.client;
 
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.client.Configs;

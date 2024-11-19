@@ -12,6 +12,8 @@ import fi.dy.masa.malilib.gui.button.ConfigButtonBoolean;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
+import fi.dy.masa.malilib.util.LayerMode;
+import fi.dy.masa.malilib.util.LayerRange;
 import net.VrikkaDuck.duck.Variables;
 import net.VrikkaDuck.duck.config.client.gui.DuckPrintOutputType;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
@@ -21,9 +23,13 @@ import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.networking.EntityDataType;
 import net.VrikkaDuck.duck.util.PermissionLevel;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.io.File;
 import java.util.*;
@@ -39,13 +45,18 @@ public class Configs implements IConfigHandler {
         public static final DuckConfigHotkeyToggleable INSPECT_VILLAGER_TRADES = new DuckConfigHotkeyToggleable(ServerConfigs.Generic.INSPECT_VILLAGER_TRADES.getName(), true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME, "Inspect villager trades");
         public static final DuckConfigHotkeyToggleable SHOW_STATE_INFO = new DuckConfigHotkeyToggleable("showBlockstateInfo", true, "LEFT_SHIFT", KeybindSettings.MODIFIER_INGAME,"When enabled while inspecting there will be a window\n that shows more info about inspected thing.");
 
-        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES, SHOW_STATE_INFO);
+        public static final ConfigBoolean LITEMATICA_SUPPORT = new ConfigBoolean("litematicaSupport", true, "Inspect villager trades");
+
+
+        // FOR SOME REASON THIS IS USED BY THE STUPID SERVER CONFIG SYNC THING amd doesnt always contAIN ALL CONFIGS.... THIS IS SO STUPID
+        public static ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES, SHOW_STATE_INFO, LITEMATICA_SUPPORT);
         public static final ImmutableList<IConfigBase> DEFAULT_OPTIONS = ImmutableList.of(
                 INSPECT_CONTAINER,
                 INSPECT_MINECART_CONTAINERS,
                 INSPECT_PLAYER_INVENTORY,
                 INSPECT_VILLAGER_TRADES,
                 SHOW_STATE_INFO,
+                LITEMATICA_SUPPORT,
                 Hotkeys.OPEN_CONFIG_GUI
         );
         public static final ImmutableList<DuckConfigHotkeyToggleable> CONFIG_HOTKEYS = ImmutableList.of(INSPECT_CONTAINER, INSPECT_MINECART_CONTAINERS, INSPECT_PLAYER_INVENTORY, INSPECT_VILLAGER_TRADES, SHOW_STATE_INFO);
@@ -54,7 +65,14 @@ public class Configs implements IConfigHandler {
         }
         public static boolean isAnyPressed(List<DuckConfigHotkeyToggleable> exclude){
 
-            for(DuckConfigHotkeyToggleable h : CONFIG_HOTKEYS){
+            for(IConfigBase b : CONFIG_HOTKEYS){
+
+                if(!(b instanceof DuckConfigHotkeyToggleable)){
+                    continue;
+                }
+
+                DuckConfigHotkeyToggleable h = (DuckConfigHotkeyToggleable) b;
+
                 if (Admin.fromName(h.getName()) == null){
                     continue;
                 }
@@ -130,9 +148,16 @@ public class Configs implements IConfigHandler {
         // todo change
         public static int RENDER_DOUBLE_CHEST_TOOLTIP = 0;
         public static BlockPos LOOKING_AT;
+        public static BlockState LOOKING_AT_BS;
+        public static Pair<NbtCompound, ContainerType> LOOKING_AT_BE_CLIENT = new Pair<>(null, null);
         public static UUID LOOKING_AT_ENTITY;
         public static Map<BlockPos, Map.Entry<NbtCompound, ContainerType>> WORLD_CONTAINERS = new HashMap<>();
         public static Map<UUID, Map.Entry<NbtCompound, EntityDataType>> WORLD_ENTITIES = new HashMap<>();
+
+        // key = third party mod name
+        public static Map<String, World> THIRD_PARTY_WORLDS = new HashMap<>();
+
+        public static Map<String, LayerRange> THIRD_PARTY_RENDER_LAYERS = new HashMap<>();
     }
 
     public static void loadFromFile()
@@ -163,7 +188,7 @@ public class Configs implements IConfigHandler {
         {
             JsonObject root = new JsonObject();
 
-            ConfigUtils.writeConfigBase(root, "Generic", Generic.CONFIG_HOTKEYS);
+            ConfigUtils.writeConfigBase(root, "Generic", Generic.DEFAULT_OPTIONS);
             if(Variables.DEBUG){
                 ConfigUtils.writeConfigBase(root, "Debug", Debug.OPTIONS);
             }

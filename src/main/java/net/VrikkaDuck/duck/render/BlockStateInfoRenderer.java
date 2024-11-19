@@ -36,11 +36,10 @@ public class BlockStateInfoRenderer {
         if(Configs.Actions.LOOKING_AT_ENTITY != null){
             return;
         }
-        BlockState bs = mc.world.getBlockState(Configs.Actions.LOOKING_AT);
+        BlockState bs = Configs.Actions.LOOKING_AT_BS;
         if (bs == null) {
             return;
         }
-
 
         List<String> props = BlockUtils.getFormattedBlockStateProperties(bs);
         ItemStack stack = bs.getBlock().asItem().getDefaultStack();

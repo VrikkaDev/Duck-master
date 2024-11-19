@@ -57,7 +57,7 @@ public abstract class ServerPlayerNetworkHandlerMixin {
                 }
             });
 
-            Optional<ContainerPacket.ContainerS2CPacket> packet = NbtUtils.getContainerPacket(_posl, player);
+            Optional<ContainerPacket.ContainerS2CPacket> packet = NbtUtils.getContainerPacket(_posl, player, player.getServerWorld());
 
             packet.ifPresent(p -> NetworkHandler.Server.SendToClient(player, p));
         });

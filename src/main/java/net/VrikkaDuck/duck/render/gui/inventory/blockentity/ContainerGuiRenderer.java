@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Map;
@@ -31,11 +32,18 @@ public class ContainerGuiRenderer {
     public void render(DrawContext context){
         BlockPos pos = Configs.Actions.LOOKING_AT;
 
-        if(!Configs.Actions.WORLD_CONTAINERS.containsKey(pos)){
-            return;
-        }
+        Map.Entry<NbtCompound, ContainerType> entry;
+        Pair<NbtCompound, ContainerType> p = Configs.Actions.LOOKING_AT_BE_CLIENT;
 
-        Map.Entry<NbtCompound, ContainerType> entry = Configs.Actions.WORLD_CONTAINERS.get(pos);
+        if(Configs.Actions.WORLD_CONTAINERS.containsKey(pos)){
+            entry = Configs.Actions.WORLD_CONTAINERS.get(pos);
+        }else{
+            if(p.getRight() != ContainerType.NONE && p.getLeft() != null && p.getRight() != null){
+                entry = Map.entry(p.getLeft(), p.getRight());
+            }else{
+                return;
+            }
+        }
 
         if(entry == null){
             return;
@@ -43,6 +51,7 @@ public class ContainerGuiRenderer {
 
         ItemStack cis = new ItemStack(Items.WHITE_SHULKER_BOX);
         cis.setNbt(entry.getKey());
+
 
         switch (entry.getValue()){
             case HOPPER -> hopperInventoryRenderer.render(cis, ScaledWidth() / 2 - 60, ScaledHeight() / 2 + 32, context);

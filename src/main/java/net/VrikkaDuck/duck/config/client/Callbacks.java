@@ -9,8 +9,8 @@ import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigDouble;
 import net.VrikkaDuck.duck.config.client.options.admin.DuckConfigLevel;
 import net.VrikkaDuck.duck.config.common.ServerConfigs;
-import net.VrikkaDuck.duck.event.ClientBlockHitHandler;
-import net.VrikkaDuck.duck.event.ClientEntityHitHandler;
+import net.VrikkaDuck.duck.handler.client.ClientBlockHitHandler;
+import net.VrikkaDuck.duck.handler.client.ClientEntityHitHandler;
 import net.VrikkaDuck.duck.networking.NetworkHandler;
 import net.VrikkaDuck.duck.networking.packet.AdminPacket;
 import net.VrikkaDuck.duck.render.gui.config.ConfigGui;
@@ -47,7 +47,6 @@ public class Callbacks {
             NetworkHandler.Client.SendToServer(packet);
         }
     }
-
 
     public static void setCallbacks(){
         KeyCallbackHotkeysGeneric callbackGeneric = new KeyCallbackHotkeysGeneric();

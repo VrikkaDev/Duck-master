@@ -1,6 +1,7 @@
 package net.VrikkaDuck.duck;
 
 import net.VrikkaDuck.duck.debug.DebugProfiler;
+import net.VrikkaDuck.duck.util.DuckModUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,7 +10,7 @@ public class Variables {
     public static final int PERMISSIONLEVEL = 4;
     public static final String MODNAME = "duck";
     public static final String MODID = "duck";
-    public static final String MODVERSION = "1.1.2+b1";
+    public static final String MODVERSION = DuckModUtils.getModVersionString("duck").split("-")[1];
 
     // DEBUG
     public static final Boolean DEBUG = true;

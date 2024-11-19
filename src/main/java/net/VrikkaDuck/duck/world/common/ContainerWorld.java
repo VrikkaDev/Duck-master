@@ -92,7 +92,7 @@ public class ContainerWorld {
         if(lastHashedBlockEntities == null){
             lastHashedBlockEntities = hn;
 
-            Optional<ContainerPacket.ContainerS2CPacket> packet = NbtUtils.getContainerPacket(bents.stream().map(BlockEntity::getPos).toList(), player);
+            Optional<ContainerPacket.ContainerS2CPacket> packet = NbtUtils.getContainerPacket(bents.stream().map(BlockEntity::getPos).toList(), player, player.getServerWorld());
 
             packet.ifPresent((p -> NetworkHandler.Server.SendToClient(player, p)));
             return;
@@ -106,7 +106,7 @@ public class ContainerWorld {
 
         lastHashedBlockEntities = hn;
 
-        Optional<ContainerPacket.ContainerS2CPacket> packet = NbtUtils.getContainerPacket(diffBlocks, player);
+        Optional<ContainerPacket.ContainerS2CPacket> packet = NbtUtils.getContainerPacket(diffBlocks, player, player.getServerWorld());
 
         packet.ifPresent((p -> NetworkHandler.Server.SendToClient(player, p)));
 

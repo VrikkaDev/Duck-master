@@ -19,6 +19,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,7 @@ import static net.VrikkaDuck.duck.util.NbtUtils.*;
 
 public class NetworkHandler {
     public static class Server{
+
         public static void SendToClient(ServerPlayerEntity player, FabricPacket packet){
 
             if(packet.toString().length() > 900000){
@@ -43,6 +45,8 @@ public class NetworkHandler {
 
             ServerPlayNetworking.send(player, packet);
         }
+
+
         public static void SendBlockEntityToNearby(World world, BlockPos pos){
             if(!ServerConfigs.Generic.INSPECT_CONTAINER.getBooleanValue() || world == null){
                 return;
@@ -59,8 +63,9 @@ public class NetworkHandler {
                 if(player instanceof ServerPlayerEntity splayer){
                     boolean hasPerm = player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_CONTAINER.getPermissionLevel());
                     if(!hasPerm){continue;}
-                    ContainerPacket.ContainerS2CPacket p = NbtUtils.getContainerPacket(List.of(pos), splayer).orElse(null);
+                    ContainerPacket.ContainerS2CPacket p = NbtUtils.getContainerPacket(List.of(pos), splayer, splayer.getServerWorld()).orElse(null);
                     if(p == null){
+                        Variables.LOGGER.warn("Couldnt create container s2c packet");
                         return;
                     }
                     NetworkHandler.Server.SendToClient(splayer, p);
@@ -89,7 +94,7 @@ public class NetworkHandler {
                     NbtCompound compound;
                     switch (type){
                         case VILLAGER_TRADES -> compound = getVillagerTradesNbt((VillagerEntity) entity, splayer).orElse(new NbtCompound());
-                        case PLAYER_INVENTORY -> compound = getPlayerInventoryNbt((ServerPlayerEntity) entity, splayer).orElse(new NbtCompound());
+                        case PLAYER_INVENTORY -> compound = getPlayerInventoryNbt((ServerPlayerEntity) entity, splayer, splayer.getServerWorld()).orElse(new NbtCompound());
                         case MINECART_CHEST, MINECART_HOPPER -> compound = getMinecartContainerNbt((AbstractMinecartEntity) entity, splayer).orElse(new NbtCompound());
                         default -> {continue;}
                     }
@@ -109,9 +114,15 @@ public class NetworkHandler {
                 }
             }
         }
+
     }
     public static class Client{
         public static void SendToServer(FabricPacket packet){
+
+            if(packet.toString().length() > 900000){
+                Variables.LOGGER.warn("Tried to send packet too large");
+            }
+
             DebugPrinter.DebugPrint(packet, Configs.Debug.PRINT_PACKETS_C2S.getBooleanValue());
             ClientPlayNetworking.send(packet);
         }

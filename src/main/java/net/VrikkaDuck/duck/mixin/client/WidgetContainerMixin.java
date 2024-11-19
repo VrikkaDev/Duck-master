@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WidgetContainer.class)
 public class WidgetContainerMixin {
-    @Shadow protected WidgetBase hoveredSubWidget;
+    @Shadow(remap = false) protected WidgetBase hoveredSubWidget;
 
     @Inject(method = "drawSubWidgets", at = @At("RETURN"))
     private void dsw(int mouseX, int mouseY, DrawContext drawContext, CallbackInfo ci){

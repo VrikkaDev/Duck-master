@@ -24,15 +24,14 @@ import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.*;
 import net.minecraft.recipe.*;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +51,7 @@ public class NbtUtils {
         return r;
     }
 
-    public static Optional<ContainerPacket.ContainerS2CPacket> getContainerPacket(List<BlockPos> positions, ServerPlayerEntity player) {
+    public static Optional<ContainerPacket.ContainerS2CPacket> getContainerPacket(List<BlockPos> positions, PlayerEntity player, World world) {
         if (!ServerConfigs.Generic.INSPECT_CONTAINER.getBooleanValue()
                 || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_CONTAINER.getPermissionLevel())
                 || positions.isEmpty()) {
@@ -62,11 +61,12 @@ public class NbtUtils {
         Map<BlockPos, NbtCompound> rmap = new HashMap<>();
 
         for(BlockPos pos : positions){
-            BlockEntity blockEntity = player.getWorld().getBlockEntity(pos);
+            BlockEntity blockEntity = world.getBlockEntity(pos);
 
             if (blockEntity == null) {
-                Variables.LOGGER.warn("Could not find BlockEntity from the given position");
-                return Optional.empty();
+                //Variables.LOGGER.warn("Could not find BlockEntity from the given position");
+                rmap.put(pos, new NbtCompound());
+                continue;
             }
 
             NbtCompound compound = blockEntity.createNbtWithId();
@@ -84,11 +84,17 @@ public class NbtUtils {
                     ChestBlockEntity sbEntity = (ChestBlockEntity)blockEntity;
                     BlockState state = sbEntity.getCachedState();
 
-                    Direction direction = ChestBlock.getFacing(state);
-                    ChestBlockEntity doubleChest = (ChestBlockEntity) player.getWorld().getBlockEntity(sbEntity.getPos().offset(direction, 1));
+                    // Direction direction = ChestBlock.getFacing(state);
+                    // world.getBlockEntity(sbEntity.getPos().offset(direction, 1))
+
+                    ChestBlockEntity doubleChest = (ChestBlockEntity) world.getBlockEntity(ChestUtils.getOtherChestBlockPos(world, sbEntity.getPos()));
+
+                    if(doubleChest == null){
+                        break;
+                    }
 
                     if (state.get(ChestBlock.CHEST_TYPE).equals(ChestType.RIGHT)) {
-                        blockPos = ChestUtils.getOtherChestBlockPos(player.getServerWorld(), blockEntity.getPos());
+                        blockPos = ChestUtils.getOtherChestBlockPos(world, blockEntity.getPos());
                         compound = getDoubleChestNbt(sbEntity.createNbtWithId(), doubleChest.createNbtWithId());
                     } else {
                         blockPos = blockEntity.getPos();
@@ -96,15 +102,29 @@ public class NbtUtils {
                     }
                 }
 
-                case ENDER_CHEST -> compound = getEnderChestNbt(player).orElse(new NbtCompound());
-                case FURNACE -> compound = getFurnaceNbt((AbstractFurnaceBlockEntity) blockEntity, player).orElse(new NbtCompound());
-                case BEEHIVE -> compound = getBeehiveNbt((BeehiveBlockEntity) blockEntity, player).orElse(new NbtCompound());
-                case CRAFTER -> compound = addResultRecipe(player, compound).orElse(new NbtCompound());
+                case ENDER_CHEST -> compound = getEnderChestNbt(player, world).orElse(new NbtCompound());
+                case FURNACE -> compound = getFurnaceNbt((AbstractFurnaceBlockEntity) blockEntity, player, world).orElse(new NbtCompound());
+                case BEEHIVE -> compound = getBeehiveNbt((BeehiveBlockEntity) blockEntity, player, world).orElse(new NbtCompound());
+                case CRAFTER -> compound = addResultRecipe(compound, player, world).orElse(new NbtCompound());
                 default -> {
                 }
             }
 
             removeExtra(compound);
+
+            if (!compound.contains("Items") || compound.getList("Items", 10).isEmpty()) {
+                NbtList lst = new NbtList();
+                NbtCompound a = new NbtCompound();
+                a.put("Count", NbtByte.of((byte) 1));
+                lst.add(0, a);
+                NbtCompound b = new NbtCompound();
+                b.put("Slot", NbtByte.of((byte) 1));
+                lst.add(1, b);
+                NbtCompound c = new NbtCompound();
+                c.put("Count", NbtString.of("minecraft:air"));
+                lst.add(2, c);
+                compound.put("Items", lst);
+            }
 
             compound.putInt("containerType", type.value);
 
@@ -115,7 +135,7 @@ public class NbtUtils {
 
         return Optional.of(new ContainerPacket.ContainerS2CPacket(player.getUuid(), rmap));
     }
-    public static Optional<NbtCompound> getFurnaceNbt(AbstractFurnaceBlockEntity fblockEntity, ServerPlayerEntity player) {
+    public static Optional<NbtCompound> getFurnaceNbt(AbstractFurnaceBlockEntity fblockEntity, PlayerEntity player, World world) {
 
         if (fblockEntity == null) {
             Variables.LOGGER.error("Could not find BlockEntity from the given position");
@@ -137,7 +157,7 @@ public class NbtUtils {
         currentFurnaceXp = 0.0f;
 
         recipesUsed.object2IntEntrySet().forEach(entry -> {
-            player.getWorld().getRecipeManager().get(entry.getKey()).ifPresent(recipe -> {
+            world.getRecipeManager().get(entry.getKey()).ifPresent(recipe -> {
                 list.add(recipe.value());
 
                 currentFurnaceXp += entry.getIntValue() * ((AbstractCookingRecipe) recipe.value()).getExperience();
@@ -149,7 +169,7 @@ public class NbtUtils {
         return Optional.of(fcompound);
     }
 
-    public static Optional<NbtCompound> addResultRecipe(ServerPlayerEntity player, NbtCompound nbt){
+    public static Optional<NbtCompound> addResultRecipe(NbtCompound nbt, PlayerEntity player, World world){
 
         CraftingInventory craftingInventory = new CraftingInventory(new ScreenHandler(null, -1) {
             @Override
@@ -170,10 +190,10 @@ public class NbtUtils {
             craftingInventory.setStack(slot, stak);
         }
 
-        Optional<RecipeEntry<CraftingRecipe>> optional = player.getServerWorld().getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, player.getServerWorld());
+        Optional<RecipeEntry<CraftingRecipe>> optional = world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, world);
         if (optional.isPresent()) {
             RecipeEntry<CraftingRecipe> recipeEntry = optional.get();
-            ItemStack ss = recipeEntry.value().getResult(player.getServerWorld().getRegistryManager());
+            ItemStack ss = recipeEntry.value().getResult(world.getRegistryManager());
 
             NbtCompound cc = new NbtCompound();
             ss.writeNbt(cc);
@@ -183,7 +203,7 @@ public class NbtUtils {
         return Optional.of(nbt);
     }
 
-    public static Optional<NbtCompound> getEnderChestNbt(ServerPlayerEntity player){
+    public static Optional<NbtCompound> getEnderChestNbt(PlayerEntity player, World world){
         if(player == null){
             return Optional.empty();
         }
@@ -194,7 +214,7 @@ public class NbtUtils {
         return Optional.of(compound);
     }
 
-    public static Optional<NbtCompound> getBeehiveNbt(BeehiveBlockEntity beeblockEntity, ServerPlayerEntity player) {
+    public static Optional<NbtCompound> getBeehiveNbt(BeehiveBlockEntity beeblockEntity, PlayerEntity player, World world) {
 
         if (beeblockEntity == null) {
             return Optional.empty();
@@ -210,7 +230,7 @@ public class NbtUtils {
 
         return Optional.of(beecompound);
     }
-    public static Optional<NbtCompound> getPlayerInventoryNbt(ServerPlayerEntity target, ServerPlayerEntity player) {
+    public static Optional<NbtCompound> getPlayerInventoryNbt(ServerPlayerEntity target, PlayerEntity player, World world) {
         if (!ServerConfigs.Generic.INSPECT_PLAYER_INVENTORY.getBooleanValue() || !player.hasPermissionLevel(ServerConfigs.Generic.INSPECT_PLAYER_INVENTORY.getPermissionLevel())) {
             return Optional.empty();
         }
