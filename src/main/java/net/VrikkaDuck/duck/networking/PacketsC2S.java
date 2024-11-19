@@ -200,6 +200,9 @@ public class PacketsC2S {
 
             compound.putUuid("uuid", entity.getUuid());
             compound.putInt("entityType", type.value);
+            if(_list.toString().length() + compound.toString().length() > 900000){
+                break;
+            }
             _list.add(compound);
         }
 

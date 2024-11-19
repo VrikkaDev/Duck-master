@@ -108,6 +108,11 @@ public class NetworkHandler {
                     NbtCompound tc = new NbtCompound();
                     tc.put("entities", _l);
 
+                    if(tc.toString().length() > 900000){
+                        Variables.LOGGER.warn("Tried to send packet too large, EntityPacket.EntityS2CPacket");
+                        return;
+                    }
+
                     EntityPacket.EntityS2CPacket p = new EntityPacket.EntityS2CPacket(splayer.getUuid(), tc);
 
                     NetworkHandler.Server.SendToClient(splayer, p);
