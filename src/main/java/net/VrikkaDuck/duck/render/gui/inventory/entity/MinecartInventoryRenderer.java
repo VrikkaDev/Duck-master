@@ -22,15 +22,15 @@ public class MinecartInventoryRenderer {
     public MinecartInventoryRenderer(){
     }
 
-    public void render(Map.Entry<NbtCompound, EntityDataType> entry, int x, int y, DrawContext context){
+    public void render(Map.Entry<NbtCompound, EntityDataType> entry, int x, int y, String worldname ,DrawContext context){
         ItemStack cis = new ItemStack(Items.WHITE_SHULKER_BOX);
         cis.setNbt(entry.getKey());
 
         if(entry.getValue() == EntityDataType.MINECART_CHEST){
             shulkerInventoryRenderer.render(cis, x - 96,
-                    y + 30, true, context);
+                    y + 30, true, worldname, context);
         }else{
-            hopperInventoryRenderer.render(cis, x - (52 + 8), y + (16 + 16), context);
+            hopperInventoryRenderer.render(cis, x - (52 + 8), y + (16 + 16),worldname,  context);
         }
     }
 }

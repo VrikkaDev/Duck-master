@@ -9,7 +9,8 @@ public class ShulkerInventoryRenderer {
     private final MinecraftClient mc = MinecraftClient.getInstance();
     public ShulkerInventoryRenderer(){
     }
-    public void render(ItemStack stack, int baseX, int baseY, boolean useBgColors, DrawContext drawContext){
+    public void render(ItemStack stack, int baseX, int baseY, boolean useBgColors, String worldname, DrawContext drawContext){
         RenderUtils.renderShulkerBoxPreview(stack, baseX, baseY, useBgColors, drawContext);
+        drawContext.drawText(mc.textRenderer, worldname, baseX+10, baseY-95, 0xFFFFFF, true);
     }
 }

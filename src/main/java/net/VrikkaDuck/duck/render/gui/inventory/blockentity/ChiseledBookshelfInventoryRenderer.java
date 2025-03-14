@@ -19,8 +19,10 @@ public class ChiseledBookshelfInventoryRenderer {
     private final MinecraftClient mc = MinecraftClient.getInstance();
     public ChiseledBookshelfInventoryRenderer(){
     }
-    public void render(NbtCompound nbt, int baseX, int baseY, DrawContext context){
+    public void render(NbtCompound nbt, int baseX, int baseY, String worldname, DrawContext context){
         GuiRenderUtils.renderBackground(baseX-250/2, baseY-80, 250, 90);
+
+        context.drawText(mc.textRenderer, worldname, baseX-122, baseY-88, 0xFFFFFF, true);
 
         if(nbt.isEmpty()){
             return;

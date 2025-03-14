@@ -9,8 +9,11 @@ public class BeehiveInventoryRenderer {
     private final MinecraftClient mc = MinecraftClient.getInstance();
     public BeehiveInventoryRenderer(){
     }
-    public void render(NbtCompound nbt, int baseX, int baseY, DrawContext context){
-        GuiRenderUtils.renderBackground(baseX-35, baseY-31, 61, 31);
+    public void render(NbtCompound nbt, int baseX, int baseY, String worldname, DrawContext context){
+
+        context.drawText(mc.textRenderer, worldname, baseX-30, baseY-40, 0xFFFFFF, true);
+
+        GuiRenderUtils.renderBackground(baseX-33, baseY-31, 61, 31);
 
         String honeyCount = nbt.contains("HoneyLevel") ? String.valueOf(nbt.getInt("HoneyLevel")) : "0";
         String beeCount = nbt.contains("BeeCount") ? String.valueOf(nbt.getInt("BeeCount")) : "0";

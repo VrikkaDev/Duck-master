@@ -13,12 +13,13 @@ public class DispenserInventoryRenderer {
     public DispenserInventoryRenderer(){
     }
 
-    public void render(ItemStack stack, int x, int y, DrawContext context){
+    public void render(ItemStack stack, int x, int y, String worldname, DrawContext context){
 
         DefaultedList<ItemStack> items = InventoryUtils.getStoredItems(stack, -1);
 
         Inventory inv = fi.dy.masa.malilib.util.InventoryUtils.getAsInventory(items);
 
+        context.drawText(mc.textRenderer, worldname, x+2, y-20, 0xFFFFFF, true);
 
         y -= 12;
 

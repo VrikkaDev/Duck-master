@@ -55,10 +55,13 @@ public class CrafterInventoryRenderer {
     public CrafterInventoryRenderer(){
     }
 
-    public void render(NbtCompound nbt, int baseX, int baseY, DrawContext context){
+    public void render(NbtCompound nbt, int baseX, int baseY, String worldname, DrawContext context){
+
 
         baseX -= backgroundWidth/2;
         baseY -= backgroundHeight/2+30;
+
+        context.drawText(mc.textRenderer, worldname, baseX+1, baseY-10, 0xFFFFFF, true);
 
         GuiRenderUtils.renderBackground(baseX, baseY, backgroundWidth, backgroundHeight);
 

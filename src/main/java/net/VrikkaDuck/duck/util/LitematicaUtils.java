@@ -13,6 +13,7 @@ import net.minecraft.util.math.Box;
 
 import java.util.Arrays;
 
+// Why in utils :D
 public class LitematicaUtils {
     public static void UpdateLitematicaWorld(){
 
@@ -28,8 +29,12 @@ public class LitematicaUtils {
 
             WorldSchematic ws = SchematicWorldHandler.getSchematicWorld();
 
-            net.VrikkaDuck.duck.config.client.Configs.Actions.THIRD_PARTY_RENDER_LAYERS.put("litematica", DataManager.getRenderLayerRange());
-            net.VrikkaDuck.duck.config.client.Configs.Actions.THIRD_PARTY_WORLDS.put("litematica", ws);
+            if(!net.VrikkaDuck.duck.config.client.Configs.Actions.THIRD_PARTY_WORLDS.containsKey("litematica")) {
+                net.VrikkaDuck.duck.config.client.Configs.Actions.THIRD_PARTY_WORLDS.put("litematica", new net.VrikkaDuck.duck.world.client.ThirdPartyRaycastableWorld("litematica"));
+            }
+
+            net.VrikkaDuck.duck.config.client.Configs.Actions.THIRD_PARTY_WORLDS.get("litematica").UpdateWorld(ws);
+            net.VrikkaDuck.duck.config.client.Configs.Actions.THIRD_PARTY_WORLDS.get("litematica").UpdateLayerRange(DataManager.getRenderLayerRange());
         }else{
             net.VrikkaDuck.duck.config.client.Configs.Actions.THIRD_PARTY_WORLDS.remove("litematica");
         }

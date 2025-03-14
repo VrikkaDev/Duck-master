@@ -17,7 +17,7 @@ public class DoubleChestInventoryRenderer {
     private final MinecraftClient mc = MinecraftClient.getInstance();
     public DoubleChestInventoryRenderer(){
     }
-    public void render(ItemStack stack, int baseX, int baseY, DrawContext context)
+    public void render(ItemStack stack, int baseX, int baseY, String worldname, DrawContext context)
     {
         baseY -= 30;
 
@@ -29,6 +29,8 @@ public class DoubleChestInventoryRenderer {
             {
                 return;
             }
+
+            context.drawText(mc.textRenderer, worldname, baseX+10, baseY-149, 0xFFFFFF, true);
 
             InventoryOverlay.InventoryRenderType type = InventoryOverlay.InventoryRenderType.FIXED_54;
             InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, items.size());

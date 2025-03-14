@@ -23,6 +23,7 @@ import net.VrikkaDuck.duck.config.common.ServerConfigs;
 import net.VrikkaDuck.duck.networking.ContainerType;
 import net.VrikkaDuck.duck.networking.EntityDataType;
 import net.VrikkaDuck.duck.util.PermissionLevel;
+import net.VrikkaDuck.duck.world.client.ThirdPartyRaycastableWorld;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -149,13 +150,13 @@ public class Configs implements IConfigHandler {
         public static int RENDER_DOUBLE_CHEST_TOOLTIP = 0;
         public static BlockPos LOOKING_AT;
         public static BlockState LOOKING_AT_BS;
-        public static Pair<NbtCompound, ContainerType> LOOKING_AT_BE_CLIENT = new Pair<>(null, null);
+        public static Map<String, Pair<NbtCompound, ContainerType>> LOOKING_AT_BE_CLIENT = new HashMap<>();
         public static UUID LOOKING_AT_ENTITY;
         public static Map<BlockPos, Map.Entry<NbtCompound, ContainerType>> WORLD_CONTAINERS = new HashMap<>();
         public static Map<UUID, Map.Entry<NbtCompound, EntityDataType>> WORLD_ENTITIES = new HashMap<>();
 
         // key = third party mod name
-        public static Map<String, World> THIRD_PARTY_WORLDS = new HashMap<>();
+        public static Map<String, ThirdPartyRaycastableWorld> THIRD_PARTY_WORLDS = new HashMap<>();
 
         public static Map<String, LayerRange> THIRD_PARTY_RENDER_LAYERS = new HashMap<>();
     }

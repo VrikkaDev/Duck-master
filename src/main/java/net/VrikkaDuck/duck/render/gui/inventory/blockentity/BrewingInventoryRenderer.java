@@ -30,11 +30,13 @@ public class BrewingInventoryRenderer {
     public BrewingInventoryRenderer(){
     }
 
-    public void render(NbtCompound nbt, int baseX, int baseY, DrawContext context){
+    public void render(NbtCompound nbt, int baseX, int baseY, String worldname, DrawContext context){
         //DebugPrinter.DebugPrint(nbt, true);
 
         baseX = baseX - 128+42;
         baseY = baseY - 46;
+
+        context.drawText(mc.textRenderer, worldname, baseX+10, baseY-10, 0xFFFFFF, true);
 
 
         GuiRenderUtils.renderBackground(baseX, baseY, 128+41, 50);

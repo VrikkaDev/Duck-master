@@ -8,9 +8,9 @@ import net.VrikkaDuck.duck.networking.packet.ContainerPacket;
 import net.VrikkaDuck.duck.util.ChestUtils;
 import net.VrikkaDuck.duck.util.NbtUtils;
 import net.VrikkaDuck.duck.world.client.DuckRaycastContext;
+import net.VrikkaDuck.duck.world.client.ThirdPartyRaycastableWorld;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
@@ -22,22 +22,19 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 public class ClientBlockHitHandler {
+
+    private ThirdPartyRaycastableWorld thirdPartyRaycastableWorld = new ThirdPartyRaycastableWorld("Minecraft");
     public ClientBlockHitHandler(){
     }
 
@@ -53,17 +50,57 @@ public class ClientBlockHitHandler {
     private BlockPos PREVIOUS_BLOCK;
 
     public void reload(){
+        thirdPartyRaycastableWorld.UpdateWorld(mc.world);
 
-        Pair<HitResult, World> tpwhr = checkTPW();
+        List<Pair<ThirdPartyRaycastableWorld, HitResult>> tpwhr = checkTPW();
+        tpwhr.add(new Pair<>(thirdPartyRaycastableWorld, mc.cameraEntity.raycast(5, 0.0F, false)));
 
-        World worlduse = mc.world;
-        HitResult blockHit = mc.cameraEntity.raycast(5, 0.0F, false);
-        if(tpwhr != null && blockHit.squaredDistanceTo(mc.getCameraEntity()) > tpwhr.getLeft().squaredDistanceTo(mc.getCameraEntity())){
-            blockHit = tpwhr.getLeft();
-            worlduse = tpwhr.getRight();
+        AtomicBoolean found = new AtomicBoolean(false);
+
+        tpwhr.forEach(entry -> {
+            if(entry.getRight() == null || entry.getRight().getType() != HitResult.Type.BLOCK){
+                Configs.Actions.LOOKING_AT_BE_CLIENT.remove(entry.getLeft().Name);
+                return;
+            }
+            found.set(true);
+
+            HitResult blockHit = entry.getRight();
+            ThirdPartyRaycastableWorld worlduse = entry.getLeft();
+
+            if(blockHit.getType() != HitResult.Type.BLOCK) {
+
+                lookingNewBlock(null, worlduse);
+                return;
+            }
+
+            BlockPos blockPos = ((BlockHitResult) blockHit).getBlockPos();
+            assert worlduse != null;
+
+            if(PREVIOUS_BLOCK == null){
+                PREVIOUS_BLOCK = blockPos;
+                lookingNewBlock(blockPos, worlduse);
+                return;
+            }
+
+            if(PREVIOUS_BLOCK.equals(blockPos)){
+                return;
+            }
+            PREVIOUS_BLOCK = blockPos;
+
+            lookingNewBlock(blockPos, worlduse);
+        });
+
+        if(!found.get()){
+            PREVIOUS_BLOCK = null;
+            lookingNewBlock(null, thirdPartyRaycastableWorld);
         }
 
-        if(blockHit.getType() != HitResult.Type.BLOCK) {
+        /*if(tpwhr != null && blockHit.squaredDistanceTo(mc.getCameraEntity()) > tpwhr.getLeft().squaredDistanceTo(mc.getCameraEntity())){
+            blockHit = tpwhr.getLeft();
+            worlduse = tpwhr.getRight();
+        }*/
+
+        /*if(blockHit.getType() != HitResult.Type.BLOCK) {
             PREVIOUS_BLOCK = null;
             lookingNewBlock(null, worlduse);
             return;
@@ -83,7 +120,7 @@ public class ClientBlockHitHandler {
         }
         PREVIOUS_BLOCK = blockPos;
 
-        lookingNewBlock(blockPos, worlduse);
+        lookingNewBlock(blockPos, worlduse);*/
 
     }
 
@@ -103,31 +140,19 @@ public class ClientBlockHitHandler {
         Variables.PROFILER.stop("clientBlockHitHandler_reloadRaycast");
     }
 
-    private Pair<HitResult, World> checkTPW(){
-        for(Map.Entry<String, World> entry : Configs.Actions.THIRD_PARTY_WORLDS.entrySet()){
+    private List<Pair<ThirdPartyRaycastableWorld, HitResult>> checkTPW(){
+        List<Pair<ThirdPartyRaycastableWorld, HitResult>> r = new ArrayList<>();
+        for(Map.Entry<String, ThirdPartyRaycastableWorld> entry : Configs.Actions.THIRD_PARTY_WORLDS.entrySet()){
 
             if(entry.getKey().equals("litematica")){
                 if(!Configs.Generic.LITEMATICA_SUPPORT.getBooleanValue()){
                     continue;
                 }
             }
-
-            float maxDistance = 5;
-            float tickDelta = 0.0F;
-            boolean includeFluids = false;
-
-            Vec3d vec3d = Objects.requireNonNull(mc.getCameraEntity()).getCameraPosVec(tickDelta);
-            Vec3d vec3d2 = mc.getCameraEntity().getRotationVec(tickDelta);
-            Vec3d vec3d3 = vec3d.add(vec3d2.x * maxDistance, vec3d2.y * maxDistance, vec3d2.z * maxDistance);
-
-
-            HitResult blockHit = entry.getValue().raycast(new DuckRaycastContext(vec3d, vec3d3, DuckRaycastContext.DuckShapeType.OUTLINE_WITH_LAYER_RANGE, includeFluids ? RaycastContext.FluidHandling.ANY : RaycastContext.FluidHandling.NONE, mc.getCameraEntity(), Configs.Actions.THIRD_PARTY_RENDER_LAYERS.get(entry.getKey())));
-
-            if(blockHit.getType() == HitResult.Type.BLOCK){
-                return new Pair<>(blockHit, entry.getValue());
-            }
+            HitResult ray = entry.getValue().Raycast(mc);
+            r.add(new Pair<>(entry.getValue(), ray));
         }
-        return null;
+        return r;
     }
 
     private void tickBlockData(){
@@ -158,12 +183,20 @@ public class ClientBlockHitHandler {
         }
     }
 
-    public void lookingNewBlock(BlockPos blockPos, World world){
+    public void lookingNewBlock(BlockPos blockPos, ThirdPartyRaycastableWorld world){
 
         Configs.Actions.LOOKING_AT = blockPos;
-        Configs.Actions.LOOKING_AT_BE_CLIENT.setRight(ContainerType.NONE);
+        Pair<NbtCompound, ContainerType> LAT = Configs.Actions.LOOKING_AT_BE_CLIENT.get(world.Name);
+        if(LAT == null){
+            Configs.Actions.LOOKING_AT_BE_CLIENT.put(world.Name, new Pair<>(null, ContainerType.NONE));
+            LAT = Configs.Actions.LOOKING_AT_BE_CLIENT.get(world.Name);
+        }
+        LAT.setRight(ContainerType.NONE);
+       /* Variables.LOGGER.info("Configs.Actions.LOOKING_AT_BE_CLIENT");
+        Variables.LOGGER.info(Configs.Actions.LOOKING_AT_BE_CLIENT.toString());
+        Variables.LOGGER.info(Configs.Actions.LOOKING_AT_BE_CLIENT.get(world.Name).toString());*/
 
-        if(world == null){
+        if(world.World == null){
             Configs.Actions.LOOKING_AT_BS = null;
             return;
         }
@@ -173,13 +206,13 @@ public class ClientBlockHitHandler {
             return;
         }
 
-        Configs.Actions.LOOKING_AT_BS = world.getBlockState(blockPos);
+        Configs.Actions.LOOKING_AT_BS = world.World.getBlockState(blockPos);
 
         if(Configs.Actions.LOOKING_AT_ENTITY != null){
             return;
         }
 
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+        BlockEntity blockEntity = world.World.getBlockEntity(blockPos);
 
         if(blockEntity == null){
             //resetAll();
@@ -189,7 +222,7 @@ public class ClientBlockHitHandler {
 
         ContainerType ct = ContainerType.fromBlockEntity(blockEntity);
 
-        Configs.Actions.LOOKING_AT_BE_CLIENT.setRight(ct);
+        LAT.setRight(ct);
 
         // A COMMENT IN THIS PROJECT... THATS CRAZY
         // Checks if targeted block is one of the supported container blocks
@@ -203,8 +236,8 @@ public class ClientBlockHitHandler {
             ChestBlockEntity chestbe = (ChestBlockEntity)blockEntity;
             BlockState bs = chestbe.getCachedState();
             if((bs.get(ChestBlock.CHEST_TYPE).equals(ChestType.RIGHT))){
-                BlockPos obp = ChestUtils.getOtherChestBlockPos(world, blockPos);
-                BlockEntity be = world.getBlockEntity(obp);
+                BlockPos obp = ChestUtils.getOtherChestBlockPos(world.World, blockPos);
+                BlockEntity be = world.World.getBlockEntity(obp);
                 if (be != null){
                     Configs.Actions.LOOKING_AT = obp;
                 }else{
@@ -213,10 +246,10 @@ public class ClientBlockHitHandler {
             }
         }
 
-        Optional<ContainerPacket.ContainerS2CPacket> o = NbtUtils.getContainerPacket(List.of(Configs.Actions.LOOKING_AT), mc.player, world);
+        Optional<ContainerPacket.ContainerS2CPacket> o = NbtUtils.getContainerPacket(List.of(Configs.Actions.LOOKING_AT), mc.player, world.World);
         NbtCompound n = new NbtCompound();
         o.ifPresent(s2CPacket -> n.put("BlockEntityTag", s2CPacket.nbtMap().get(Configs.Actions.LOOKING_AT)));
-        Configs.Actions.LOOKING_AT_BE_CLIENT.setLeft(n);
+        LAT.setLeft(n);
 
         if(!Configs.Generic.INSPECT_CONTAINER.getKeybind().isKeybindHeld()){
             return;
@@ -309,13 +342,5 @@ public class ClientBlockHitHandler {
             );
         }
 
-    }
-    private static enum TestShapeType implements RaycastContext.ShapeProvider {
-        TEST_SHAPE_TYPE;
-
-        @Override
-        public VoxelShape get(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-            return null;
-        }
     }
 }

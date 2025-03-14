@@ -22,11 +22,13 @@ public class FurnaceInventoryRenderer {
     private final MinecraftClient mc = MinecraftClient.getInstance();
     public FurnaceInventoryRenderer(){
     }
-    public void render(NbtCompound nbt, int baseX, int baseY, DrawContext context){
+    public void render(NbtCompound nbt, int baseX, int baseY, String worldname, DrawContext context){
 
         if(nbt.isEmpty()){
             return;
         }
+
+        context.drawText(mc.textRenderer, worldname, baseX+10, baseY-95, 0xFFFFFF, true);
 
         InventoryOverlay.InventoryRenderType type = InventoryOverlay.InventoryRenderType.FURNACE;
         InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, 3);

@@ -18,7 +18,7 @@ public class HopperInventoryRenderer {
     public HopperInventoryRenderer(){
     }
 
-    public void render(ItemStack stack, int baseX, int baseY, DrawContext context){
+    public void render(ItemStack stack, int baseX, int baseY, String worldname, DrawContext context){
         if (stack.hasNbt())
         {
             DefaultedList<ItemStack> items = InventoryUtils.getStoredItems(stack, -1);
@@ -31,6 +31,7 @@ public class HopperInventoryRenderer {
 
             int screenWidth = GuiUtils.getScaledWindowWidth();
             int screenHeight = GuiUtils.getScaledWindowHeight();
+            context.drawText(mc.textRenderer, worldname, baseX+10, baseY-60, 0xFFFFFF, true);
 
             int height = props.height + 18;
             int x = MathHelper.clamp(baseX + 8 , 0, screenWidth - props.width);

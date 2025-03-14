@@ -54,7 +54,7 @@ public class EntityInventoryRenderer {
             case MINECART_CHEST, MINECART_HOPPER -> {
 
                 if(Configs.Generic.INSPECT_MINECART_CONTAINERS.isKeybindHeld() && Configs.Admin.INSPECT_MINECART_CONTAINERS.getBooleanValue()){
-                    minecartInventoryRenderer.render(entry, ScaledWidth()/2, ScaledHeight()/2, context);
+                    minecartInventoryRenderer.render(entry, ScaledWidth()/2, ScaledHeight()/2, "Minecraft", context);
                 }
             }
             default -> {}
